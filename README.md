@@ -26,4 +26,4 @@ This project was developed by the following students:
  - Daniel Field (z5416299)
  - Jayden Hunter (z5416114)
  - Mitchell Gayfer (z)
- - Fide Hatu (z)
+ - Fadi Hatu (z)
