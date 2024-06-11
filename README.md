@@ -14,9 +14,9 @@ git clone https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900t11a
 ```
 
 To use this repo, please see the `README.md` files within the relevent Agent directories:
-1. Identity Holders - [[identity_holder/README.md]]
-2. Issuers - [[issuer/README.md]]
-3. Service Providers - [[service_provider/README.md]]
+1. Identity Holders - [identity_holder/README.md](identity_holder/README.md)
+2. Issuers - [issuer/README.md](issuer/README.md)
+3. Service Providers - [service_provider/README.md](service_provider/README.md)
 
 ## Credits
 
