@@ -1,4 +1,22 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=15170700&assignment_repo_type=AssignmentRepo)
+# Self-Soverign Identity
+This repo contains three seperate agents, capable of implementing protocol **Protocol Name**.
+The agents are:
+- Identity Holders
+- Issuers
+- Service Providers
+
+
+## Usage
+To begin, clone this repository using
+
+```bash
+git clone https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900t11abookworms.git
+```
+
+To use this repo, please see the `README.md` files within the relevent Agent directories:
+1. Identity Holders - [identity_holder/README.md](identity_holder/README.md)
+2. Issuers - [issuer/README.md](issuer/README.md)
+3. Service Providers - [service_provider/README.md](service_provider/README.md)
 
 ## Credits
 
@@ -8,3 +26,4 @@ This project was developed by the following students:
  - Daniel Field (z5416299)
  - Jayden Hunter (z5416114)
  - Mitchell Gayfer (z)
+ - Fadi Hatu (z)
