@@ -21,9 +21,9 @@ To use this repo, please see the `README.md` files within the relevent Agent dir
 ## Credits
 
 This project was developed by the following students:
- - Alexander Blackmore (z)
+ - Alexander Blackmore (z5420273)
  - Chanikan Palanusitthepa (z5361235)
  - Daniel Field (z5416299)
  - Jayden Hunter (z5416114)
- - Mitchell Gayfer (z)
- - Fadi Hatu (z)
+ - Mitchell Gayfer (z5420468)
+ - Fadi Hatu (z5309136)
