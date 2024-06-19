@@ -11,7 +11,7 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { hello } from "./extra";
+import { addOne } from "./extra";
 
 dotenv.config();
 
@@ -19,16 +19,9 @@ const app: Express = express();
 const port = process.env.PORT || 8081;
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript Server" + hello());
+    res.send("Express + TypeScript Server : 2+1=" + addOne(2));
 });
 
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
-
-
-
-// See ../tests/presentation.ts for this
-export function addOne(number: number): number {
-    return number + 1
-}
