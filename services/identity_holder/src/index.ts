@@ -25,3 +25,10 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
+
+
+
+// See ../tests/presentation.ts for this
+export function addOne(number: number): number {
+    return number + 1
+}
