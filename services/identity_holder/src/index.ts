@@ -11,6 +11,7 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
+import { hello } from "./extra";
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ const app: Express = express();
 const port = process.env.PORT || 8081;
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript Server");
+    res.send("Express + TypeScript Server" + hello());
 });
 
 app.listen(port, () => {
