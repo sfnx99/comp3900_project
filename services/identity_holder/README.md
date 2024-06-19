@@ -1,4 +1,4 @@
-# Self-Sovereign Identity (Identity Holder)
+`# Self-Sovereign Identity (Identity Holder)
 The Identity Holder (IH) is responsible for storing credentials provided to them by Issuers.
 They are also responsible for 
 
