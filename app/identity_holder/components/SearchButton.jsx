@@ -1,9 +1,8 @@
-import { Text } from "react-native";
+import { renderIconByName } from "../scripts/util";
+
 
 const SearchButton = () => {
-  return (
-    <Text>Search</Text>
-  );
+  return renderIconByName("magnify", { size: 30 });
 }
 
 export default SearchButton;
