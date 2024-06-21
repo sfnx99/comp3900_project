@@ -22,35 +22,48 @@ export default App = () => {
         initialRouteName="Home"
         screenOptions={{
           tabBarShowLabel: false,
-          headerShown: false,
+          headerShown: true,
           tabBarStyle: styles.navBar,
+          headerStyle: styles.header,
+          headerShadowVisible: false,
         }}
-        backBehavior="order"
+        backBehavior="history"
       >
         <Tab.Screen
           name="Home"
           component={HomeScreen}
-          options={{ tabBarIcon: renderIconByName("home") }}
+          options={{
+            tabBarIcon: renderIconByName("home"),
+            headerShown: false,
+          }}
         />
         <Tab.Screen
           name="Wallet"
           component={WalletScreen}
-          options={{ tabBarIcon: renderIconByName("wallet") }}
+          options={{
+            tabBarIcon: renderIconByName("wallet"),
+          }}
         />
         <Tab.Screen
           name="Request"
           component={RequestCredentialScreen}
-          options={{ tabBarIcon: renderIconByName("card-plus") }}
+          options={{
+            tabBarIcon: renderIconByName("card-plus"),
+          }}
         />
         <Tab.Screen
           name="Notifications"
           component={NotificationsScreen}
-          options={{ tabBarIcon: renderIconByName("bell") }}
+          options={{
+            tabBarIcon: renderIconByName("bell"),
+          }}
         />
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{ tabBarIcon: renderIconByName("cog") }}
+          options={{
+            tabBarIcon: renderIconByName("cog"),
+          }}
         />
       </Tab.Navigator>
     </NavigationContainer>
@@ -69,5 +82,9 @@ const navTheme = {
 const styles = StyleSheet.create({
   navBar: {
     backgroundColor: theme.nav,
+  },
+  header: {
+    backgroundColor: theme.background,
+    height: 100,
   }
 });
