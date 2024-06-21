@@ -1,11 +1,10 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import MainNavigation from "./MainNavigation";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import MainNavigation from './MainNavigation';
 
+const App = () => (
+  <GestureHandlerRootView>
+    <MainNavigation />
+  </GestureHandlerRootView>
+);
 
-export default App = () => {
-  return (
-    <GestureHandlerRootView>
-      <MainNavigation />
-    </GestureHandlerRootView>
-  );
-}
+export default App;

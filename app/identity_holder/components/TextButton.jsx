@@ -1,8 +1,10 @@
-import { Text, StyleSheet, View } from "react-native";
-import theme from "../styles/colors";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import PropTypes from 'prop-types';
 
-const TextButton = ({ text, onPress, inverted=false }) => {
+import theme from '../styles/colors';
+
+const TextButton = ({ text, onPress, inverted = false }) => {
   const backgroundColour = inverted ? theme.background : theme.primary;
 
   const styles = StyleSheet.create({
@@ -16,7 +18,7 @@ const TextButton = ({ text, onPress, inverted=false }) => {
     text: {
       color: theme.text,
       textAlign: 'center',
-    }
+    },
   });
 
   return (
@@ -25,11 +27,17 @@ const TextButton = ({ text, onPress, inverted=false }) => {
     >
       <View
         style={styles.view}
-        >
+      >
         <Text style={styles.text}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
-}
+};
+
+TextButton.propTypes = {
+  text: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+  inverted: PropTypes.bool.isRequired,
+};
 
 export default TextButton;

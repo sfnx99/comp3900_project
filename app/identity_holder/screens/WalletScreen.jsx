@@ -1,12 +1,10 @@
-import { Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const WalletScreen = () => {
-  return (
-    <SafeAreaView>
-      <Text>Wallet</Text>
-    </SafeAreaView>
-  );
-}
+const WalletScreen = () => (
+  <SafeAreaView>
+    <Text>Wallet</Text>
+  </SafeAreaView>
+);
 
 export default WalletScreen;
