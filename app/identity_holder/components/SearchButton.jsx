@@ -1,7 +1,7 @@
 import { renderIconByName } from "../scripts/util";
 
-
-const SearchButton = () => {
+// TODO: Implement onPress param
+const SearchButton = (onPress) => {
   return renderIconByName("magnify", { size: 30 });
 }
 
