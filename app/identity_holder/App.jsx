@@ -1,22 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./screens/HomeScreen";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SettingsScreen from "./screens/SettingsScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import WalletScreen from "./screens/WalletScreen";
+import { renderIconByName } from "./scripts/util";
 
 const Tab = createBottomTabNavigator();
-
-const renderIconByName = (name) => {
-  return ({ color, size }) => (
-    <MaterialCommunityIcons
-      name={name}
-      color={color}
-      size={size}
-    />
-  )
-}
 
 export default App = () => {
   return (
