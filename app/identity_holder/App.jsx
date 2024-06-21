@@ -5,6 +5,7 @@ import SettingsScreen from "./screens/SettingsScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import WalletScreen from "./screens/WalletScreen";
 import { renderIconByName } from "./scripts/util";
+import RequestCredentialScreen from "./screens/RequestCredentialScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,6 +29,11 @@ export default App = () => {
           name="Wallet"
           component={WalletScreen}
           options={{ tabBarIcon: renderIconByName("wallet") }}
+        />
+        <Tab.Screen
+          name="Request"
+          component={RequestCredentialScreen}
+          options={{ tabBarIcon: renderIconByName("card-plus") }}
         />
         <Tab.Screen
           name="Notifications"
