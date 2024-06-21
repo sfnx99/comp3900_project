@@ -1,22 +1,29 @@
+import { StyleSheet } from "react-native";
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+
+import { renderIconByName } from "./scripts/util";
+import theme from "./styles/colors";
+
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import WalletScreen from "./screens/WalletScreen";
-import { renderIconByName } from "./scripts/util";
 import RequestCredentialScreen from "./screens/RequestCredentialScreen";
 
 const Tab = createBottomTabNavigator();
 
 export default App = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      theme={navTheme}
+    >
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
           tabBarShowLabel: false,
           headerShown: false,
+          tabBarStyle: styles.navBar,
         }}
         backBehavior="order"
       >
@@ -49,3 +56,18 @@ export default App = () => {
     </NavigationContainer>
   );
 }
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: theme.primaryVariant,
+    background: theme.background,
+  }
+}
+
+const styles = StyleSheet.create({
+  navBar: {
+    backgroundColor: theme.nav,
+  }
+});
