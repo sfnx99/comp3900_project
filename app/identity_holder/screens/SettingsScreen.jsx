@@ -1,18 +1,26 @@
 import { useContext, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 import { ThemeContext } from '../context/ThemeContext';
 
 const SettingsScreen = () => {
+  const navigation = useNavigation();
   const [toggle, setToggle] = useState(false);
   const { toggleTheme } = useContext(ThemeContext);
 
   // TODO: Remove this once all the settings have been implemented
-  const dummyFunctions = () => {
-    console.log('Temporary Function');
+  const dummyFunctions = () => {};
+
+  // TODO: Still WIP until authentication is implemented
+  const logout = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
   };
 
   return (
@@ -65,7 +73,7 @@ const SettingsScreen = () => {
       />
       <SettingButton
         text="Logout"
-        onPress={dummyFunctions}
+        onPress={logout}
         icon="logout"
       />
     </SafeAreaView>
