@@ -10,11 +10,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  * @param {*} props - Extra props to add to the button.
  * @returns a react element with the rendered icon.
  */
-export const renderIconByName = (name, props = null) => ({ color, size }) => (
+export const renderIconByName = (name, onPress, props = null) => ({ color, size }) => (
   <MaterialCommunityIcons
     name={name}
     color={color}
     size={size}
+    onPress={onPress}
     {...props}
   />
 );
