@@ -21,13 +21,16 @@ const MainNavigation = () => (
   >
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         tabBarShowLabel: false,
         headerShown: true,
         tabBarStyle: styles.navBar,
         headerStyle: styles.header,
         headerShadowVisible: false,
-      }}
+        headerTitleAlign: 'center',
+        headerTitleStyle: styles.headerTitle,
+        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+      })}
       backBehavior="history"
     >
       <Tab.Screen
@@ -36,6 +39,7 @@ const MainNavigation = () => (
         options={{
           tabBarIcon: renderIconByName('home'),
           headerShown: false,
+          headerTitleAlign: 'center',
         }}
       />
       <Tab.Screen
@@ -87,7 +91,10 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: theme.background,
-    height: 100,
+    height: 80,
+  },
+  headerTitle: {
+    fontWeight: 'bold',
   },
 });
 
