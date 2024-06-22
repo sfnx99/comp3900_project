@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import theme from '../styles/colors';
 
-const SettingButton = ({ text, onPress, icon }) => (
+const SettingButton = ({ text, onPress, icon = null }) => (
   <TouchableOpacity
     onPress={onPress}
   >
@@ -40,10 +40,6 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
 });
-
-SettingButton.defaultProps = {
-  icon: null,
-};
 
 SettingButton.propTypes = {
   text: PropTypes.string.isRequired,
