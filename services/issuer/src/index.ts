@@ -11,6 +11,9 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
+import { metadata } from "./metadata";
+import { authorize } from "./authorize";
+import { issue } from "./issue";
 
 dotenv.config();
 
@@ -19,6 +22,21 @@ const port = process.env.PORT || 8082;
 
 app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server");
+});
+
+app.get("/v1/metadata", (req: Request, res: Response) => {
+    res.json(metadata());
+});
+
+app.get("/v1/authorize", (req: Request, res: Response) => {
+    const email = req.query.email as string;
+    const password = req.query.password as string;
+    res.json(authorize(email, password));
+});
+
+app.get("/v1/credential/issue", (req: Request, res: Response) => {
+    const access_token = req.get('access_token') as string;
+    res.json(issue(access_token));
 });
 
 app.listen(port, () => {
