@@ -6,7 +6,7 @@ import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 
 const SettingsScreen = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [toggle, setToggle] = useState(false);
   const dummyFunctions = () => {
     console.log('Temporary Function');
   };
@@ -16,8 +16,8 @@ const SettingsScreen = () => {
       <NotificationButton
         text="Notifications"
         icon="bell-outline"
-        toggle={darkMode}
-        setToggle={setDarkMode}
+        toggle={toggle}
+        setToggle={() => setToggle(!toggle)}
       />
       <SettingButton
         text="Activity Share Preferences"
