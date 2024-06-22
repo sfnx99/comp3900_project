@@ -1,7 +1,8 @@
+import * as React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-import { StyleSheet } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet, Button } from 'react-native';
 
 import theme from './styles/colors';
 import { renderIconByName } from './scripts/util';
@@ -11,9 +12,36 @@ import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import WalletScreen from './screens/WalletScreen';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import EditInfo from './screens/EditInfo';
 import SearchButton from './components/SearchButton';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const RequestStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="RequestCredential" 
+      component={RequestCredentialScreen} 
+      options={({ navigation }) => ({
+        title: 'Request Credential',
+        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontSize: 24, fontWeight: 'normal' },
+      })} 
+    />
+    <Stack.Screen 
+      name="EditInfo" 
+      component={EditInfo} 
+      options={({ navigation }) => ({
+        title: 'Edit Info',
+        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
+      })}
+    />
+  </Stack.Navigator>
+);
 
 const MainNavigation = () => (
   <NavigationContainer
@@ -43,18 +71,19 @@ const MainNavigation = () => (
         }}
       />
       <Tab.Screen
+        name="RequestCredential"
+        component={RequestStack}
+        options={{
+          headerShown: false,
+          tabBarIcon: renderIconByName('card-plus'),
+        }}
+      />
+      <Tab.Screen
         name="Wallet"
         component={WalletScreen}
         options={{
           tabBarIcon: renderIconByName('wallet'),
           headerRight: SearchButton(),
-        }}
-      />
-      <Tab.Screen
-        name="Request"
-        component={RequestCredentialScreen}
-        options={{
-          tabBarIcon: renderIconByName('card-plus'),
         }}
       />
       <Tab.Screen
