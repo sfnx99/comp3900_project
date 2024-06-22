@@ -69,30 +69,13 @@ function add_json_object_to_file(new_object: string, filepath: string, style: st
     });
 }
 
-function format(format: string, style: string): void {
-    try {
-        add_json_object_to_file(format, "./metadata.json", style)
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function issuer(issuer: string, style: string): void {
-    try {
-        add_json_object_to_file(issuer, "trusted.json", style)
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 // Check options provided in arguments and resolve them to corresponding commands.
-
 if (options.cred) {
     if ((!options.add && !options.remove) || (options.add && options.remove)) {
         console.log("Add and remove arguments input incorrectly");
     } else {
 	const style = options.add === true ? "add" : "remove"
-        format(options.cred, style)
+        add_json_object_to_file(options.cred, "./metadata.json", style)
     }
 }
 
@@ -101,7 +84,7 @@ if (options.trust) {
         console.log("Add and remove arguments input incorrectly");
     } else {
         const style = options.add === true ? "add" : "remove"
-        issuer(options.cred, style)
+        add_json_object_to_file(options.trust, "trusted.json", style)
     }
 }
 
