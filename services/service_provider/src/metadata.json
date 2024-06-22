@@ -1,19 +1,18 @@
 {
   "list": [
     {
-      "iss" : "Service NSW",
-      "cred" : {
-        "attr1" : "DOB",
-        "attr2" : "FName"
+      "iss": "Local Pub",
+      "cred": {
+        "attr1": "DOB",
+        "attr2": "LName",
+        "attr3": "Picture"
       }
     },
     {
-      "iss" : "Local Pub",
-      "cred" : {
-        "attr1" : "DOB",
-        "attr2" : "LName",
-        "attr3" : "Picture"
-      }
+      "iss": "Service NSW"
+    },
+    {
+      "iss": "Service NSW"
     }
   ]
 }

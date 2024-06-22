@@ -2,11 +2,9 @@
 Below is CLI, utilising Commander.js.
 */
 
-import { StringifyOptions } from "querystring";
-
-const fs = require("fs");
-const { Command } = require("commander");
-const figlet = require("figlet");
+import * as fs from "fs";
+import { Command } from "commander";
+import figlet from "figlet";
 
 const program = new Command();
 console.log(figlet.textSync("Service Provider"));
@@ -23,28 +21,28 @@ program
 const options = program.opts();
 
 function add_json_object_to_file(new_object: string, filepath: string, style: string): void {
-    fs.readFile(filepath, 'utf8', (err: Error, data: any) => {
+    fs.readFile(filepath, (err: NodeJS.ErrnoException | null, data: Buffer) => {
         if (err) {
             console.error("Could not read file:", err);
             return;
         }
 
-        let jsonObject;
-        try {
-            jsonObject = JSON.parse(data);
-        } catch (parseErr) {
-            console.error("Could not parse JSON:", parseErr);
-            return;
-        }
+        const jsonObject = JSON.parse(data.toString());
 
-        // Ensure the jsonObject has a list of objects
+        // try {
+        //     jsonObject = JSON.parse(data.toString());
+        // } catch (parseErr) {
+        //     console.error("Could not parse JSON:", parseErr);
+        //     return;
+        // }
+
         if (!Array.isArray(jsonObject.list)) {
             jsonObject.list = [];
         }
 
         // Add or remove the new object
 	    if (style === "add") {
-            let new_json_object = JSON.parse(new_object);
+            const new_json_object = JSON.parse(new_object);
             jsonObject.list.push(new_json_object);
             console.log("JSON object added successfully.");
         } else if (style === "remove") {
@@ -60,7 +58,7 @@ function add_json_object_to_file(new_object: string, filepath: string, style: st
         }
 
         // Write the updated JSON object back to the file
-        fs.writeFile(filepath, JSON.stringify(jsonObject, null, 2), 'utf8', (writeErr: Error) => {
+        fs.writeFile(filepath, JSON.stringify(jsonObject, null, 2), 'utf8', (writeErr: NodeJS.ErrnoException | null) => {
             if (writeErr) {
                 console.error("Could not write file:", writeErr);
                 return;

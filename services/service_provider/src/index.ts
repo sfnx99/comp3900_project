@@ -12,7 +12,7 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-const fs = require("fs");
+import * as fs from "fs";
 
 dotenv.config();
 
@@ -28,14 +28,14 @@ app.listen(port, () => {
 });
 
 app.post("/v1/metadata", (req: Request, res: Response) => {
-    fs.readFile("./metadata.json", 'utf8', (err: Error, data: any) => {
+    fs.readFile("./metadata.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
         if (err) {
             console.error("Could not read file:", err);
             return;
         }
 
         try {
-            let jsonObject = JSON.parse(data);
+            const jsonObject = JSON.parse(data.toString());
             res.status(200).json(jsonObject);
         } catch (parseErr) {
             res.status(500).json({ message: 'Internal Server Error', error: parseErr });;
@@ -45,16 +45,16 @@ app.post("/v1/metadata", (req: Request, res: Response) => {
 
 app.post("/v1/receive", (req: Request, res: Response) => {
     const data = req.body;
-    let jsonObject = JSON.parse(data);
+    const jsonObject = JSON.parse(data);
 
-    fs.readFile("./trusted.json", 'utf8', (err: Error, data: any) => {
+    fs.readFile("./trusted.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
         if (err) {
             console.error("Could not read file:", err);
             return;
         }
 
         try {
-            let trusted = JSON.parse(data);
+            const trusted = JSON.parse(data.toString());
             const issuer = jsonObject.iss;
             if (trusted.list.findIndex((item: { iss: string; }) => item.iss === issuer)) {
                 res.status(200).json({ message: 'Credential Accepted.' });
@@ -66,7 +66,4 @@ app.post("/v1/receive", (req: Request, res: Response) => {
         }
     });
 });
-
-let metadata = JSON.parse("./metadata.json");
-console.log(metadata)
 
