@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     flexDirection: 'row',
     alignContent: 'center',
+    gap: 10,
   },
   text: {
     color: theme.text,

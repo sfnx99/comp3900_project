@@ -1,18 +1,23 @@
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import SettingButton from '../components/SettingButton';
+import NotificationButton from '../components/NotificationButton';
 
 const SettingsScreen = () => {
+  const [darkMode, setDarkMode] = useState(false);
   const dummyFunctions = () => {
     console.log('Temporary Function');
   };
 
   return (
     <SafeAreaView style={styles.view}>
-      <SettingButton
+      <NotificationButton
         text="Notifications"
-        onPress={dummyFunctions}
         icon="bell-outline"
+        toggle={darkMode}
+        setToggle={setDarkMode}
       />
       <SettingButton
         text="Activity Share Preferences"
