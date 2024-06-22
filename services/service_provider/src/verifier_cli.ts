@@ -15,7 +15,7 @@ program
     .version("1.0.0")
     .description("A CLI used for operating the Service Provider.")
     .option("-a --add", "Add an object when paired with a matching credential/issuer")
-    .option("-r --remove", "Remove an object when paired with a matching credential/issuer")
+    .option("-r --remove", "Remove an object when paired with a matching issuer name")
     .option("-c --cred [value]", "Specify a credential to be added or removed from the metadata file.")
     .option("-i --trust [value]", "Specify an issuer to be added or removed from the trusted issuers file.")
     .parse(process.argv);
@@ -46,12 +46,13 @@ function add_json_object_to_file(new_object: string, filepath: string, style: st
 	    if (style === "add") {
             let new_json_object = JSON.parse(new_object);
             jsonObject.list.push(new_json_object);
+            console.log("JSON object added successfully.");
         } else if (style === "remove") {
-            let new_json_object = JSON.parse(new_object);
-            const index = jsonObject.list.indexOf(new_json_object);
-            console.log(new_json_object)
+            const index = jsonObject.list.findIndex((item: { iss: string; }) => item.iss === new_object);
+
             if (index > -1) {
                 jsonObject.list.splice(index, 1);
+                console.log("JSON object removed successfully.");
             } else {
                 console.error("Object not in list.");
                 return;
@@ -64,7 +65,6 @@ function add_json_object_to_file(new_object: string, filepath: string, style: st
                 console.error("Could not write file:", writeErr);
                 return;
             }
-            console.log("JSON object added successfully.");
         });
     });
 }
