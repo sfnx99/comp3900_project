@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
+import { ThemeContext } from '../context/ThemeContext';
 
 const SettingsScreen = () => {
   const [toggle, setToggle] = useState(false);
+  const { toggleTheme } = useContext(ThemeContext);
+
+  // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {
     console.log('Temporary Function');
   };
@@ -31,7 +35,7 @@ const SettingsScreen = () => {
       />
       <SettingButton
         text="Dark Mode"
-        onPress={dummyFunctions}
+        onPress={toggleTheme}
         icon="theme-light-dark"
       />
       <SettingButton
