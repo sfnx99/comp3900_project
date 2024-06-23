@@ -1,13 +1,14 @@
+import PropTypes from 'prop-types';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { getCoordinates } from '../../components/Geocoding';
 import ActivityHistory from '../ActivityHistory';
-import { renderIconByName } from '../../scripts/util';
+import { credentialPropType, renderIconByName } from '../../scripts/util';
 import HomeScreen from '../HomeScreen';
 
 const Stack = createStackNavigator();
 
-const HomeStack = () => {
+const HomeStack = ({ credentials }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const HomeStack = () => {
           headerTitleAlign: 'center',
         }}
       >
-        {() => <HomeScreen activities={notifications} />}
+        {() => <HomeScreen credentials={credentials} activities={notifications} />}
       </Stack.Screen>
       <Stack.Screen
         name="ActivityHistory"
@@ -77,6 +78,10 @@ const HomeStack = () => {
       </Stack.Screen>
     </Stack.Navigator>
   );
+};
+
+HomeStack.propTypes = {
+  credentials: PropTypes.arrayOf(credentialPropType),
 };
 
 export default HomeStack;

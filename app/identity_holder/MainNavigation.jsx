@@ -79,13 +79,14 @@ const MainApp = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeStack}
         options={{
           tabBarIcon: renderIconByName('home'),
           headerShown: false,
           headerTitleAlign: 'center',
         }}
-      />
+      >
+        {() => <HomeStack credentials={credentials} />}
+      </Tab.Screen>
       <Tab.Screen
         name="RequestCredentialTab"
         component={RequestStack}

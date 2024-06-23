@@ -25,7 +25,7 @@ const HomeScreen = ({ credentials, activities }) => {
         />
       </View>
       <View style={styles.activitySection}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <Text style={styles.recentActivity}>Recent Activity</Text>
         <ActivityPreview activities={activities} />
         <TextButton
           text="View All Activity History"
@@ -46,7 +46,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
   },
   header: {
-    flex: 0.15,
+    marginTop: 10,
+    flex: 0.1,
     justifyContent: 'center',
   },
   welcomeText: {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   credentialsSection: {
-    flex: 0.35,
+    flex: 0.4,
     justifyContent: 'space-between',
     marginBottom: 24,
   },
@@ -67,10 +68,10 @@ const styles = StyleSheet.create({
     flex: 0.5,
     justifyContent: 'space-between',
   },
-  sectionTitle: {
+  recentActivity: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   button: {
     marginTop: 8,

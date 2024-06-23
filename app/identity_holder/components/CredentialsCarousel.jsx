@@ -1,56 +1,25 @@
 import PropType from 'prop-types';
-import {
-  Dimensions,
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
+import { StyleSheet } from 'react-native';
+import PagerView from 'react-native-pager-view';
 
 import { credentialPropType } from '../scripts/util';
+import CredentialCard from './CredentialCard';
 
-const CredentialsCarousel = ({ credentials }) => {
-  const { width } = Dimensions.get('window');
-
-  return (
-    <View style={styles.carousel}>
-      <Carousel
-        loop
-        width={width}
-        height={width / 2}
-        data={[...new Array(6).keys()]}
-        scrollAnimationDuration={1000}
-        onSnapToItem={(index) => console.log('current index:', index)}
-        renderItem={({ index }) => (
-          <View
-            style={styles.view}
-          >
-            <Text style={styles.text}>
-              {index}
-            </Text>
-          </View>
-        )}
-      />
-    </View>
-  );
-};
+const CredentialsCarousel = ({ credentials }) => (
+  <PagerView style={styles.pagerView} initialPage={0}>
+    {credentials.map((credential) => (
+      <CredentialCard credential={credential} />
+    ))}
+  </PagerView>
+);
 
 const styles = StyleSheet.create({
-  carousel: {
-    flex: 1,
-  },
-  view: {
-    flex: 1,
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 30,
+  pagerView: {
+    height: 230,
   },
 });
 
-CredentialsCarousel.propType = {
+CredentialsCarousel.propTypes = {
   credentials: PropType.arrayOf(credentialPropType),
 };
 
