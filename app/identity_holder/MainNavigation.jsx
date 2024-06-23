@@ -18,47 +18,95 @@ import { ThemeContext } from './context/ThemeContext';
 import SuccessfullySubmitted from './screens/SuccessfullySubmitted';
 import ActivityHistory from './screens/ActivityHistory';
 import LoginScreen from './screens/LoginScreen';
+import { getCoordinates } from './components/Geocoding';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const RequestStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="RequestCredential"
-      component={RequestCredentialScreen}
-      options={({ navigation }) => ({
-        title: 'Request Credential',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
-      })}
-    />
-    <Stack.Screen
-      name="SuccessfullySubmitted"
-      component={SuccessfullySubmitted}
-      options={({ navigation }) => ({
-        headerTitle: '',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
-      })}
-    />
-    <Stack.Screen
-      name="ActivityHistory"
-      component={ActivityHistory}
-      options={({ navigation }) => ({
-        headerTitle: 'Activity History',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
-      })}
-    />
-  </Stack.Navigator>
-);
+const RequestStack = () => {
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const initialNotifications = [
+        {
+          id: 1,
+          name: 'Medicare Card',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'UNSW Medical Centre',
+        },
+        {
+          id: 2,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Joe Bar, Newtown',
+        },
+        {
+          id: 3,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Woolworths, Newtown',
+        },
+      ];
+
+      const notificationsWithCoordinates = await Promise.all(
+        initialNotifications.map(async (notification) => {
+          if (notification.type === 'location' && notification.detail) {
+            const coordinates = await getCoordinates(notification.detail);
+            return { ...notification, coordinates };
+          }
+          return notification;
+        }),
+      );
+
+      setNotifications(notificationsWithCoordinates);
+    };
+
+    fetchNotifications();
+  }, []);
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="RequestCredential"
+        component={RequestCredentialScreen}
+        options={({ navigation }) => ({
+          title: 'Request Credential',
+          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
+        })}
+      />
+      <Stack.Screen
+        name="SuccessfullySubmitted"
+        component={SuccessfullySubmitted}
+        options={({ navigation }) => ({
+          headerTitle: '',
+          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
+        })}
+      />
+      <Stack.Screen
+        name="ActivityHistory"
+        options={({ navigation }) => ({
+          headerTitle: 'Activity History',
+          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
+        })}
+      >
+        {() => <ActivityHistory notifications={notifications} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+};
 
 const MainApp = () => {
   const [credentials, setCredentials] = useState([]);
+
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
