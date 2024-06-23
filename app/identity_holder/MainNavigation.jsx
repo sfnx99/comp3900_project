@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -58,7 +58,28 @@ const RequestStack = () => (
 );
 
 const MainApp = () => {
+  const [credentials, setCredentials] = useState([]);
   const { theme } = useContext(ThemeContext);
+
+  useEffect(() => {
+    // TODO: GET CREDENTIALS HERE
+    const fetchCredentials = async () => {
+      setCredentials([
+        {
+          id: '1',
+          iss: 'NSW Government',
+          cred: {
+            credName: 'Drivers License',
+            fullName: 'Jessica Brown',
+            expiryDate: new Date(),
+            licenseNumber: '0123456789',
+          },
+        },
+      ]);
+    };
+
+    fetchCredentials();
+  }, []);
 
   const styles = StyleSheet.create({
     navBar: {
@@ -112,12 +133,13 @@ const MainApp = () => {
       />
       <Tab.Screen
         name="Wallet"
-        component={WalletScreen}
         options={{
           tabBarIcon: renderIconByName('wallet'),
           headerRight: SearchButton(),
         }}
-      />
+      >
+        {() => <WalletScreen credentials={credentials} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}
