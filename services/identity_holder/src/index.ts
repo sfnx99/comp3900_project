@@ -14,6 +14,7 @@ import express, { Express, Request, Response } from "express";
 import { addOne } from "./extra";
 import { authRegister, authLogin, authLogout } from "./auth";
 import {getCredentials, getCredential, deleteCredential} from "./credentials";
+import {getIssuers, getRequest, makeRequest} from './issuer';
 
 dotenv.config();
 
@@ -79,6 +80,41 @@ app.delete('/v1/credential', (req: Request, res: Response) => {
     if (token !== undefined) {
         // Cut off "Bearer "{token}
         const result = deleteCredential(token.slice(7), id);
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
+app.get('/v1/issuers', (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = getIssuers(token.slice(7));
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
+app.get('/v1/credential/request', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { issuer } = req.body;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = await getRequest(token.slice(7), issuer)
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
+app.post('/v1/credential/request', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { issuer, format, access_code } = req.body;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = await makeRequest(token.slice(7), issuer, format, access_code)
         res.status(result.status).json(result.body);
     } else {
         res.status(401).json({error: "User is not logged in"});

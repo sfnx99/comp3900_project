@@ -16,7 +16,7 @@ let data: Data = {
         }
     ],
     issuers: [
-        "localhost:8082" // hardcoded
+        "http://localhost:8082" // hardcoded
     ]
 }
 
@@ -31,6 +31,12 @@ export function getData() : Data {
 
 // config
 export const SALT_ROUNDS = 10
+export const FORMAT_MAP = {
+    "Learner Driver Licence": ["first_name", "last_name", "dob"],
+    "Provisional Driver Licence": ["first_name", "last_name", "dob"],
+    "Driver Licence": ["first_name", "last_name", "dob"],
+    "Photo Card": ["first_name", "last_name", "dob"]
+}
 
 // helpers
 export function toUser(token: string): User|undefined {
