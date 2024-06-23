@@ -14,10 +14,12 @@ const HomeScreen = ({ credentials, activities }) => {
     <SafeAreaView>
       <Text>Welcome back,</Text>
       <Text>Jessica</Text>
-      <CredentialsCarousel />
+      <CredentialsCarousel
+        credentials={credentials}
+      />
       <TextButton
         text="View All Credentials"
-        onPress={() => console.log('Hello World')}
+        onPress={() => navigation.navigate('Wallet')}
       />
       <ActivityPreview
         activities={activities}
