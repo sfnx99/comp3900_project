@@ -61,7 +61,7 @@ const MainNavigation = () => {
             headerShadowVisible: false,
             headerTitleAlign: 'center',
             headerTitleStyle: styles.headerTitle,
-            headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+            headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30, color: theme.text }),
           })}
           backBehavior="history"
         >
