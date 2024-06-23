@@ -18,11 +18,24 @@ export default function RequestCredentialScreen({ navigation }) {
   const [Pnumber, setPnumber] = useState('');
   const [address, setAddress] = useState('');
   const [isPressed, setIsPressed] = useState(false);
+  const [emptyFields, setEmptyFields] = useState([]);
 
-  // const handleSubmit = () => {
-  //   console.log('Credential Requested:', { name, email, password });
-  // };
+  const handleSubmit = () => {
+    const emptyFields = [];
+    if (!typeofID) emptyFields.push('typeofID');
+    if (!docnumb) emptyFields.push('docnumb');
+    if (!FullName) emptyFields.push('FullName');
+    if (!Pnumber) emptyFields.push('Pnumber');
+    if (!address) emptyFields.push('address');
 
+    if (emptyFields.length > 0) {
+      setEmptyFields(emptyFields);
+      Alert.alert('Error', 'Please fill all the fields');
+      return;
+    }
+    setEmptyFields([]);
+    navigation.navigate("SuccessfullySubmitted");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,7 +46,10 @@ export default function RequestCredentialScreen({ navigation }) {
         <View style={styles.inputContainer}>
             <Text style={styles.label}>Form Of Identification Required</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                emptyFields.includes('typeofID') && styles.inputError
+              ]}
               value={typeofID}
               onChangeText={setID}
             />
@@ -43,7 +59,10 @@ export default function RequestCredentialScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Document Number</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                emptyFields.includes('docnumb') && styles.inputError
+              ]}
               value={docnumb}
               onChangeText={setdocnumb}
             />
@@ -53,7 +72,10 @@ export default function RequestCredentialScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Full Name</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                emptyFields.includes('FullName') && styles.inputError
+              ]}
               value={FullName}
               onChangeText={setFullName}
             />
@@ -63,7 +85,10 @@ export default function RequestCredentialScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Phone Number</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                emptyFields.includes('Pnumber') && styles.inputError
+              ]}
               value={Pnumber}
               onChangeText={setPnumber}
               keyboardType="phone-pad"
@@ -74,7 +99,10 @@ export default function RequestCredentialScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Address</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                emptyFields.includes('address') && styles.inputError
+              ]}
               value={address}
               onChangeText={setAddress}
             />
@@ -82,11 +110,21 @@ export default function RequestCredentialScreen({ navigation }) {
           </View>
           <TouchableOpacity 
             style={[styles.button, isPressed && styles.buttonHover]} 
-            onPress={() => navigation.navigate("EditInfo")}
+            // onPress={() => navigation.navigate("SuccessfullySubmitted")}
+            onPress={handleSubmit}
             onPressIn={() => setIsPressed(true)}
             onPressOut={() => setIsPressed(false)}  
           >
             <Text style={styles.buttonText}>Submit Request</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.button, isPressed && styles.buttonHover]} 
+            onPress={() => navigation.navigate("ActivityHistory")}
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}  
+          >
+            <Text style={styles.buttonText}>Activity History</Text>
           </TouchableOpacity>
         </ScrollView>
     </SafeAreaView>

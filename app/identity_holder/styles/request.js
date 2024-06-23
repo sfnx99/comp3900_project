@@ -43,6 +43,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#F5FFB9',
   },
+  inputError: {
+    borderWidth: 0.5,
+    borderColor: 'red', // Red border for error
+    borderRadius: '3px'
+  },
   placeholder: {
     color: '#888', // Placeholder text color
   },
@@ -56,6 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D6EE41', // Fluoro yellow color
     paddingVertical: 10,
     paddingHorizontal: 20,
+    marginVertical: 20,
     borderRadius: 5,
     width: width * 0.95, // 90% of the screen width
     alignItems: 'center',

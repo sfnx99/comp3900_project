@@ -2,7 +2,8 @@ import * as React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet, Button } from 'react-native';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import { StyleSheet, StatusBar } from 'react-native';
 
 import theme from './styles/colors';
 import { renderIconByName } from './scripts/util';
@@ -14,6 +15,9 @@ import WalletScreen from './screens/WalletScreen';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
 import EditInfo from './screens/EditInfo';
 import SearchButton from './components/SearchButton';
+import SuccessfullySubmitted from './screens/SuccessfullySubmitted';
+import ActivityHistory from './screens/ActivityHistory';
+import LoginScreen from './screens/LoginScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -31,10 +35,20 @@ const RequestStack = () => (
       })} 
     />
     <Stack.Screen 
-      name="EditInfo" 
-      component={EditInfo} 
+      name="SuccessfullySubmitted" 
+      component={SuccessfullySubmitted } 
       options={({ navigation }) => ({
-        title: 'Edit Info',
+        headerTitle: '',
+        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
+      })}
+    />
+     <Stack.Screen 
+      name="ActivityHistory" 
+      component={ActivityHistory} 
+      options={({ navigation }) => ({
+        headerTitle: '',
         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
         headerTitleAlign: 'center',
         headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
@@ -42,68 +56,148 @@ const RequestStack = () => (
     />
   </Stack.Navigator>
 );
+const MainApp = () => (
+  <Tab.Navigator
+    initialRouteName="Home"
+    screenOptions={({ navigation }) => ({
+      tabBarShowLabel: false,
+      headerShown: true,
+      tabBarStyle: styles.navBar,
+      headerStyle: styles.header,
+      headerShadowVisible: false,
+      headerTitleAlign: 'center',
+      headerTitleStyle: styles.headerTitle,
+      headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+    })}
+    backBehavior="history"
+  >
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{
+        tabBarIcon: renderIconByName('home'),
+        headerShown: false,
+        headerTitleAlign: 'center',
+      }}
+    />
+    <Tab.Screen
+      name="RequestCredentialTab"
+      component={RequestStack}
+      options={{
+        headerShown: false,
+        tabBarIcon: renderIconByName('card-plus'),
+      }}
+    />
+    <Tab.Screen
+      name="Wallet"
+      component={WalletScreen}
+      options={{
+        tabBarIcon: renderIconByName('wallet'),
+        headerRight: SearchButton(),
+      }}
+    />
+    <Tab.Screen
+      name="Notifications"
+      component={NotificationsScreen}
+      options={{
+        tabBarIcon: renderIconByName('bell'),
+        headerRight: SearchButton(),
+      }}
+    />
+    <Tab.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{
+        tabBarIcon: renderIconByName('cog'),
+      }}
+    />
+  </Tab.Navigator>
+);
 
 const MainNavigation = () => (
-  <NavigationContainer
-    theme={navTheme}
-  >
-    <Tab.Navigator
-      initialRouteName="Home"
-      screenOptions={({ navigation }) => ({
-        tabBarShowLabel: false,
-        headerShown: true,
-        tabBarStyle: styles.navBar,
-        headerStyle: styles.header,
-        headerShadowVisible: false,
-        headerTitleAlign: 'center',
-        headerTitleStyle: styles.headerTitle,
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-      })}
-      backBehavior="history"
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: renderIconByName('home'),
-          headerShown: false,
-          headerTitleAlign: 'center',
-        }}
+  <NavigationContainer theme={navTheme}>
+    <ExpoStatusBar style="dark" />
+    <StatusBar barStyle="dark-content" />
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Login" 
+        component={LoginScreen} 
+        options={{ headerShown: false }} // Hide header for login screen
       />
-      <Tab.Screen
-        name="RequestCredential"
-        component={RequestStack}
-        options={{
-          headerShown: false,
-          tabBarIcon: renderIconByName('card-plus'),
-        }}
+      <Stack.Screen 
+        name="MainApp" 
+        component={MainApp} 
+        options={{ headerShown: false }} // Hide header for main app container
       />
-      <Tab.Screen
-        name="Wallet"
-        component={WalletScreen}
-        options={{
-          tabBarIcon: renderIconByName('wallet'),
-          headerRight: SearchButton(),
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          tabBarIcon: renderIconByName('bell'),
-          headerRight: SearchButton(),
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: renderIconByName('cog'),
-        }}
-      />
-    </Tab.Navigator>
+    </Stack.Navigator>
   </NavigationContainer>
 );
+
+// const MainNavigation = () => (
+//   <NavigationContainer
+//     theme={navTheme}
+//   >
+//     <ExpoStatusBar style="dark" />
+//     <StatusBar barStyle="dark-content" />
+
+//     <Tab.Navigator
+//       initialRouteName="Home"
+//       screenOptions={({ navigation }) => ({
+//         tabBarShowLabel: false,
+//         headerShown: true,
+//         tabBarStyle: styles.navBar,
+//         headerStyle: styles.header,
+//         headerShadowVisible: false,
+//         headerTitleAlign: 'center',
+//         headerTitleStyle: styles.headerTitle,
+//         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
+//       })}
+//       backBehavior="history"
+//     >
+//       <Tab.Screen
+//         name="Home"
+//         component={HomeScreen}
+//         options={{
+//           tabBarIcon: renderIconByName('home'),
+//           headerShown: false,
+//           headerTitleAlign: 'center',
+//         }}
+//       />
+//       <Tab.Screen
+//         name="RequestCredentialTab"
+//         component={RequestStack}
+//         options={{
+//           headerShown: false,
+//           tabBarIcon: renderIconByName('card-plus'),
+//         }}
+//       />
+//       <Tab.Screen
+//         name="Wallet"
+//         component={WalletScreen}
+//         options={{
+//           tabBarIcon: renderIconByName('wallet'),
+//           headerRight: SearchButton(),
+//         }}
+//       />
+//       <Tab.Screen
+//         name="Notifications"
+//         component={NotificationsScreen}
+//         options={{
+//           tabBarIcon: renderIconByName('bell'),
+//           headerRight: SearchButton(),
+//         }}
+//       />
+//       <Tab.Screen
+//         name="Settings"
+//         component={SettingsScreen}
+//         options={{
+//           tabBarIcon: renderIconByName('cog'),
+//         }}
+//       />
+//     </Tab.Navigator>
+//   </NavigationContainer>
+// );
+
 
 const navTheme = {
   ...DefaultTheme,
