@@ -56,13 +56,14 @@ const HomeStack = () => {
     <Stack.Navigator>
       <Stack.Screen
         name="HomeMain"
-        component={HomeScreen}
         options={{
           tabBarIcon: renderIconByName('home'),
           headerShown: false,
           headerTitleAlign: 'center',
         }}
-      />
+      >
+        {() => <HomeScreen activities={notifications} />}
+      </Stack.Screen>
       <Stack.Screen
         name="ActivityHistory"
         options={({ navigation }) => ({

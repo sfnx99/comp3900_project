@@ -8,7 +8,7 @@ import { ThemeContext } from '../context/ThemeContext';
 import { isValidDate } from '../scripts/util';
 import CircleIcon from './CircleIcon';
 
-const Notification = ({ notification }) => {
+const Activity = ({ notification }) => {
   const { theme } = useContext(ThemeContext);
 
   const formattedTimestamp = format(new Date(notification.timestamp), 'dd/MM/yyyy');
@@ -20,6 +20,7 @@ const Notification = ({ notification }) => {
       case 'pending':
         return 'upload';
       case 'location':
+      case 'location-preview':
         return 'map-marker-radius-outline';
       default:
         return null;
@@ -68,13 +69,10 @@ const Notification = ({ notification }) => {
   });
 
   return (
-
-    
-
     <View style={styles.notification}>
       <View style={[styles.iconContainer, { alignSelf: 'flex-start' }]}>
         <CircleIcon name={getIconName()} size={16} color={'black'} backgroundColor="#D6EE41" />
-        </View>
+      </View>
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name}>{notification.name}</Text>
@@ -102,13 +100,13 @@ const Notification = ({ notification }) => {
   );
 };
 
-Notification.propTypes = {
+Activity.propTypes = {
   notification: PropTypes.shape({
     id: PropTypes.number,
     name: PropTypes.string,
     detail: PropTypes.string,
     timestamp: isValidDate,
-    type: PropTypes.oneOf(['approval', 'pending', 'location']),
+    type: PropTypes.oneOf(['approval', 'pending', 'location', 'location-preview']),
     coordinates: PropTypes.shape({
       latitude: PropTypes.number,
       longitude: PropTypes.number,
@@ -116,4 +114,4 @@ Notification.propTypes = {
   }).isRequired,
 };
 
-export default Notification;
+export default Activity;
