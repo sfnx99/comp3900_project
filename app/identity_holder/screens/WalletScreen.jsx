@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import CredentialCard from '../components/CredentialCard';
 
 const WalletScreen = ({ credentials }) => (
-  <ScrollView>
+  <ScrollView style={styles.container}>
     {credentials.map((credential) => (
       <CredentialCard
         key={credential.id}
@@ -20,5 +20,11 @@ WalletScreen.propTypes = {
     cred: PropTypes.shape(),
   })).isRequired,
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 21,
+  },
+});
 
 export default WalletScreen;
