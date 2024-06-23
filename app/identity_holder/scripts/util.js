@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { isDate } from 'date-fns';
 
 /**
  * Renders an icon from MaterialCommunityIcons.
@@ -19,3 +20,13 @@ export const renderIconByName = (name, onPress, props = null) => ({ color, size 
     {...props}
   />
 );
+
+/**
+ * Prop validation function when prop is a Date object from date-fns.
+ */
+export const isValidDate = (props, propName, componentName) => {
+  if (!isDate(props[propName])) {
+    return new Error(`Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected a valid date object.`);
+  }
+  return null;
+};
