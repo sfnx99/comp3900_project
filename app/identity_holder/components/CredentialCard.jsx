@@ -1,12 +1,16 @@
 import PropTypes from 'prop-types';
+import { useContext } from 'react';
 import {
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { ThemeContext } from '../context/ThemeContext';
 
 const CredentialCard = ({ credential }) => {
+  const { theme } = useContext(ThemeContext);
+
   const handlePress = () => {
     // TODO: Open the specific credential, passing the credential prop
   };
@@ -26,6 +30,7 @@ const CredentialCard = ({ credential }) => {
     },
     text: {
       marginVertical: 10,
+      color: theme.text,
     },
   });
 
