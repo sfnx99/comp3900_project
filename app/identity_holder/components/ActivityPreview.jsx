@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native';
 
 import Activity from './Activity';
 import { notificationPropType } from '../scripts/util';
@@ -18,24 +18,13 @@ const ActivityPreview = ({ activities }) => {
     setDisplayed(newDisplayed);
   }, [activities]);
   return (
-    <View style={styles.component}>
-      <Text style={styles.text}>Recent Activity</Text>
+    <ScrollView>
       {displayed.map((activity) => (
         <Activity key={activity.id} notification={activity} />
       ))}
-    </View>
+    </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  component: {
-    height: 173,
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
 
 ActivityPreview.propTypes = {
   activities: PropTypes.arrayOf(notificationPropType).isRequired,
