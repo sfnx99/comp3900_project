@@ -1,7 +1,11 @@
+export type Attribute = {
+    [attr: string] : string,
+}
+
 export interface Credential {
     id: string,
     iss: string,
-    cred: any
+    cred: Attribute[]
 }
 
 export interface User {
@@ -18,5 +22,5 @@ export interface Data {
 
 export interface Response {
     status: number,
-    body: string|any // In an error response, body = error message
+    body: Attribute
 }

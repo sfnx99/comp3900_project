@@ -1,4 +1,4 @@
-import { getData, setData, toUser, FORMAT_MAP } from './data';
+import { toUser, FORMAT_MAP } from './data';
 import axios from 'axios';
 
 export async function getPresentation(token: string, verifier: string) {
@@ -53,7 +53,7 @@ export async function makePresentation(token: string, verifier: string, format: 
     }
     // Check specified presentation conforms to format
     for (const attr in FORMAT_MAP[format]) {
-        if (!(attr in Object.keys(pres.cred))) {
+        if (!(attr in pres.cred.map(e => Object.keys(e)[0]))) {
             return Promise.resolve({
                 status: 400,
                 body: {

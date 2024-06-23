@@ -9,11 +9,11 @@ let data: Data = {
                 {
                     id: "test",
                     iss: "test",
-                    cred: {
-                        first_name: "test",
-                        last_name: "test",
-                        dob: "test"
-                    }
+                    cred: [
+                        {first_name: "test"},
+                        {last_name: "test"},
+                        {dob: "test"}
+                    ]
                 }
             ],
             sessions: []

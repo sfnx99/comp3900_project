@@ -40,7 +40,6 @@ export function authRegister(email: string, password: string) : Response {
 export function authLogin(email: string, password: string) { 
 
     const data = getData();
-    const hash = bcrypt.hashSync(password, SALT_ROUNDS);
     let invalidFlag = false;
     // Check email exists
     if (!data.users.map(e => e.email).includes(email)) {

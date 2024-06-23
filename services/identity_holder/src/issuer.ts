@@ -1,4 +1,4 @@
-import { getData, setData, toUser, FORMAT_MAP } from './data';
+import { getData, toUser, FORMAT_MAP } from './data';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 export function getIssuers(token: string) {

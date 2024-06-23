@@ -1,7 +1,6 @@
 import { getData, setData, toUser } from './data';
 
 export function getCredentials(token: string) {
-    const data = getData();
     const user = toUser(token);
     if (user === undefined) {
         return {
@@ -20,7 +19,6 @@ export function getCredentials(token: string) {
 }
 
 export function getCredential(token: string, id: string) {
-    const data = getData();
     const user = toUser(token);
     if (user === undefined) {
         return {
