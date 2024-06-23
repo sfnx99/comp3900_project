@@ -10,41 +10,14 @@ import { renderIconByName } from './scripts/util';
 import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import WalletScreen from './screens/WalletScreen';
-import RequestCredentialScreen from './screens/RequestCredentialScreen';
-// import EditInfo from './screens/EditInfo';
 import SearchButton from './components/SearchButton';
 import { ThemeContext } from './context/ThemeContext';
-import SuccessfullySubmitted from './screens/SuccessfullySubmitted';
 import LoginScreen from './screens/LoginScreen';
 import HomeStack from './screens/stacks/HomeStack';
+import RequestStack from './screens/stacks/RequestStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
-const RequestStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="RequestCredential"
-      component={RequestCredentialScreen}
-      options={({ navigation }) => ({
-        title: 'Request Credential',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
-      })}
-    />
-    <Stack.Screen
-      name="SuccessfullySubmitted"
-      component={SuccessfullySubmitted}
-      options={({ navigation }) => ({
-        headerTitle: '',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
-      })}
-    />
-  </Stack.Navigator>
-);
 
 const MainApp = () => {
   const [credentials, setCredentials] = useState([]);
