@@ -31,7 +31,7 @@ const RequestStack = () => (
         title: 'Request Credential',
         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
         headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 24, fontWeight: 'normal' },
+        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
       })}
     />
     <Stack.Screen
@@ -48,10 +48,10 @@ const RequestStack = () => (
       name="ActivityHistory"
       component={ActivityHistory}
       options={({ navigation }) => ({
-        headerTitle: '',
+        headerTitle: 'Activity History',
         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
         headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
+        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
       })}
     />
   </Stack.Navigator>

@@ -45,6 +45,7 @@ const NotificationsScreen = () => {
 
 const styles = StyleSheet.create({
   view: {
+    marginTop: 20,
     gap: 24,
     marginHorizontal: 21,
   },

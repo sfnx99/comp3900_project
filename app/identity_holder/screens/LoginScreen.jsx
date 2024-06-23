@@ -26,7 +26,7 @@ const LoginScreen = () => {
           navigation.replace('MainApp');
         } else {
           Alert.alert('Authentication Failed', 'Please try again.');
-        }
+        } 
       } catch (error) {
         Alert.alert('Error', error.message);
       }
