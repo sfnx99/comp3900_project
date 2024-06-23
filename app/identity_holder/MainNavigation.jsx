@@ -69,7 +69,7 @@ const MainApp = () => {
           id: '1',
           iss: 'NSW Government',
           cred: {
-            credName: 'Drivers License',
+            credName: 'NSW Drivers License',
             fullName: 'Jessica Brown',
             expiryDate: new Date(),
             licenseNumber: '0123456789',
