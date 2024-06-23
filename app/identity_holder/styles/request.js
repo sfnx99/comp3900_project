@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 13,
     marginBottom: 5,
-    color: '#888', 
+    color: 'black', 
   },
   inputContainer: {
     width: '95%',
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderColor: '#000000',
-    paddingLeft: '10px',
+    paddingLeft: 10,
     borderRadius: 0,
     marginBottom: 10,
     backgroundColor: '#F5FFB9',
