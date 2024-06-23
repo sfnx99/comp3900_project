@@ -1,23 +1,18 @@
 import { Response } from './interface';
 import { getData, setData, SALT_ROUNDS } from './data';
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 export function authRegister(email: string, password: string) : Response {
-    // Validate email with dodgy regex
-    if (!/[\s.+]+@([\s+].?)+/.test(email)) {
-        return {
-            status: 400,
-            body: 'Invalid email address'
-        };
-    }
     const data = getData();
 
     // Check email already exists
     if (data.users.map(e => e.email).includes(email)) {
         return {
             status: 400,
-            body: 'Email address in use'
+            body: {
+                error: 'Email address in use'
+            }
         }
     }
 
@@ -43,13 +38,6 @@ export function authRegister(email: string, password: string) : Response {
 }
 
 export function authLogin(email: string, password: string) { 
-    // Validate email with dodgy regex
-    if (!/[\s.+]+@([\s+].?)+/.test(email)) {
-        return {
-            status: 400,
-            body: 'Invalid email address'
-        };
-    }
 
     const data = getData();
     const hash = bcrypt.hashSync(password, SALT_ROUNDS);
@@ -69,7 +57,9 @@ export function authLogin(email: string, password: string) {
     if (invalidFlag) {
         return {
             status: 401,
-            message: "Invalid email or password"
+            body: {
+                error: "Invalid email or password"
+            }
         }
     }
 
@@ -95,11 +85,19 @@ export function authLogout(token: string) {
     if (user === undefined) {
         return {
             status: 400,
-            body: "Cannot invalidate session; session does not exist"
+            body: {
+                error: "Cannot invalidate session; session does not exist"
+            }
+
         }
     }
 
     // Invalidate session
     user.sessions = user.sessions.filter(e => e != token);
     setData(data);
+
+    return {
+        status: 200,
+        body: {}
+    }
 }
