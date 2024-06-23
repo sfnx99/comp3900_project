@@ -5,12 +5,12 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#000', // Black background
+      backgroundColor: '#000',
     },
     text: {
       fontSize: 24,
       marginBottom: 20,
-      color: '#fff', // White text
+      color: '#fff',
     },
     logo: {
       width: 250,

@@ -35,7 +35,7 @@ const LoginScreen = () => {
     return (
         <View style={styles.container}>
         <Image
-          source={require('../images/logo3.png')} // Make sure the path to your image is correct
+          source={require('../images/logo3.png')} 
           style={styles.logo}
         />
         <Text style={styles.text}>Login Screen</Text>
@@ -43,7 +43,7 @@ const LoginScreen = () => {
           <Button title="Login with Face ID" onPress={authenticate} />
         )}
         <Button
-          title="Proceed without Biometric"
+          title="Proceed without login (for computer testing)"
           onPress={() => navigation.replace('MainApp')}
         />
       </View>

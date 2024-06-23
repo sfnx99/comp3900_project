@@ -27,14 +27,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color: '#888', // Label text color
+    color: '#888', 
   },
   inputContainer: {
-    width: '95%', // 90% of the screen width
+    width: '95%',
     marginBottom: 20,
   },
   input: {
-    width: '100%', // 90% of the screen width
+    width: '100%', 
     paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderColor: '#000000',
@@ -45,32 +45,32 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderWidth: 0.5,
-    borderColor: 'red', // Red border for error
+    borderColor: 'red',
     borderRadius: '3px'
   },
   placeholder: {
-    color: '#888', // Placeholder text color
+    color: '#888', 
   },
   buttonContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: 30, // Adjust this value to set the distance from the bottom
+    bottom: 30, 
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#D6EE41', // Fluoro yellow color
+    backgroundColor: '#D6EE41', 
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginVertical: 20,
+    marginVertical: 20 ,
     borderRadius: 5,
-    width: width * 0.95, // 90% of the screen width
+    width: width * 0.95, 
     alignItems: 'center',
   },
   buttonHover: {
-    backgroundColor: '#C0C000', // Slightly darker yellow for hover effect
+    backgroundColor: '#C0C000', 
   },
   buttonText: {
-    color: '#000', // Black text
+    color: '#000', 
     fontSize: 16,
     textAlign: 'center',
   },

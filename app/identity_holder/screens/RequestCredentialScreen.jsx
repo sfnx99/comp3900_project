@@ -1,14 +1,8 @@
 import React, {useState} from 'react';
 import { Text, TextInput, TouchableOpacity, Alert, View, ScrollView, Button} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/request';
 
-// const RequestCredentialScreen = () => {
-//   const handlePress = () => {
-//     Alert.alert('Button Pressed', 'You pressed the button!');
-//   };
 
 export default function RequestCredentialScreen({ navigation }) {
 
