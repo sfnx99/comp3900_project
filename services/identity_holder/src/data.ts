@@ -9,7 +9,11 @@ let data: Data = {
                 {
                     id: "test",
                     iss: "test",
-                    cred: {}
+                    cred: {
+                        first_name: "test",
+                        last_name: "test",
+                        dob: "test"
+                    }
                 }
             ],
             sessions: []
@@ -25,7 +29,6 @@ export function setData(newData: Data) {
 }
 
 export function getData() : Data {
-    console.log(data);
     return data
 }
 

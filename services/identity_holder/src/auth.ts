@@ -42,7 +42,6 @@ export function authLogin(email: string, password: string) {
     const data = getData();
     const hash = bcrypt.hashSync(password, SALT_ROUNDS);
     let invalidFlag = false;
-    console.log(hash)
     // Check email exists
     if (!data.users.map(e => e.email).includes(email)) {
         invalidFlag = true;

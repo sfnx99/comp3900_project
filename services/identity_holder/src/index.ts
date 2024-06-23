@@ -15,6 +15,7 @@ import { addOne } from "./extra";
 import { authRegister, authLogin, authLogout } from "./auth";
 import {getCredentials, getCredential, deleteCredential} from "./credentials";
 import {getIssuers, getRequest, makeRequest} from './issuer';
+import {getPresentation, makePresentation} from './verifier';
 
 dotenv.config();
 
@@ -115,6 +116,30 @@ app.post('/v1/credential/request', async (req: Request, res: Response) => {
     if (token !== undefined) {
         // Cut off "Bearer "{token}
         const result = await makeRequest(token.slice(7), issuer, format, access_code)
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
+app.get("/v1/credential/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier } = req.body;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = await getPresentation(token.slice(7), verifier);
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
+app.post("/v1/credential/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier, format, id } = req.body;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = await makePresentation(token.slice(7), verifier, format, id);
         res.status(result.status).json(result.body);
     } else {
         res.status(401).json({error: "User is not logged in"});
