@@ -1,9 +1,12 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MainNavigation from './MainNavigation';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App = () => (
   <GestureHandlerRootView>
-    <MainNavigation />
+    <ThemeProvider>
+      <MainNavigation />
+    </ThemeProvider>
   </GestureHandlerRootView>
 );
 

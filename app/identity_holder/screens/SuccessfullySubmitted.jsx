@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const EditInfo = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>Edit Info Screen</Text>
+      <Text style={styles.text}>Credential Request Successfully Submitted</Text>
     </SafeAreaView>
   );
 };
