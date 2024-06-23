@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { ScrollView, StyleSheet } from 'react-native';
 import Notification from '../components/Activity';
-import { isValidDate } from '../scripts/util';
+import { notificationPropType } from '../scripts/util';
 
 const ActivityHistory = ({ notifications }) => (
   <ScrollView style={styles.view}>
@@ -20,15 +20,7 @@ const styles = StyleSheet.create({
 });
 
 ActivityHistory.propTypes = {
-  notifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      detail: PropTypes.string,
-      timestamp: isValidDate,
-      type: PropTypes.oneOf(['approval', 'pending', 'location']),
-    }),
-  ).isRequired,
+  notifications: PropTypes.arrayOf(notificationPropType).isRequired,
 };
 
 export default ActivityHistory;

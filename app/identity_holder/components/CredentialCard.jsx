@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useContext } from 'react';
 import {
   Text,
@@ -7,6 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
+import { credentialPropType } from '../scripts/util';
 
 const CredentialCard = ({ credential }) => {
   const { theme } = useContext(ThemeContext);
@@ -49,11 +49,7 @@ const CredentialCard = ({ credential }) => {
 };
 
 CredentialCard.propTypes = {
-  credential: PropTypes.exact({
-    id: PropTypes.string,
-    iss: PropTypes.string,
-    cred: PropTypes.shape(),
-  }).isRequired,
+  credential: credentialPropType.isRequired,
 };
 
 export default CredentialCard;

@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
 import { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { format } from 'date-fns';
 
 import { ThemeContext } from '../context/ThemeContext';
-import { isValidDate } from '../scripts/util';
+import { notificationPropType } from '../scripts/util';
 import CircleIcon from './CircleIcon';
 
 const Notification = ({ notification }) => {
@@ -78,13 +77,7 @@ const Notification = ({ notification }) => {
 };
 
 Notification.propTypes = {
-  notification: PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string,
-    detail: PropTypes.string,
-    timestamp: isValidDate,
-    type: PropTypes.oneOf(['approval', 'pending', 'location']),
-  }).isRequired,
+  notification: notificationPropType.isRequired,
 };
 
 export default Notification;

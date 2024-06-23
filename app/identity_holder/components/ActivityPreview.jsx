@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import Activity from './Activity';
+import { notificationPropType } from '../scripts/util';
 
 const ActivityPreview = ({ activities }) => {
   const [displayed, setDisplayed] = useState([]);
@@ -20,7 +21,7 @@ const ActivityPreview = ({ activities }) => {
     <View style={styles.component}>
       <Text style={styles.text}>Recent Activity</Text>
       {displayed.map((activity) => (
-        <Activity notification={activity} />
+        <Activity key={activity.id} notification={activity} />
       ))}
     </View>
   );
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 ActivityPreview.propTypes = {
-  activities: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  activities: PropTypes.arrayOf(notificationPropType).isRequired,
 };
 
 export default ActivityPreview;
