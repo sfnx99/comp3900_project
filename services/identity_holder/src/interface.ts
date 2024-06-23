@@ -1,4 +1,5 @@
 export interface Credential {
+    id: string,
     iss: string,
     cred: any
 }

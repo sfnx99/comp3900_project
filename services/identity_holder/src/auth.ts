@@ -1,5 +1,5 @@
 import { Response } from './interface';
-import { getData, setData, SALT_ROUNDS } from './data';
+import { getData, setData, toUser, SALT_ROUNDS } from './data';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -42,13 +42,13 @@ export function authLogin(email: string, password: string) {
     const data = getData();
     const hash = bcrypt.hashSync(password, SALT_ROUNDS);
     let invalidFlag = false;
-
+    console.log(hash)
     // Check email exists
     if (!data.users.map(e => e.email).includes(email)) {
         invalidFlag = true;
     } else {
         // Check password correct
-        if (data.users.find(e => e.email === email)?.hash !== hash) {
+        if (!bcrypt.compareSync(password, data.users.find(e => e.email === email)!.hash)) {
             invalidFlag = true
         }
     }
@@ -79,7 +79,7 @@ export function authLogin(email: string, password: string) {
 export function authLogout(token: string) {
     // Find user in question
     const data = getData();
-    const user = data.users.find(e => e.sessions.includes(token));
+    const user = toUser(token);
 
     // Bad token
     if (user === undefined) {
