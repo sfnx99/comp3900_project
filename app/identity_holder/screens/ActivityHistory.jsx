@@ -1,39 +1,68 @@
-// ActivityHistory.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, ActivityIndicator } from 'react-native';
-import axios from 'axios';
-import styles from '../styles/act'
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
+import Notification from '../components/Activity';
+import { getCoordinates } from '../components/Geocoding';
 
 const ActivityHistory = () => {
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const fetchName = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('https://api.namefake.com/');
-      setName(response.data.name);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetchName();
+    const fetchNotifications = async () => {
+      const initialNotifications = [
+        {
+          id: 1,
+          name: 'Medicare Card',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'UNSW Medical Centre',
+        },
+        {
+          id: 2,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Joe Bar, Newtown',
+        },
+        {
+          id: 3,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Woolworths, Newtown',
+        },
+      ];
+
+      const notificationsWithCoordinates = await Promise.all(
+        initialNotifications.map(async (notification) => {
+          if (notification.type === 'location' && notification.detail) {
+            const coordinates = await getCoordinates(notification.detail);
+            return { ...notification, coordinates };
+          }
+          return notification;
+        })
+      );
+
+      setNotifications(notificationsWithCoordinates);
+    };
+
+    fetchNotifications();
   }, []);
 
   return (
-    <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <Text style={styles.name}>{name}</Text>
-      )}
-      <Button title="Fetch New Name" onPress={fetchName} />
-    </View>
+    <ScrollView style={styles.view}>
+      {notifications.map((notification) => (
+        <Notification key={notification.id} notification={notification} />
+      ))}
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  view: {
+    marginTop: 20,
+    gap: 24,
+    marginHorizontal: 21,
+  },
+});
 
 export default ActivityHistory;
