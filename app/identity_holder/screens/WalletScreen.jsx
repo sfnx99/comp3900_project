@@ -20,10 +20,10 @@ WalletScreen.propTypes = {
     cred: PropTypes.shape(),
   })).isRequired,
 };
-const {width, height} = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
-    marginTop: height*0.05,
+    marginTop: height * 0.05,
     marginHorizontal: 21,
   },
 });

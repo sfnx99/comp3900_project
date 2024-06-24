@@ -1,9 +1,10 @@
-import React, { useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
+
 import Notification from '../components/Activity';
 import { notificationPropType } from '../scripts/util';
-import { useNavigation } from '@react-navigation/native';
 
 const ActivityHistory = ({ notifications }) => {
   const navigation = useNavigation();
@@ -11,7 +12,7 @@ const ActivityHistory = ({ notifications }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: 'Activity History', // Set your desired title here
+      title: 'Activity History',
     });
   }, [navigation]);
 
@@ -37,4 +38,3 @@ ActivityHistory.propTypes = {
 };
 
 export default ActivityHistory;
-

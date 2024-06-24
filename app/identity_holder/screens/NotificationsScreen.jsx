@@ -43,10 +43,10 @@ const NotificationsScreen = () => {
   );
 };
 
-const {width, height} = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   view: {
-    marginTop: height*0.04,
+    marginTop: height * 0.04,
     gap: 24,
     marginHorizontal: 21,
   },
