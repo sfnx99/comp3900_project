@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,11 @@ import { notificationPropType } from '../scripts/util';
 
 const ActivityHistory = ({ notifications }) => {
   const navigation = useNavigation();
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    setActivities(notifications.filter((notification) => notification.type === 'location'));
+  }, [notifications]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -18,7 +23,7 @@ const ActivityHistory = ({ notifications }) => {
 
   return (
     <ScrollView style={styles.view}>
-      {notifications.map((notification) => (
+      {activities.map((notification) => (
         <Notification key={notification.id} notification={notification} />
       ))}
     </ScrollView>
