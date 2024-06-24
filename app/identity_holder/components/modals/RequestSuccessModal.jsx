@@ -1,50 +1,50 @@
-import React from 'react';
 import {
-  Text,
+  Modal,
   StyleSheet,
+  Text,
+  Alert,
+  TouchableOpacity,
   Image,
   Dimensions,
-  TouchableOpacity,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CommonActions, useNavigation } from '@react-navigation/native';
 
-import Logo from '../images/logo3.png';
+import Logo from '../../images/logo3.png';
 
 const { width, height } = Dimensions.get('window');
 
-const Success = () => {
-  const navigation = useNavigation();
-
-  /**
-   * Send the user home and reset the RequestStack so
-   * the user will go back to the form.
-   */
-  const handleGoHome = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      }),
-    );
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
+const RequestSuccessModal = ({ modalVisible, handleModalClose }) => (
+  <Modal
+    animationType="slide"
+    transparent
+    visible={modalVisible}
+    onRequestClose={() => {
+      Alert.alert('Modal has been closed.');
+      handleModalClose();
+    }}
+  >
+    <SafeAreaView style={[styles.container, styles.modalView]}>
       <Image
         source={Logo}
         style={styles.logo}
       />
       <Text style={styles.text}>Credential Request Successfully Submitted</Text>
-      <TouchableOpacity style={styles.button} onPress={handleGoHome}>
+      <TouchableOpacity style={styles.button} onPress={handleModalClose}>
         <Text style={styles.buttonText}>Go Home</Text>
       </TouchableOpacity>
 
     </SafeAreaView>
-  );
-};
+  </Modal>
+);
 
 const styles = StyleSheet.create({
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+  },
   container: {
     backgroundColor: '#F6F8FA',
     flex: 1,
@@ -56,15 +56,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
-  /*
-  text2: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#586411',
-    padding: 10,
-    textAlign: 'center'
-  },
-  */
   logo: {
     marginTop: height * -0.05,
     width: width * 0.5,
@@ -86,4 +77,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Success;
+RequestSuccessModal.propTypes = {
+  modalVisible: PropTypes.bool.isRequired,
+  handleModalClose: PropTypes.func.isRequired,
+};
+
+export default RequestSuccessModal;
