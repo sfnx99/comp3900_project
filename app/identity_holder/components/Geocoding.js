@@ -12,17 +12,18 @@ export const getCoordinates = async (address) => {
     });
 
     if (response.data.status === 'OK') {
-      const location = response.data.results[0].geometry.location;
+      const { location } = response.data.results[0].geometry;
       return {
         latitude: location.lat,
         longitude: location.lng,
       };
-    } else {
-      console.error('Geocoding API error:', response.data.status);
-      return null;
     }
+
+    // TODO: Potentially change console.error logs to a popup on the front end
+    // console.error('Geocoding API error:', response.data.status);
+    return null;
   } catch (error) {
-    console.error('Geocoding API error:', error);
+    // console.error('Geocoding API error:', error);
     return null;
   }
 };
