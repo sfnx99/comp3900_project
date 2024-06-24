@@ -37,6 +37,7 @@ export const credentialPropType = PropTypes.exact({
   iss: PropTypes.string.isRequired,
   cred: PropTypes.shape({
     credName: PropTypes.string,
+    expiryDate: isValidDate,
   }).isRequired,
 });
 

@@ -16,6 +16,7 @@ import LoginScreen from './screens/LoginScreen';
 import HomeStack from './screens/stacks/HomeStack';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
 import { getCoordinates } from './components/Geocoding';
+import WalletStack from './screens/stacks/WalletStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -162,10 +163,10 @@ const MainApp = () => {
         name="Wallet"
         options={{
           tabBarIcon: renderIconByName('wallet'),
-          headerRight: SearchButton(),
+          headerShown: false,
         }}
       >
-        {() => <WalletScreen credentials={credentials} />}
+        {() => <WalletStack credentials={credentials} />}
       </Tab.Screen>
       <Tab.Screen
         name="Notifications"
