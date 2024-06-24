@@ -14,7 +14,7 @@ import SearchButton from './components/SearchButton';
 import { ThemeContext } from './context/ThemeContext';
 import LoginScreen from './screens/LoginScreen';
 import HomeStack from './screens/stacks/HomeStack';
-import RequestStack from './screens/stacks/RequestStack';
+import RequestCredentialScreen from './screens/RequestCredentialScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -98,7 +98,7 @@ const MainApp = () => {
       </Tab.Screen>
       <Tab.Screen
         name="Request Credentials"
-        component={RequestStack}
+        component={RequestCredentialScreen}
         options={{
           // headerShown: false,
           tabBarIcon: renderIconByName('card-plus'),
