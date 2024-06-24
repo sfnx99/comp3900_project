@@ -5,7 +5,7 @@ import {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { dark, light } from '../scripts/themes';
+import { dark, light } from '../styles/themes';
 
 const ThemeContext = createContext();
 

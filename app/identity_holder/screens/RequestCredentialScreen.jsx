@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import styles from '../styles/request';
-import RequestSuccessModal from '../components/RequestSuccessModal';
+import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 
 const RequestCredentialScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);

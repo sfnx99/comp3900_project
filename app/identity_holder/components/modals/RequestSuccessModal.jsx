@@ -10,7 +10,7 @@ import {
 import PropTypes from 'prop-types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Logo from '../images/logo3.png';
+import Logo from '../../images/logo3.png';
 
 const { width, height } = Dimensions.get('window');
 
