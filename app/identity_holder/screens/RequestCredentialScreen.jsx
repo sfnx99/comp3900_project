@@ -21,6 +21,14 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [isPressed, setIsPressed] = useState(false);
   const [emptyFields, setEmptyFields] = useState([]);
 
+  const clearForm = () => {
+    setID('');
+    setdocnumb('');
+    setFullName('');
+    setPnumber('');
+    setAddress('');
+  };
+
   const handleSubmit = () => {
     const tmpEmptyFields = [];
     if (!typeofID) tmpEmptyFields.push('typeofID');
@@ -35,6 +43,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       return;
     }
     setEmptyFields([]);
+    clearForm();
     navigation.navigate('SuccessfullySubmitted');
   };
 
