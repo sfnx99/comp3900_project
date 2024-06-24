@@ -8,23 +8,17 @@ const Stack = createStackNavigator();
 const RequestStack = () => (
   <Stack.Navigator>
     <Stack.Screen
-      name="RequestCredential"
+      name="Request Credential"
       component={RequestCredentialScreen}
       options={({ navigation }) => ({
-        title: 'Request Credential',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'bold' },
+        headerShown: false
       })}
     />
     <Stack.Screen
       name="SuccessfullySubmitted"
       component={SuccessfullySubmitted}
       options={({ navigation }) => ({
-        headerTitle: '',
-        headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-        headerTitleAlign: 'center',
-        headerTitleStyle: { fontSize: 18, fontWeight: 'thin' },
+        headerShown: false,
       })}
     />
   </Stack.Navigator>

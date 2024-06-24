@@ -1,4 +1,4 @@
-import PropType from 'prop-types';
+import PropTypes from 'prop-types';
 import { StyleSheet } from 'react-native';
 import PagerView from 'react-native-pager-view';
 
@@ -8,7 +8,7 @@ import CredentialCard from './CredentialCard';
 const CredentialsCarousel = ({ credentials }) => (
   <PagerView style={styles.pagerView} initialPage={0}>
     {credentials.map((credential) => (
-      <CredentialCard credential={credential} />
+      <CredentialCard key={credential.id} credential={credential} />
     ))}
   </PagerView>
 );
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 });
 
 CredentialsCarousel.propTypes = {
-  credentials: PropType.arrayOf(credentialPropType),
+  credentials: PropTypes.arrayOf(credentialPropType).isRequired,
 };
 
 export default CredentialsCarousel;

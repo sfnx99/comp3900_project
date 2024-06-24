@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
       },
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: '20px'
+    // marginTop: '10px'
   },
   content: {
     flex: 1,
@@ -25,21 +25,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 13,
+    fontSize: 11,
     marginBottom: 5,
     color: 'black', 
   },
   inputContainer: {
     width: '95%',
     marginBottom: 20,
+    borderRadius: 0,
   },
   input: {
     width: '100%', 
     paddingVertical: 10,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.2,
     borderColor: '#000000',
     paddingLeft: 10,
-    borderRadius: 0,
+    borderRadius: 10,
     marginBottom: 10,
     backgroundColor: '#F5FFB9',
   },

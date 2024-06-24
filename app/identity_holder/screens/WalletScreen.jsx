@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import CredentialCard from '../components/CredentialCard';
 
 const WalletScreen = ({ credentials }) => (
@@ -20,9 +20,10 @@ WalletScreen.propTypes = {
     cred: PropTypes.shape(),
   })).isRequired,
 };
-
+const {width, height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
+    marginTop: height*0.05,
     marginHorizontal: 21,
   },
 });

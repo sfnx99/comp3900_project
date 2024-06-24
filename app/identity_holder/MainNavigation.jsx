@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet} from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { renderIconByName } from './scripts/util';
@@ -44,21 +44,29 @@ const MainApp = () => {
     fetchCredentials();
   }, []);
 
+
   const styles = StyleSheet.create({
     navBar: {
       backgroundColor: theme.nav,
     },
     header: {
       backgroundColor: theme.background,
-      height: 80,
+      height: 100,
     },
     headerTitle: {
       color: theme.text,
       fontWeight: 'bold',
+      paddingTop: 25,
+      fontSize: 20,
+
     },
     headerLeft: {
+      paddingTop: 25,
       size: 30,
       color: theme.text,
+    },
+    headerRight: {
+      paddingTop: 25,
     },
   });
 
@@ -88,10 +96,10 @@ const MainApp = () => {
         {() => <HomeStack credentials={credentials} />}
       </Tab.Screen>
       <Tab.Screen
-        name="RequestCredentialTab"
+        name="Request Credentials"
         component={RequestStack}
         options={{
-          headerShown: false,
+          // headerShown: false,
           tabBarIcon: renderIconByName('card-plus'),
         }}
       />
