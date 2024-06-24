@@ -1,4 +1,5 @@
 {
-    "trusted_issuers" : [
-    ]
+  "issuers": [
+    "http://localhost:8082"
+  ]
 }
