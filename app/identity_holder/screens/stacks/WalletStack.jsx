@@ -32,7 +32,7 @@ const WalletStack = ({ credentials }) => {
       cardStyle
     >
       <Stack.Screen
-        name="WalletMain"
+        name="Wallet"
         options={({ navigation }) => ({
           headerShown: true,
           tabBarStyle: '#F1F2EC',

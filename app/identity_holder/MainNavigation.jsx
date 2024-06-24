@@ -160,7 +160,7 @@ const MainApp = () => {
         }}
       />
       <Tab.Screen
-        name="Wallet"
+        name="WalletStack"
         options={{
           tabBarIcon: renderIconByName('wallet'),
           headerShown: false,
