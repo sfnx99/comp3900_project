@@ -1,6 +1,12 @@
+import { StyleSheet } from 'react-native';
 import { renderIconByName } from '../scripts/util';
 
-// TODO: Implement onPress param
-const SearchButton = () => renderIconByName('magnify', { size: 30 });
+const styles = StyleSheet.create({
+  searchButton: {
+    paddingTop: 25,
+  },
+});
+
+const SearchButton = (onPress) => renderIconByName('magnify', onPress, { size: 30, style: styles.searchButton });
 
 export default SearchButton;

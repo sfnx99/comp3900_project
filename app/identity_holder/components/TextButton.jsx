@@ -37,7 +37,7 @@ const TextButton = ({ text, onPress, inverted = false }) => {
 TextButton.propTypes = {
   text: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
-  inverted: PropTypes.bool.isRequired,
+  inverted: PropTypes.bool,
 };
 
 export default TextButton;
