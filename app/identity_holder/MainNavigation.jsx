@@ -23,6 +23,7 @@ const Stack = createNativeStackNavigator();
 const MainApp = () => {
   const [credentials, setCredentials] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -77,12 +78,6 @@ const MainApp = () => {
       setNotifications(notificationsWithCoordinates);
     };
 
-    fetchNotifications();
-  }, []);
-
-  const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
     // TODO: GET CREDENTIALS HERE
     const fetchCredentials = async () => {
       setCredentials([
@@ -99,6 +94,7 @@ const MainApp = () => {
       ]);
     };
 
+    fetchNotifications();
     fetchCredentials();
   }, []);
 
