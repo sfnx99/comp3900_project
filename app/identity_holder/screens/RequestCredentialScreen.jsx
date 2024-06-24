@@ -11,8 +11,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import styles from '../styles/request';
+import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 
 const RequestCredentialScreen = ({ navigation }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [typeofID, setID] = useState('');
   const [docnumb, setdocnumb] = useState('');
   const [FullName, setFullName] = useState('');
@@ -20,6 +23,14 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [isPressed, setIsPressed] = useState(false);
   const [emptyFields, setEmptyFields] = useState([]);
+
+  const clearForm = () => {
+    setID('');
+    setdocnumb('');
+    setFullName('');
+    setPnumber('');
+    setAddress('');
+  };
 
   const handleSubmit = () => {
     const tmpEmptyFields = [];
@@ -35,11 +46,22 @@ const RequestCredentialScreen = ({ navigation }) => {
       return;
     }
     setEmptyFields([]);
-    navigation.navigate('SuccessfullySubmitted');
+    clearForm();
+    setModalVisible(!modalVisible);
+  };
+
+  const handleModalClose = () => {
+    clearForm();
+    setModalVisible(false);
+    navigation.navigate('Home');
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <RequestSuccessModal
+        modalVisible={modalVisible}
+        handleModalClose={handleModalClose}
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
 
