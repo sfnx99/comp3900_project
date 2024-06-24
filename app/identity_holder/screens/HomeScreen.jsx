@@ -47,14 +47,15 @@ const HomeScreen = ({ credentials, activities }) => {
   );
 };
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     scrollContent: {
       flexGrow: 1,
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
+      paddingBottom: 20,
     },
     backgroundColor: '#F7F7F7',
     padding: width * 0.05,
@@ -76,14 +77,12 @@ const styles = StyleSheet.create({
   },
   credentialsSection: {
     width: width * 0.9,
-    flex: 0.4,
     justifyContent: 'space-between',
     marginBottom: 24,
   },
   activitySection: {
-    flex: 0.5,
     justifyContent: 'space-between',
-    marginBottom: -height * 0.05,
+    marginBottom: 20, // -height * 0.05,
   },
   recentActivity: {
     marginTop: 20,
