@@ -3,14 +3,13 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 import { ThemeContext } from '../context/ThemeContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -88,7 +87,7 @@ const SettingsScreen = () => {
     </SafeAreaView>
   );
 };
-const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
