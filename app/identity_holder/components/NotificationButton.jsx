@@ -46,8 +46,8 @@ const NotificationButton = ({
 const styles = StyleSheet.create({
   viewOuter: {
     padding: 10,
-    paddingTop: 0,
-    paddingBottom: 0,
+    paddingTop: 5,
+    paddingBottom: 5,
     marginBottom: 10,
     backgroundColor: theme.primary,
     borderRadius: 10,
@@ -58,10 +58,11 @@ const styles = StyleSheet.create({
   viewInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 15,
   },
   text: {
     color: theme.text,
+    fontSize: 16,
   },
 });
 

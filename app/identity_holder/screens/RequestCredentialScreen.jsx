@@ -111,15 +111,6 @@ export default function RequestCredentialScreen({ navigation }) {
           >
             <Text style={styles.buttonText}>Submit Request</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.button, isPressed && styles.buttonHover]} 
-            onPress={() => navigation.navigate("ActivityHistory")}
-            onPressIn={() => setIsPressed(true)}
-            onPressOut={() => setIsPressed(false)}  
-          >
-            <Text style={styles.buttonText}>Activity History</Text>
-          </TouchableOpacity>
         </ScrollView>
     </SafeAreaView>
   );
