@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { StatusBar, StyleSheet} from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { renderIconByName } from './scripts/util';
@@ -44,7 +44,6 @@ const MainApp = () => {
     fetchCredentials();
   }, []);
 
-
   const styles = StyleSheet.create({
     navBar: {
       backgroundColor: theme.nav,
@@ -65,9 +64,11 @@ const MainApp = () => {
       size: 30,
       color: theme.text,
     },
+    /*
     headerRight: {
       paddingTop: 25,
     },
+    */
   });
 
   return (

@@ -1,16 +1,12 @@
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { format } from 'date-fns';
 import MapView, { Marker } from 'react-native-maps';
 
-import { ThemeContext } from '../context/ThemeContext';
 import { isValidDate } from '../scripts/util';
 import CircleIcon from './CircleIcon';
 
 const Activity = ({ notification }) => {
-  const { theme } = useContext(ThemeContext);
-
   const formattedTimestamp = format(new Date(notification.timestamp), 'dd/MM/yyyy');
 
   const getIconName = () => {
@@ -38,6 +34,7 @@ const Activity = ({ notification }) => {
     },
     iconContainer: {
       marginRight: 12,
+      alignSelf: 'flex-start',
     },
     content: {
       flex: 1,
@@ -70,8 +67,8 @@ const Activity = ({ notification }) => {
 
   return (
     <View style={styles.notification}>
-      <View style={[styles.iconContainer, { alignSelf: 'flex-start' }]}>
-        <CircleIcon name={getIconName()} size={16} color={'black'} backgroundColor="#D6EE41" />
+      <View style={styles.iconContainer}>
+        <CircleIcon name={getIconName()} size={16} color="black" backgroundColor="#D6EE41" />
       </View>
       <View style={styles.content}>
         <View style={styles.header}>

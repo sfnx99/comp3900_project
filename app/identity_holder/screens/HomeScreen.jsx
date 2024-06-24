@@ -1,13 +1,18 @@
 import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
+
 import TextButton from '../components/TextButton';
 import CredentialsCarousel from '../components/CredentialsCarousel';
 import ActivityPreview from '../components/ActivityPreview';
 import { credentialPropType, notificationPropType } from '../scripts/util';
-import { ScrollView } from 'react-native-gesture-handler';
-
 
 const HomeScreen = ({ credentials, activities }) => {
   const navigation = useNavigation();
@@ -15,28 +20,28 @@ const HomeScreen = ({ credentials, activities }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStylestyle={styles.scrollContent}>
-      <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome back,</Text>
-        <Text style={styles.nameText}>Jessica</Text>
-      </View>
-      <View style={styles.credentialsSection}>
-        <CredentialsCarousel credentials={credentials} />
-        <TextButton
-          text="View All Credentials"
-          onPress={() => navigation.navigate('Wallet')}
-          style={styles.button}
-        />
-      </View>
-      <View style={styles.activitySection}>
-        <Text style={styles.recentActivity}>Recent Activity</Text>
-        <ActivityPreview activities={activities.slice(0,2)} />
-        <TextButton
-          text="View All Activity History"
-          onPress={() => navigation.navigate('ActivityHistory')}
-          inverted
-          style={styles.button}
-        />
-      </View>
+        <View style={styles.header}>
+          <Text style={styles.welcomeText}>Welcome back,</Text>
+          <Text style={styles.nameText}>Jessica</Text>
+        </View>
+        <View style={styles.credentialsSection}>
+          <CredentialsCarousel credentials={credentials} />
+          <TextButton
+            text="View All Credentials"
+            onPress={() => navigation.navigate('Wallet')}
+            style={styles.button}
+          />
+        </View>
+        <View style={styles.activitySection}>
+          <Text style={styles.recentActivity}>Recent Activity</Text>
+          <ActivityPreview activities={activities.slice(0, 2)} />
+          <TextButton
+            text="View All Activity History"
+            onPress={() => navigation.navigate('ActivityHistory')}
+            inverted
+            style={styles.button}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -52,7 +57,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     backgroundColor: '#F7F7F7',
-    padding: width* 0.05,
+    padding: width * 0.05,
   },
   header: {
     marginTop: 10,
@@ -74,7 +79,6 @@ const styles = StyleSheet.create({
     flex: 0.4,
     justifyContent: 'space-between',
     marginBottom: 24,
-    
   },
   activitySection: {
     flex: 0.5,

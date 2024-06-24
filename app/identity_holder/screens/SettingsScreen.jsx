@@ -1,6 +1,10 @@
-import { useContext, useState} from 'react';
-import { ScrollView, StyleSheet, Dimensions} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useContext, useState } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import SettingButton from '../components/SettingButton';
@@ -25,7 +29,7 @@ const SettingsScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
-      <SafeAreaView style={styles.view}>
+      <View style={styles.view}>
         <NotificationButton
           text="Notifications"
           icon="bell-outline"
@@ -77,11 +81,11 @@ const SettingsScreen = () => {
           onPress={logout}
           icon="logout"
         />
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };
-const {width, height} = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   view: {
-    marginTop: -height*0.04,
+    marginTop: -height * 0.04,
     marginHorizontal: 21,
     alignContent: 'center',
   },
