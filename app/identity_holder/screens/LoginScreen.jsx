@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Alert, Image } from 'react-native';
+import { View, Text, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import styles from '../styles/loginStyles';
+import CustomButton from '../components/CustomButton';  // Adjust the path as necessary
 
 const LoginScreen = () => {
     const [isBiometricSupported, setIsBiometricSupported] = useState(false);
@@ -33,21 +34,26 @@ const LoginScreen = () => {
     };
   
     return (
-        <View style={styles.container}>
+      <View style={styles.container}>
         <Image
           source={require('../images/logo3.png')} 
           style={styles.logo}
         />
-        <Text style={styles.text}>Login Screen</Text>
+        <Text style={styles.text}> BW Credentials</Text>
         {isBiometricSupported && (
-          <Button title="Login with Face ID" onPress={authenticate} />
+          <CustomButton
+            style={styles.button}
+            title="Login with Face ID"
+            onPress={authenticate}
+          />
         )}
-        <Button
+        <CustomButton
+          style={styles.button}
           title="Proceed without login (for computer testing)"
           onPress={() => navigation.replace('MainApp')}
         />
       </View>
     );
-  };
-  
-  export default LoginScreen;
+};
+
+export default LoginScreen;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import Notification from '../components/Notification';
 
 const NotificationsScreen = () => {
@@ -43,9 +43,10 @@ const NotificationsScreen = () => {
   );
 };
 
+const {width, height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   view: {
-    marginTop: 20,
+    marginTop: height*0.04,
     gap: 24,
     marginHorizontal: 21,
   },

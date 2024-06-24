@@ -11,14 +11,16 @@ const SettingButton = ({ text, onPress, icon = null }) => {
 
   const styles = StyleSheet.create({
     view: {
-      padding: 10,
-      paddingBottom: 15,
+      padding: 20,
+      paddingLeft: 10,
+      // paddingBottom: 15,
       backgroundColor: theme.background,
       flexDirection: 'row',
       alignContent: 'center',
-      gap: 10,
+      gap: 15,
     },
     text: {
+      fontSize: 16,
       color: theme.text,
     },
   });

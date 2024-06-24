@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isDate } from 'date-fns';
+import PropTypes from 'prop-types';
 
 /**
  * Renders an icon from MaterialCommunityIcons.
@@ -30,3 +31,19 @@ export const isValidDate = (props, propName, componentName) => {
   }
   return null;
 };
+
+export const credentialPropType = PropTypes.exact({
+  id: PropTypes.string.isRequired,
+  iss: PropTypes.string.isRequired,
+  cred: PropTypes.shape({
+    credName: PropTypes.string,
+  }).isRequired,
+});
+
+export const notificationPropType = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  detail: PropTypes.string,
+  timestamp: isValidDate,
+  type: PropTypes.oneOf(['approval', 'pending', 'location', 'location-preview']),
+});

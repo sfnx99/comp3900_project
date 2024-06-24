@@ -1,52 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 import Notification from '../components/Activity';
-import { getCoordinates } from '../components/Geocoding';
+import { notificationPropType } from '../scripts/util';
+import { useNavigation } from '@react-navigation/native';
 
-const ActivityHistory = () => {
-  const [notifications, setNotifications] = useState([]);
+const ActivityHistory = ({ notifications }) => {
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const initialNotifications = [
-        {
-          id: 1,
-          name: 'Medicare Card',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'UNSW Medical Centre',
-        },
-        {
-          id: 2,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Joe Bar, Newtown',
-        },
-        {
-          id: 3,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Woolworths, Newtown',
-        },
-      ];
-
-      const notificationsWithCoordinates = await Promise.all(
-        initialNotifications.map(async (notification) => {
-          if (notification.type === 'location' && notification.detail) {
-            const coordinates = await getCoordinates(notification.detail);
-            return { ...notification, coordinates };
-          }
-          return notification;
-        })
-      );
-
-      setNotifications(notificationsWithCoordinates);
-    };
-
-    fetchNotifications();
-  }, []);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: 'Activity History', // Set your desired title here
+    });
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.view}>
@@ -65,4 +32,9 @@ const styles = StyleSheet.create({
   },
 });
 
+ActivityHistory.propTypes = {
+  notifications: PropTypes.arrayOf(notificationPropType).isRequired,
+};
+
 export default ActivityHistory;
+
