@@ -1,5 +1,6 @@
 import {
   createContext,
+  useContext,
   useMemo,
   useState,
 } from 'react';
@@ -31,4 +32,6 @@ ThemeProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export { ThemeContext, ThemeProvider };
+const useTheme = () => useContext(ThemeContext);
+
+export { ThemeContext, ThemeProvider, useTheme };
