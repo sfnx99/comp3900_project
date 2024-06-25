@@ -1,7 +1,20 @@
 import axios from 'axios';
+import { WALLET_HOST, WALLET_PORT } from '@env';
 
-const port = 8000;
-const url = `http://localhost:${port}`;
+const port = WALLET_PORT || 8082;
+const url = `${WALLET_HOST || 'http://localhost'}:${port}`;
+
+/**
+ * Test connectivity with the backend.
+ */
+export const sanityCheck = async () => {
+  try {
+    const response = await axios.get(`${url}`);
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 /**
  * Registers a user in the wallet API.
