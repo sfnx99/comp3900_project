@@ -19,11 +19,10 @@ const SettingsScreen = () => {
   // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {};
 
-  // TODO: Still WIP until authentication is implemented
   const logout = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Login' }],
+      routes: [{ name: 'Authentication' }],
     });
   };
 
@@ -98,7 +97,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   view: {
-    // marginTop: -height * 0.04,
     marginHorizontal: 21,
     alignContent: 'center',
   },

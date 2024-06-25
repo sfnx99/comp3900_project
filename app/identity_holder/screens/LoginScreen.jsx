@@ -59,6 +59,11 @@ const LoginScreen = () => {
         title="Proceed without login (for computer testing)"
         onPress={() => navigation.replace('MainApp')}
       />
+      <CustomButton
+        style={styles.button}
+        title="Register"
+        onPress={() => navigation.navigate('Register')}
+      />
     </View>
   );
 };
