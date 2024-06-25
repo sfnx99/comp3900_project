@@ -1,0 +1,8 @@
+{
+  "formats": [
+    "Learner Driver Licence",
+    "Provisional Driver Licence",
+    "Driver Licence"
+  ],
+  "response": "http://localhost:8083"
+}
