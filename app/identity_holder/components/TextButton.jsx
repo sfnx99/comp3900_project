@@ -4,7 +4,12 @@ import PropTypes from 'prop-types';
 
 import theme from '../styles/colors';
 
-const TextButton = ({ text, onPress, inverted = false }) => {
+const TextButton = ({
+  text,
+  onPress,
+  inverted = false,
+  style,
+}) => {
   const backgroundColour = inverted ? theme.background : theme.primary;
 
   const styles = StyleSheet.create({
@@ -26,7 +31,7 @@ const TextButton = ({ text, onPress, inverted = false }) => {
       onPress={onPress}
     >
       <View
-        style={styles.view}
+        style={[styles.view, style ? { ...style } : null]}
       >
         <Text style={styles.text}>{text}</Text>
       </View>
@@ -38,6 +43,7 @@ TextButton.propTypes = {
   text: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
   inverted: PropTypes.bool,
+  style: PropTypes.shape(),
 };
 
 export default TextButton;
