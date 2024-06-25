@@ -9,7 +9,6 @@ import { renderIconByName } from './scripts/util';
 
 import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
-import WalletScreen from './screens/WalletScreen';
 import SearchButton from './components/SearchButton';
 import { ThemeContext } from './context/ThemeContext';
 import LoginScreen from './screens/LoginScreen';
@@ -220,70 +219,5 @@ const MainNavigation = () => {
     </NavigationContainer>
   );
 };
-
-// const MainNavigation = () => (
-//   <NavigationContainer
-//     theme={navTheme}
-//   >
-//     <ExpoStatusBar style="dark" />
-//     <StatusBar barStyle="dark-content" />
-
-//     <Tab.Navigator
-//       initialRouteName="Home"
-//       screenOptions={({ navigation }) => ({
-//         tabBarShowLabel: false,
-//         headerShown: true,
-//         tabBarStyle: styles.navBar,
-//         headerStyle: styles.header,
-//         headerShadowVisible: false,
-//         headerTitleAlign: 'center',
-//         headerTitleStyle: styles.headerTitle,
-//         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-//       })}
-//       backBehavior="history"
-//     >
-//       <Tab.Screen
-//         name="Home"
-//         component={HomeScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('home'),
-//           headerShown: false,
-//           headerTitleAlign: 'center',
-//         }}
-//       />
-//       <Tab.Screen
-//         name="RequestCredentialTab"
-//         component={RequestStack}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: renderIconByName('card-plus'),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Wallet"
-//         component={WalletScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('wallet'),
-//           headerRight: SearchButton(),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Notifications"
-//         component={NotificationsScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('bell'),
-//           headerRight: SearchButton(),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Settings"
-//         component={SettingsScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('cog'),
-//         }}
-//       />
-//     </Tab.Navigator>
-//   </NavigationContainer>
-// );
 
 export default MainNavigation;
