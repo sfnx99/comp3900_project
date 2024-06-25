@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { ThemeContext } from '../../context/ThemeContext';
-import { renderIconByName } from '../../scripts/util';
+import { credentialPropType, renderIconByName } from '../../scripts/util';
 import WalletScreen from '../WalletScreen';
 import SearchButton from '../../components/SearchButton';
 import CredentialInformation from '../CredentialInformation';
@@ -51,9 +52,9 @@ const WalletStack = ({ credentials }) => {
         {() => <WalletScreen credentials={credentials} />}
       </Stack.Screen>
       <Stack.Screen
-        name="CredentialDetail"
+        name="CredentialInformation"
         component={CredentialInformation}
-        options={({ navigation }) => ({
+        options={({ route, navigation }) => ({
           headerShown: true,
           headerStyle: styles.header,
           headerShadowVisible: false,
@@ -64,10 +65,15 @@ const WalletStack = ({ credentials }) => {
             size: 30,
             color: theme.text,
           }),
+          title: route.params?.credential?.cred?.credName || 'Credential Information',
         })}
       />
     </Stack.Navigator>
   );
+};
+
+WalletStack.propTypes = {
+  credentials: PropTypes.arrayOf(credentialPropType),
 };
 
 export default WalletStack;

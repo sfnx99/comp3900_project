@@ -23,7 +23,10 @@ const CredentialCard = ({ credential }) => {
       },
     };
 
-    navigation.navigate('CredentialDetail', { credential: serializableCredential });
+    navigation.navigate('WalletStack', {
+      screen: 'CredentialInformation',
+      params: { credential: serializableCredential },
+    });
   };
 
   const styles = StyleSheet.create({
