@@ -5,14 +5,28 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import { ThemeContext } from '../context/ThemeContext';
 import { credentialPropType } from '../scripts/util';
 
 const CredentialCard = ({ credential }) => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
 
   const handlePress = () => {
-    // TODO: Open the specific credential, passing the credential prop
+    const serializableCredential = {
+      ...credential,
+      cred: {
+        ...credential.cred,
+        expiryDate: credential.cred.expiryDate ? credential.cred.expiryDate.toISOString() : null,
+      },
+    };
+
+    navigation.navigate('WalletStack', {
+      screen: 'CredentialInformation',
+      params: { credential: serializableCredential },
+    });
   };
 
   const styles = StyleSheet.create({

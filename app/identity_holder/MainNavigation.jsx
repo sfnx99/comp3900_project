@@ -9,22 +9,75 @@ import { renderIconByName } from './scripts/util';
 
 import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
-import WalletScreen from './screens/WalletScreen';
 import SearchButton from './components/SearchButton';
 import { ThemeContext } from './context/ThemeContext';
 import LoginScreen from './screens/LoginScreen';
 import HomeStack from './screens/stacks/HomeStack';
-import RequestStack from './screens/stacks/RequestStack';
+import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import { getCoordinates } from './components/Geocoding';
+import WalletStack from './screens/stacks/WalletStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const MainApp = () => {
   const [credentials, setCredentials] = useState([]);
-
+  const [notifications, setNotifications] = useState([]);
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
+    const fetchNotifications = async () => {
+      const initialNotifications = [
+        {
+          id: 1,
+          name: 'Medicare Card',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'UNSW Medical Centre',
+        },
+        {
+          id: 2,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Joe Bar, Newtown',
+        },
+        {
+          id: 3,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Woolworths, Newtown',
+        },
+        {
+          id: 4,
+          name: 'Credential Approved',
+          type: 'approval',
+          timestamp: new Date(),
+          detail: 'Your NSW Drivers License has been verified.',
+        },
+        {
+          id: 5,
+          name: 'Credential Pending',
+          type: 'pending',
+          timestamp: new Date(),
+          detail: 'Request for UNSW ID card pending approval.',
+        },
+      ];
+
+      const notificationsWithCoordinates = await Promise.all(
+        initialNotifications.map(async (notification) => {
+          if (notification.type === 'location' && notification.detail) {
+            const coordinates = await getCoordinates(notification.detail);
+            return { ...notification, coordinates };
+          }
+          return notification;
+        }),
+      );
+
+      setNotifications(notificationsWithCoordinates);
+    };
+
     // TODO: GET CREDENTIALS HERE
     const fetchCredentials = async () => {
       setCredentials([
@@ -41,6 +94,7 @@ const MainApp = () => {
       ]);
     };
 
+    fetchNotifications();
     fetchCredentials();
   }, []);
 
@@ -94,33 +148,34 @@ const MainApp = () => {
           headerTitleAlign: 'center',
         }}
       >
-        {() => <HomeStack credentials={credentials} />}
+        {() => <HomeStack credentials={credentials} notifications={notifications} />}
       </Tab.Screen>
       <Tab.Screen
         name="Request Credentials"
-        component={RequestStack}
+        component={RequestCredentialScreen}
         options={{
           // headerShown: false,
           tabBarIcon: renderIconByName('card-plus'),
         }}
       />
       <Tab.Screen
-        name="Wallet"
+        name="WalletStack"
         options={{
           tabBarIcon: renderIconByName('wallet'),
-          headerRight: SearchButton(),
+          headerShown: false,
         }}
       >
-        {() => <WalletScreen credentials={credentials} />}
+        {() => <WalletStack credentials={credentials} />}
       </Tab.Screen>
       <Tab.Screen
         name="Notifications"
-        component={NotificationsScreen}
         options={{
           tabBarIcon: renderIconByName('bell'),
           headerRight: SearchButton(),
         }}
-      />
+      >
+        {() => <NotificationsScreen notifications={notifications} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
@@ -164,70 +219,5 @@ const MainNavigation = () => {
     </NavigationContainer>
   );
 };
-
-// const MainNavigation = () => (
-//   <NavigationContainer
-//     theme={navTheme}
-//   >
-//     <ExpoStatusBar style="dark" />
-//     <StatusBar barStyle="dark-content" />
-
-//     <Tab.Navigator
-//       initialRouteName="Home"
-//       screenOptions={({ navigation }) => ({
-//         tabBarShowLabel: false,
-//         headerShown: true,
-//         tabBarStyle: styles.navBar,
-//         headerStyle: styles.header,
-//         headerShadowVisible: false,
-//         headerTitleAlign: 'center',
-//         headerTitleStyle: styles.headerTitle,
-//         headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), { size: 30 }),
-//       })}
-//       backBehavior="history"
-//     >
-//       <Tab.Screen
-//         name="Home"
-//         component={HomeScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('home'),
-//           headerShown: false,
-//           headerTitleAlign: 'center',
-//         }}
-//       />
-//       <Tab.Screen
-//         name="RequestCredentialTab"
-//         component={RequestStack}
-//         options={{
-//           headerShown: false,
-//           tabBarIcon: renderIconByName('card-plus'),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Wallet"
-//         component={WalletScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('wallet'),
-//           headerRight: SearchButton(),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Notifications"
-//         component={NotificationsScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('bell'),
-//           headerRight: SearchButton(),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Settings"
-//         component={SettingsScreen}
-//         options={{
-//           tabBarIcon: renderIconByName('cog'),
-//         }}
-//       />
-//     </Tab.Navigator>
-//   </NavigationContainer>
-// );
 
 export default MainNavigation;

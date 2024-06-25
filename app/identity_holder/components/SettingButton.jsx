@@ -13,7 +13,7 @@ const SettingButton = ({ text, onPress, icon = null }) => {
     view: {
       padding: 20,
       paddingLeft: 10,
-      // paddingBottom: 15,
+      paddingBottom: 15,
       backgroundColor: theme.background,
       flexDirection: 'row',
       alignContent: 'center',

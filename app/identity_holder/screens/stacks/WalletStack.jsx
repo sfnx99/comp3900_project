@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
+import { createStackNavigator } from '@react-navigation/stack';
 import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
 
-import ActivityHistory from '../ActivityHistory';
-import { credentialPropType, notificationPropType, renderIconByName } from '../../scripts/util';
-import HomeScreen from '../HomeScreen';
 import { ThemeContext } from '../../context/ThemeContext';
+import { credentialPropType, renderIconByName } from '../../scripts/util';
+import WalletScreen from '../WalletScreen';
+import SearchButton from '../../components/SearchButton';
+import CredentialInformation from '../CredentialInformation';
 
 const Stack = createStackNavigator();
 
-const HomeStack = ({ credentials, notifications }) => {
+const WalletStack = ({ credentials }) => {
   const { theme } = useContext(ThemeContext);
+
   const styles = StyleSheet.create({
     header: {
       backgroundColor: theme.background,
@@ -24,25 +26,14 @@ const HomeStack = ({ credentials, notifications }) => {
       fontSize: 20,
     },
   });
+
   return (
     <Stack.Navigator
       screenOptions={styles.header}
       cardStyle
     >
       <Stack.Screen
-        name="HomeMain"
-        options={{
-          tabBarIcon: renderIconByName('home'),
-          headerShown: false,
-          headerStyle: styles.header,
-          headerTitleStyle: styles.text,
-          headerTitleAlign: 'center',
-        }}
-      >
-        {() => <HomeScreen credentials={credentials} activities={notifications} />}
-      </Stack.Screen>
-      <Stack.Screen
-        name="ActivityHistory"
+        name="Wallet"
         options={({ navigation }) => ({
           headerShown: true,
           tabBarStyle: '#F1F2EC',
@@ -55,17 +46,34 @@ const HomeStack = ({ credentials, notifications }) => {
             size: 30,
             color: theme.text,
           }),
+          headerRight: SearchButton(),
         })}
       >
-        {() => <ActivityHistory notifications={notifications} />}
+        {() => <WalletScreen credentials={credentials} />}
       </Stack.Screen>
+      <Stack.Screen
+        name="CredentialInformation"
+        component={CredentialInformation}
+        options={({ route, navigation }) => ({
+          headerShown: true,
+          headerStyle: styles.header,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+          headerTitleStyle: styles.text,
+          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
+            paddingTop: 25,
+            size: 30,
+            color: theme.text,
+          }),
+          title: route.params?.credential?.cred?.credName || 'Credential Information',
+        })}
+      />
     </Stack.Navigator>
   );
 };
 
-HomeStack.propTypes = {
+WalletStack.propTypes = {
   credentials: PropTypes.arrayOf(credentialPropType),
-  notifications: PropTypes.arrayOf(notificationPropType),
 };
 
-export default HomeStack;
+export default WalletStack;
