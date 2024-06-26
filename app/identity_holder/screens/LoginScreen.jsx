@@ -54,7 +54,7 @@ const LoginScreen = () => {
       await loginUser(email, password);
       navigation.replace('MainApp');
     } catch (error) {
-      Alert.alert('Could not login:', error);
+      Alert.alert('Could not login:', error.message);
     }
   };
 

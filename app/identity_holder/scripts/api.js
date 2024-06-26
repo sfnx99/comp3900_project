@@ -8,7 +8,6 @@ const url = `${WALLET_HOST || 'http://localhost'}:${port}/v1`;
 const getToken = async () => {
   try {
     const token = await getValueFor('token');
-    console.log(token);
     if (!token) {
       throw new Error('Not authenticated for this session.');
     }
@@ -97,7 +96,6 @@ export const loginUser = async (email, password) => {
 export const logoutUser = async () => {
   try {
     const token = await getToken();
-    console.log('Token to logout:', token);
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
         Authorization: `Bearer ${token}`,
