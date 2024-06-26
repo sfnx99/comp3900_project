@@ -11,10 +11,14 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import styles from '../styles/loginStyles';
 import CustomButton from '../components/CustomButton'; // Adjust the path as necessary
 import Logo from '../images/logo3.png';
+import TextInputField from '../components/TextInputField';
+import { loginUser } from '../scripts/api';
 
 const LoginScreen = () => {
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const navigation = useNavigation();
+  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -40,6 +44,20 @@ const LoginScreen = () => {
     }
   };
 
+  const login = async () => {
+    try {
+      if (!email || !password) {
+        Alert.alert('Fill in all fields!');
+        return;
+      }
+
+      await loginUser(email, password);
+      navigation.replace('MainApp');
+    } catch (error) {
+      Alert.alert('Could not login:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -47,6 +65,24 @@ const LoginScreen = () => {
         style={styles.logo}
       />
       <Text style={styles.text}> BW Credentials</Text>
+
+      <TextInputField
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email address"
+      />
+      <TextInputField
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Password"
+        isPassword
+      />
+      <CustomButton
+        style={styles.button}
+        title="Login"
+        onPress={login}
+      />
+
       {isBiometricSupported && (
         <CustomButton
           style={styles.button}
@@ -56,13 +92,13 @@ const LoginScreen = () => {
       )}
       <CustomButton
         style={styles.button}
-        title="Proceed without login (for computer testing)"
-        onPress={() => navigation.replace('MainApp')}
+        title="Register"
+        onPress={() => navigation.navigate('Register')}
       />
       <CustomButton
         style={styles.button}
-        title="Register"
-        onPress={() => navigation.navigate('Register')}
+        title="Proceed without login (for computer testing)"
+        onPress={() => navigation.replace('MainApp')}
       />
     </View>
   );

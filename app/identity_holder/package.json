@@ -11,6 +11,7 @@
     "date-fns": "^3.6.0",
     "expo": "^51.0.0",
     "expo-local-authentication": "~14.0.1",
+    "expo-secure-store": "^13.0.1",
     "expo-status-bar": "~1.12.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -37,7 +38,7 @@
     "globals": "^15.6.0"
   },
   "scripts": {
-    "start": "expo start --port 8082",
+    "start": "expo start --port 7999",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

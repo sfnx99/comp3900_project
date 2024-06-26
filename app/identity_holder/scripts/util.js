@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 import { isDate } from 'date-fns';
 import PropTypes from 'prop-types';
 
@@ -48,3 +48,22 @@ export const notificationPropType = PropTypes.shape({
   timestamp: isValidDate,
   type: PropTypes.oneOf(['approval', 'pending', 'location', 'location-preview']),
 });
+
+/**
+ * Save a key-value pair in expo secure store.
+ * @param {string} key - the key of the key-value pair.
+ * @param {*} value - the value belonging to the key.
+ */
+export const save = async (key, value) => {
+  await SecureStore.setItemAsync(key, value);
+};
+
+/**
+ * Retrieve a value from expo secure store by key.
+ * @param {string} key - key of the value being retrieved.
+ * @returns value of the key from secure storage.
+ */
+export const getValueFor = async (key) => {
+  const value = await SecureStore.getItemAsync(key);
+  return value;
+};

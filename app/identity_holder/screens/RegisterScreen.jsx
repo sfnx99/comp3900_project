@@ -40,7 +40,7 @@ const RegisterScreen = () => {
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
     } catch (error) {
-      console.log('Could not register user:', error);
+      console.error('Could not register user:', error);
     }
   };
 

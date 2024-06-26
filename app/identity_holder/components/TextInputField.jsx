@@ -13,6 +13,7 @@ const TextInputField = ({
   label,
   value,
   onChangeText,
+  placeholder,
   textAlign = 'left',
   isPassword = false,
 }) => {
@@ -44,12 +45,13 @@ const TextInputField = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
         value={value}
         onChangeText={onChangeText}
         style={styles.input}
         secureTextEntry={isPassword}
+        placeholder={placeholder}
       />
     </View>
   );
@@ -61,6 +63,7 @@ TextInputField.propTypes = {
   onChangeText: PropTypes.func.isRequired,
   textAlign: PropTypes.oneOf(['center', 'left', 'right', 'justify']),
   isPassword: PropTypes.bool,
+  placeholder: PropTypes.string,
 };
 
 export default TextInputField;
