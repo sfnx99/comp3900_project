@@ -24,7 +24,7 @@ const RegisterScreen = () => {
     setConfirmPassword('');
   };
 
-  const handleOnPress = async () => {
+  const submitForm = async () => {
     // Check all fields filled and password matches
     if (!email || !password || !confirmPassword) {
       Alert.alert('Please fill in all fields.');
@@ -36,13 +36,11 @@ const RegisterScreen = () => {
     }
 
     try {
-      const token = await registerUser(email, password);
-      console.log(`Received token: ${token}`);
-
+      await registerUser(email, password);
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
     } catch (error) {
-      console.error(`Could not register the user due to the following error: ${error}`);
+      console.log('Could not register user:', error);
     }
   };
 
@@ -79,7 +77,7 @@ const RegisterScreen = () => {
 
       <TextButton
         text="Submit"
-        onPress={handleOnPress}
+        onPress={submitForm}
       />
     </View>
   );
