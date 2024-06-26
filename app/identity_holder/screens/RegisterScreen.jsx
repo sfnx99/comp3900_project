@@ -40,13 +40,14 @@ const RegisterScreen = () => {
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
     } catch (error) {
-      console.error('Could not register user:', error);
+      Alert.alert(String(error));
     }
   };
 
   const styles = StyleSheet.create({
     container: {
       backgroundColor: theme.background,
+      marginTop: 20,
     },
     inputContainer: {
       marginHorizontal: 24,
