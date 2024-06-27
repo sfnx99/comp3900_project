@@ -15,6 +15,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import SearchButton from './components/SearchButton';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import { getCredential, getCredentials } from './scripts/api';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -79,18 +80,37 @@ const MainApp = () => {
 
     // TODO: GET CREDENTIALS HERE
     const fetchCredentials = async () => {
-      setCredentials([
-        {
-          id: '1',
-          iss: 'NSW Government',
-          cred: {
-            credName: 'NSW Drivers License',
-            fullName: 'Jessica Brown',
-            expiryDate: new Date(),
-            licenseNumber: '0123456789',
+      const tempCredentials = [];
+      const credentialIds = await getCredentials();
+
+      const credentialPromises = credentialIds.map(async (id) => {
+        try {
+          const credential = await getCredential(id);
+          tempCredentials.push(credential);
+        } catch (error) {
+          console.error(error.message);
+        }
+      });
+
+      await Promise.all(credentialPromises);
+
+      setCredentials(tempCredentials);
+      setCredentials([{
+        id: 'test',
+        iss: 'test',
+        cred: [
+          {
+            first_name: 'test',
           },
-        },
-      ]);
+          {
+            last_name: 'test',
+          },
+          {
+            dob: 'test',
+          },
+        ],
+      }]);
+      console.log(tempCredentials);
     };
 
     fetchNotifications();

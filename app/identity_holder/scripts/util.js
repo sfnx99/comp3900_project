@@ -35,10 +35,7 @@ export const isValidDate = (props, propName, componentName) => {
 export const credentialPropType = PropTypes.exact({
   id: PropTypes.string.isRequired,
   iss: PropTypes.string.isRequired,
-  cred: PropTypes.shape({
-    credName: PropTypes.string,
-    expiryDate: isValidDate,
-  }).isRequired,
+  cred: PropTypes.arrayOf(PropTypes.object).isRequired,
 });
 
 export const notificationPropType = PropTypes.shape({

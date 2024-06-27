@@ -106,3 +106,41 @@ export const logoutUser = async () => {
     handleError(error);
   }
 };
+
+/**
+ * Retrieve list of user credential IDs
+ * @returns array of credential ids
+ */
+export const getCredentials = async () => {
+  try {
+    const token = await getToken();
+    const response = await axios.get(`${url}/credentials`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data.credentials;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const getCredential = async (id) => {
+  try {
+    console.log('Credential id: ', id);
+    const token = await getToken();
+    const response = await axios(`${url}/credential?id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    return response.data.id;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};

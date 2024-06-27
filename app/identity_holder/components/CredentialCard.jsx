@@ -56,7 +56,7 @@ const CredentialCard = ({ credential }) => {
       />
 
       <View style={styles.details}>
-        <Text style={styles.text}>{credential.cred.credName}</Text>
+        <Text style={styles.text}>{credential.id}</Text>
       </View>
     </View>
   );
