@@ -4,11 +4,14 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { ThemeContext } from '../context/ThemeContext';
 import { credentialPropType } from '../scripts/util';
+
+import Card from '../images/Credential.png';
 
 const CredentialCard = ({ credential }) => {
   const navigation = useNavigation();
@@ -30,30 +33,36 @@ const CredentialCard = ({ credential }) => {
   };
 
   const styles = StyleSheet.create({
-    credential: {
-      marginBottom: 30,
+    container: {
+      width: '100%',
       alignItems: 'center',
     },
     card: {
       height: 190,
       width: '100%',
-      backgroundColor: '#F2F8CA',
+    },
+    cardImage: {
+      height: '100%',
+      width: '100%',
+      resizeMode: 'contain',
     },
     details: {
-      flexDirection: 'row',
+      marginTop: 10,
+      alignItems: 'center',
     },
     text: {
-      marginVertical: 10,
       color: theme.text,
     },
   });
 
   return (
-    <View style={styles.credential}>
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={handlePress}
         style={styles.card}
-      />
+      >
+        <Image source={Card} style={styles.cardImage} />
+      </TouchableOpacity>
 
       <View style={styles.details}>
         <Text style={styles.text}>{credential.id}</Text>
