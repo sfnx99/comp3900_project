@@ -39,21 +39,17 @@ const CredentialInformation = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.field}>
-        <Text style={[styles.fieldName, styles.text]}>Name:</Text>
-        <Text style={styles.text}>{credentialDetails.fullName}</Text>
-      </View>
-      <View style={styles.field}>
         <Text style={[styles.fieldName, styles.text]}>Expiry Date:</Text>
         <Text style={styles.text}>{expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</Text>
       </View>
-      {Object.entries(credentialDetails)
+      {/*Object.entries(credentialDetails)
         .filter(([key]) => !['fullName', 'expiryDate'].includes(key))
         .map(([key, item]) => (
           <View key={key} style={styles.field}>
             <Text style={[styles.fieldName, styles.text]}>{`${formatFieldName(key)}:`}</Text>
             <Text style={styles.text}>{item}</Text>
           </View>
-        ))}
+        ))*/}
     </SafeAreaView>
   );
 };
