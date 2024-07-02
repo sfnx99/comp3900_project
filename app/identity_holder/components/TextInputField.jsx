@@ -38,7 +38,6 @@ const TextInputField = ({
       borderColor: '#000000',
       paddingLeft: 10,
       borderRadius: 10,
-      marginBottom: 10,
       backgroundColor: '#F5FFB9',
     },
   });
