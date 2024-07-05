@@ -11,11 +11,12 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
+import { authLogin, authLogout, authRegister } from "./auth";
+import { deleteCredential, getCredential, getCredentials } from "./credentials";
 import { addOne } from "./extra";
-import { authRegister, authLogin, authLogout } from "./auth";
-import {getCredentials, getCredential, deleteCredential} from "./credentials";
-import {getIssuers, getRequest, makeRequest} from './issuer';
-import {getPresentation, makePresentation} from './verifier';
+import { getIssuers, getRequest, makeRequest } from './issuer';
+import { getPresentation, getPresentationV2, makePresentation } from './verifier';
+import { wrapAuthorisation } from "./wrapper";
 
 dotenv.config();
 
@@ -146,6 +147,19 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
     }
 });
 
+app.get("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier } = req.body;
+    if (token !== undefined) {
+        // Cut off "Bearer "{token}
+        const result = await wrapAuthorisation(token, getPresentationV2, verifier);
+        res.status(result.status).json(result.body);
+    } else {
+        res.status(401).json({error: "User is not logged in"});
+    }
+});
+
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
+

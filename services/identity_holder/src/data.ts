@@ -1,6 +1,6 @@
 import { Data, User } from './interface'
 
-let data: Data = {
+export const DEFAULT_DATA: Data = {
     users: [
         {
             email: "email",
@@ -10,11 +10,14 @@ let data: Data = {
                     id: "test",
                     iss: "test",
                     cred: [
-                        {first_name: "test"},
-                        {last_name: "test"},
-                        {dob: "test"}
+                        { first_name: "test" },
+                        { last_name: "test" },
+                        { dob: "test" }
                     ]
                 }
+            ],
+            credentialsV2: [
+
             ],
             sessions: []
         }
@@ -23,6 +26,8 @@ let data: Data = {
         "http://localhost:8082" // hardcoded
     ]
 }
+
+let data = DEFAULT_DATA
 
 export function setData(newData: Data) {
     data = newData
