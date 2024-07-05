@@ -13,7 +13,6 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import { authLogin, authLogout, authRegister } from "./auth";
 import { deleteCredential, getCredential, getCredentials } from "./credentials";
-import { addOne } from "./extra";
 import { getIssuers, getRequest, makeRequest } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
@@ -25,10 +24,6 @@ const port = process.env.PORT || 8081;
 
 // Parse request body
 app.use(express.json())
-
-app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript Server : 2+1=" + addOne(2));
-});
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
