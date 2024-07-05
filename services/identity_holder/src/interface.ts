@@ -54,6 +54,24 @@ interface DescriptorField {
     path: CredentialPath[]
 }
 
+export interface PresentationSubmission {
+    id: string,
+    definition_id: string,
+    descriptor_map: PresentationSubmissionDescriptor[]
+}
+
+export interface PresentationSubmissionDescriptor {
+    id: string,
+    format: string,
+    path: string
+}
+
+export interface Presentation {
+    "@context": string[],
+    type: CredentialType[],
+    verifiableCredential: CredentialV2[]
+}
+
 // V2 Credentials
 export interface CredentialV2 {
     "@context": string[],
@@ -64,7 +82,6 @@ export interface CredentialV2 {
 }
 
 export interface CredentialSubject {
-    id: string,
     [attr: string] : string
 }
 

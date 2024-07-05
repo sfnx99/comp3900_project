@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 import { toUser } from "./data";
 import { ResponseV2, User } from "./interface";
 
@@ -11,10 +12,18 @@ type FunctionRequiringAuthorisation = (user: User, ...args: any[]) => ResponseV2
  * This means that `doThing` does not need to authorise the User, or handle errors.
  */
 export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation>(
-    token: string,
+    token: string | undefined,
     func: T,
     ...func_args: Tail<Parameters<T>>
 ): Promise<ResponseV2> {
+    if (token === undefined) {
+        return {
+            status: HttpStatusCode.Unauthorized,
+            body: {
+                error: "User is not logged in"
+            }
+        }
+    }
     const user = toUser(token);
     if (user === undefined) {
         return {

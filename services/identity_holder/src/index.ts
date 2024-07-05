@@ -15,7 +15,7 @@ import { authLogin, authLogout, authRegister } from "./auth";
 import { deleteCredential, getCredential, getCredentials } from "./credentials";
 import { addOne } from "./extra";
 import { getIssuers, getRequest, makeRequest } from './issuer';
-import { getPresentation, getPresentationV2, makePresentation } from './verifier';
+import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
 
 dotenv.config();
@@ -149,14 +149,16 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
 
 app.get("/v2/present", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const { verifier } = req.body;
-    if (token !== undefined) {
-        // Cut off "Bearer "{token}
-        const result = await wrapAuthorisation(token, getPresentationV2, verifier);
-        res.status(result.status).json(result.body);
-    } else {
-        res.status(401).json({error: "User is not logged in"});
-    }
+    const { verifier_uri } = req.body;
+    const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
+    res.status(result.status).json(result.body);
+});
+
+app.post("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier_uri, credential_id } = req.body;
+    const result = await wrapAuthorisation(token, postPresentationV2, verifier_uri, credential_id);
+    res.status(result.status).json(result.body);
 });
 
 app.listen(port, () => {
