@@ -2,8 +2,8 @@ import { HttpStatusCode } from "axios";
 import { toUser } from "./data";
 import { ResponseV2, User } from "./interface";
 
-type Tail<T extends any[]> = T extends [User, ...infer Rest] ? Rest : never;
-type FunctionRequiringAuthorisation = (user: User, ...args: any[]) => ResponseV2 | Promise<ResponseV2>
+type Tail<T extends any[]> = T extends [User, ...infer Rest] ? Rest : never; // eslint-disable-line @typescript-eslint/no-explicit-any
+type FunctionRequiringAuthorisation = (user: User, ...args: any[]) => ResponseV2 | Promise<ResponseV2> // eslint-disable-line @typescript-eslint/no-explicit-any
 /**
  * This function wraps another function that requires authorisation, and handles all the server-side stuff.
  * 

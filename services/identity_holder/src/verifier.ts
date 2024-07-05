@@ -62,7 +62,7 @@ export async function getPresentationV2(user: User, verifier: string): Promise<R
 
 export async function postPresentationV2(user: User, verifier: string, credential_id: string): Promise<ResponseV2> {
     const verifierPresent = verifier + "/v2/present";
-    const verifiable_credential = user.credentialsV2.find(e => true) //TODO: In sprint 3, make this support multiple credentials.
+    const verifiable_credential = user.credentialsV2[0] //TODO: In sprint 3, make this support multiple credentials.
     if (verifiable_credential === undefined) {
         return {
             status: HttpStatusCode.BadRequest,
@@ -106,7 +106,7 @@ function getRelativeCredentialValue(paths: string[], credential_subject: Credent
     try {
         const values = paths.map(path => {
             const keys = path.slice(1).split('.') // TODO: Remove $[] from path instead of slicing.
-            let current: any = credential_subject
+            let current: any = credential_subject // eslint-disable-line @typescript-eslint/no-explicit-any
             for (let i = 0; i < keys.length; i++) {
                 const element = keys[i];
                 current = current[element]

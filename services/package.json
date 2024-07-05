@@ -23,5 +23,9 @@
     "ts-jest": "^29.1.5",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "uuid": "^10.0.0"
   }
 }
