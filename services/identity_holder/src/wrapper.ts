@@ -31,7 +31,7 @@ export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation
         return {
             status: 500,
             body: {
-                error: String(err)
+                error: err
             }
         }
     }

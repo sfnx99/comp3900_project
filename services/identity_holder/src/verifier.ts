@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
 import { FORMAT_MAP, toUser } from './data';
-import { ResponseV2, User, VerifierV2RequestReturn } from './interface';
+import { CredentialSubject, ResponseV2, User, VerifierV2RequestReturn } from './interface';
 
 export async function getPresentation(token: string, verifier: string) {
     const user = toUser(token);
@@ -37,7 +37,11 @@ export async function getPresentationV2(user: User, verifier: string): Promise<R
     const res: VerifierV2RequestReturn = JSON.parse(await axios.get(verifierRequest));
     const descriptor = res.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
     // For each input descriptor listed in the Presentation, Find a Credential Owned by the user.
-    const userCred = user.credentialsV2.find(c => c.type.includes(descriptor.id))
+    const userCred = user.credentialsV2.find(
+        c => c.type.includes(descriptor.id)
+        && descriptor.contraints.fields.every(
+            f => getRelativeCredentialValue(f.path, c.credentialSubject) !== undefined)
+        )
     if (userCred === undefined) {
         return {
             status: HttpStatusCode.Forbidden,
@@ -46,16 +50,40 @@ export async function getPresentationV2(user: User, verifier: string): Promise<R
             }
         }
     }
-    // User has required credentials. Ensure that they have the right proofs, too.
-    
+    // User has required credentials.
     const presentation = {
         type: descriptor.id,
-        requiredAttributes: descriptor.contraints.fields.map(f => f.path[0].lastIndexOf('.'))
+        requiredAttributes: descriptor.contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
     }
     return {
         status: 200,
         body: presentation
     }
+}
+
+function getRelativeCredentialValue(paths: string[], credential_subject: CredentialSubject) {
+    try {
+        const values = paths.map(path => {
+            const keys = path.slice(1).split('.') //remove the $ at the start of a path
+            let current: any = credential_subject
+            for (let i = 0; i < keys.length; i++) {
+                const element = keys[i];
+                current = current[element]
+            }
+            return current
+        });
+        return values.find(v => v !== undefined)
+    } catch (error) {
+        return undefined
+    }
+}
+
+function getCredentialSubjectName(input: string): string {
+    const lastIndex = input.lastIndexOf('.');
+    if (lastIndex === -1) {
+        return input; // If no period is found, return the whole input
+    }
+    return input.substring(lastIndex + 1);
 }
 
 export async function makePresentation(token: string, verifier: string, format: "Learner Driver Licence"|"Provisional Driver Licence"|"Driver Licence"|"Photo Card", id: string) {

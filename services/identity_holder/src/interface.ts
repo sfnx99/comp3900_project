@@ -25,7 +25,7 @@ export interface Data {
 
 export interface ResponseV2 {
     status: HttpStatusCode,
-    body: Attribute
+    body: Object
 }
 
 // V2: Presentation Definition
@@ -63,7 +63,7 @@ export interface CredentialV2 {
     proof: CredentialProof
 }
 
-interface CredentialSubject {
+export interface CredentialSubject {
     id: string,
     [attr: string] : string
 }
