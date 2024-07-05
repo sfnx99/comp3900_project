@@ -11,11 +11,11 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { addOne } from "./extra";
-import { authRegister, authLogin, authLogout } from "./auth";
-import {getCredentials, getCredential, deleteCredential} from "./credentials";
-import {getIssuers, getRequest, makeRequest} from './issuer';
-import {getPresentation, makePresentation} from './verifier';
+import { authLogin, authLogout, authRegister } from "./auth";
+import { deleteCredential, getCredential, getCredentials } from "./credentials";
+import { getIssuers, getRequest, makeRequest } from './issuer';
+import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
+import { wrapAuthorisation } from "./wrapper";
 
 dotenv.config();
 
@@ -24,10 +24,6 @@ const port = process.env.PORT || 8081;
 
 // Parse request body
 app.use(express.json())
-
-app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript Server : 2+1=" + addOne(2));
-});
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
@@ -146,6 +142,21 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
     }
 });
 
+app.get("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier_uri } = req.body;
+    const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
+    res.status(result.status).json(result.body);
+});
+
+app.post("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier_uri, credential_id } = req.body;
+    const result = await wrapAuthorisation(token, postPresentationV2, verifier_uri, credential_id);
+    res.status(result.status).json(result.body);
+});
+
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
+

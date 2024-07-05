@@ -1,9 +1,9 @@
-import { Response } from './interface';
-import { getData, setData, toUser, SALT_ROUNDS } from './data';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { SALT_ROUNDS, getData, setData, toUser } from './data';
+import { ResponseV2 } from './interface';
 
-export function authRegister(email: string, password: string) : Response {
+export function authRegister(email: string, password: string) : ResponseV2 {
     const data = getData();
 
     // Check email already exists
@@ -25,6 +25,7 @@ export function authRegister(email: string, password: string) : Response {
         email: email,
         hash: hash,
         credentials: [],
+        credentialsV2: [],
         sessions: [session]
     });
     setData(data);
