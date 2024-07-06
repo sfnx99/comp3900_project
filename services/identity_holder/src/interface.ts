@@ -29,9 +29,8 @@ export interface ResponseV2 {
 }
 
 // V2: Presentation Definition
-
-type CredentialType = string
-type CredentialPath = string
+export type SSI_ID = string // e.g. ef54dea5-4b6c-4447-b46f-4600edbc93a8
+type CredentialType = string // e.g. Somethng like "VerifiableCredential" or "DriversLicense"
 
 export interface VerifierV2RequestReturn {
     presentation_definition: PresentationDefinition,
@@ -39,7 +38,7 @@ export interface VerifierV2RequestReturn {
 }
 
 export interface PresentationDefinition {
-    id: string,
+    id: SSI_ID,
     input_descriptors: PresentationDescriptor[]
 }
 
@@ -51,17 +50,17 @@ interface PresentationDescriptor {
 }
 
 interface DescriptorField {
-    path: CredentialPath[]
+    path: string[]
 }
 
 export interface PresentationSubmission {
-    id: string,
-    definition_id: string,
+    id: SSI_ID,
+    definition_id: SSI_ID,
     descriptor_map: PresentationSubmissionDescriptor[]
 }
 
 export interface PresentationSubmissionDescriptor {
-    id: string,
+    id: CredentialType,
     format: string,
     path: string
 }
@@ -75,6 +74,7 @@ export interface Presentation {
 // V2 Credentials
 export interface CredentialV2 {
     "@context": string[],
+    id: SSI_ID
     type: CredentialType[],
     issuer: string,
     credentialSubject: CredentialSubject,

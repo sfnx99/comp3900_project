@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
 import { FORMAT_MAP, toUser } from './data';
-import { CredentialSubject, Presentation, PresentationSubmission, PresentationSubmissionDescriptor, ResponseV2, User, VerifierV2RequestReturn } from './interface';
+import { CredentialSubject, Presentation, PresentationSubmission, PresentationSubmissionDescriptor, ResponseV2, SSI_ID, User, VerifierV2RequestReturn } from './interface';
 
 export async function getPresentation(token: string, verifier: string) {
     const user = toUser(token);
@@ -31,6 +31,67 @@ export async function getPresentation(token: string, verifier: string) {
     }
 }
 
+export async function makePresentation(token: string, verifier: string, format: "Learner Driver Licence"|"Provisional Driver Licence"|"Driver Licence"|"Photo Card", id: string) {
+    const user = toUser(token);
+    if (user === undefined) {
+        return {
+            status: 401,
+            body: {
+                error: "Invalid session"
+            }
+        };
+    }
+    // Check credential exists
+    const pres = user.credentials.find(e => e.id === id);
+    if (pres === undefined) {
+        return Promise.resolve({
+            status: 400,
+            body: {
+                error: "No such credential"
+            }
+        });
+    }
+    // Check specified presentation conforms to format
+    for (const attr in FORMAT_MAP[format]) {
+        if (!(attr in pres.cred.map(e => Object.keys(e)[0]))) {
+            return Promise.resolve({
+                status: 400,
+                body: {
+                    error: "Specified credential does not match specified format"
+                }
+            });
+        }
+    }
+    // Send the credential!
+    const verifierReceive = verifier + "/v1/receive";
+    try {
+        const res = await axios.post(verifierReceive, pres);
+        if (res.status === 200) {
+            return {
+                status: 200,
+                body: {
+                    message: "success"
+                }
+            };
+        } else {
+            return {
+                status: 500,
+                body: {
+                    error: "verifier refused presentation"
+                }
+            }
+        }
+    } catch (err) {
+        return {
+            status: 500,
+            body: {
+                error: err
+            }
+        };
+    }
+}
+
+
 
 export async function getPresentationV2(user: User, verifier: string): Promise<ResponseV2> {
     const verifierRequest = verifier + "/v2/request";
@@ -60,7 +121,7 @@ export async function getPresentationV2(user: User, verifier: string): Promise<R
     }
 }
 
-export async function postPresentationV2(user: User, verifier: string, credential_id: string): Promise<ResponseV2> {
+export async function postPresentationV2(user: User, verifier: string, credential_id: SSI_ID): Promise<ResponseV2> {
     const verifierPresent = verifier + "/v2/present";
     const verifiable_credential = user.credentialsV2[0] //TODO: In sprint 3, make this support multiple credentials.
     if (verifiable_credential === undefined) {
@@ -125,64 +186,4 @@ function getCredentialSubjectName(input: string): string {
         return input; // If no period is found, return the whole input
     }
     return input.substring(lastIndex + 1);
-}
-
-export async function makePresentation(token: string, verifier: string, format: "Learner Driver Licence"|"Provisional Driver Licence"|"Driver Licence"|"Photo Card", id: string) {
-    const user = toUser(token);
-    if (user === undefined) {
-        return {
-            status: 401,
-            body: {
-                error: "Invalid session"
-            }
-        };
-    }
-    // Check credential exists
-    const pres = user.credentials.find(e => e.id === id);
-    if (pres === undefined) {
-        return Promise.resolve({
-            status: 400,
-            body: {
-                error: "No such credential"
-            }
-        });
-    }
-    // Check specified presentation conforms to format
-    for (const attr in FORMAT_MAP[format]) {
-        if (!(attr in pres.cred.map(e => Object.keys(e)[0]))) {
-            return Promise.resolve({
-                status: 400,
-                body: {
-                    error: "Specified credential does not match specified format"
-                }
-            });
-        }
-    }
-    // Send the credential!
-    const verifierReceive = verifier + "/v1/receive";
-    try {
-        const res = await axios.post(verifierReceive, pres);
-        if (res.status === 200) {
-            return {
-                status: 200,
-                body: {
-                    message: "success"
-                }
-            };
-        } else {
-            return {
-                status: 500,
-                body: {
-                    error: "verifier refused presentation"
-                }
-            }
-        }
-    } catch (err) {
-        return {
-            status: 500,
-            body: {
-                error: err
-            }
-        };
-    }
 }

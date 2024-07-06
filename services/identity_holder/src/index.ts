@@ -12,7 +12,7 @@ $ npx ts-node src/index.ts
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import { authLogin, authLogout, authRegister } from "./auth";
-import { deleteCredential, getCredential, getCredentials } from "./credentials";
+import { deleteCredential, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
 import { getIssuers, getRequest, makeRequest } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
@@ -142,6 +142,9 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
     }
 });
 
+// V2 Code:
+
+// Presentation
 app.get("/v2/present", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
     const { verifier_uri } = req.body;
@@ -153,6 +156,21 @@ app.post("/v2/present", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
     const { verifier_uri, credential_id } = req.body;
     const result = await wrapAuthorisation(token, postPresentationV2, verifier_uri, credential_id);
+    res.status(result.status).json(result.body);
+});
+
+// Management of Credentials
+app.get("/v2/credentials", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, getCredentialsV2);
+    res.status(result.status).json(result.body);
+});
+
+// Management of Credentials
+app.get("/v2/credential", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { credential_id } = req.body;
+    const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
     res.status(result.status).json(result.body);
 });
 

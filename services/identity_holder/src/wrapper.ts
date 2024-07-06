@@ -16,6 +16,9 @@ export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation
     func: T,
     ...func_args: Tail<Parameters<T>>
 ): Promise<ResponseV2> {
+    // If you are looking further into this, note that the first argument of the function you
+    // are passing in should be user. The token is automatically converted to a user in this code.
+    // See additional comments.
     if (token === undefined) {
         return {
             status: HttpStatusCode.Unauthorized,
@@ -34,6 +37,9 @@ export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation
         };
     }
     try {
+        // Here is where the function is called. Notice how the function requires the user field.
+        // Also notice how the rest of the arguments for that function are passed in afterwards.
+        // See getCredentialV2 for example usage - it has a User argument, and then the rest of its arguments.
        const res = await func(user, ...func_args);
        return res
     } catch (err) {
