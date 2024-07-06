@@ -12,7 +12,7 @@ $ npx ts-node src/index.ts
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import { authLogin, authLogout, authRegister } from "./auth";
-import { deleteCredential, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
+import { deleteCredential, deleteCredentialV2, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
 import { getIssuers, getRequest, makeRequest } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
@@ -166,13 +166,20 @@ app.get("/v2/credentials", async (req: Request, res: Response) => {
     res.status(result.status).json(result.body);
 });
 
-// Management of Credentials
 app.get("/v2/credential", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
     const { credential_id } = req.body;
     const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
     res.status(result.status).json(result.body);
 });
+
+app.delete('/v2/credential', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { credential_id } = req.body;
+    const result = await wrapAuthorisation(token, deleteCredentialV2, credential_id);
+    res.status(result.status).json(result.body);
+});
+
 
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);

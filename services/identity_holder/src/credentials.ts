@@ -111,3 +111,23 @@ export function getCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
         }
     };
 }
+
+export function deleteCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
+    const data = getData()
+    const userIndex = data.users.findIndex(u => u === user)
+    if (!user.credentialsV2.map(c => c.id).includes(credential_id)) {
+        return {
+            status: HttpStatusCode.BadRequest,
+            body: {
+                error: "Invalid credential ID"
+            }
+        }
+    }
+    user.credentialsV2 = user.credentialsV2.filter((cred) => cred.id !== credential_id)
+    data.users[userIndex] = user
+    setData(data)
+    return {
+        status: HttpStatusCode.Ok,
+        body: {}
+    }
+}
