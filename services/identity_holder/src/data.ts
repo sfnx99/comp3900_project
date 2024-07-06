@@ -16,9 +16,23 @@ export const DEFAULT_DATA: Data = {
                     ]
                 }
             ],
-            credentialsV2: [
-
-            ],
+            credentialsV2: [{
+                '@context': [],
+                id: 'e8b08949-8369-48d2-9d6f-2a1c2f1d52ec',
+                type: ["VerifiableCredential", "CredentialType1"],
+                issuer: 'did:exampleissuer:12345',
+                credentialSubject: {
+                    "firstName": "John",
+                    "lastName": "Smith"
+                },
+                proof: {
+                    type: '',
+                    cryptosuite: 't11a-bookworms-bbs',
+                    verificationMethod: '',
+                    proofPurpose: '',
+                    proofValue: ''
+                }
+            }],
             sessions: []
         }
     ],
