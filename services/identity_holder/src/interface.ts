@@ -25,7 +25,7 @@ export interface Data {
 
 export interface ResponseV2 {
     status: HttpStatusCode,
-    body: object
+    body: Record<string, any>
 }
 
 // V2: Presentation Definition

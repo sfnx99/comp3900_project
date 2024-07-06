@@ -102,12 +102,10 @@ export function getCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
     return {
         status: 200,
         body: {
-            credentials: {
-                "issuer": credential.issuer,
-                "type": credential.type,
-                "cryptosuite": credential.proof.cryptosuite,
-                "credential": credential_subject
-            }
+            "issuer": credential.issuer,
+            "type": credential.type,
+            "cryptosuite": credential.proof.cryptosuite,
+            "credential": credential_subject
         }
     };
 }
