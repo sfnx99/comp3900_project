@@ -25,7 +25,7 @@ export interface Data {
 
 export interface ResponseV2 {
     status: HttpStatusCode,
-    body: Record<string, any>
+    body: Record<string, any>  // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 // V2: Presentation Definition
