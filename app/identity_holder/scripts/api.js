@@ -84,7 +84,13 @@ export const registerUser = async (email, password) => {
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/login`, { email, password });
-    setToken(response.data.token);
+    const token = response.data.token;
+
+    if (token) {
+      setToken(token);
+    } else {
+      throw new Error('Token is empty.');
+    }
   } catch (error) {
     handleError(error);
   }
@@ -131,11 +137,10 @@ export const getCredential = async (id) => {
   try {
     console.log('Credential id: ', id);
     const token = await getToken();
-    const response = await axios(`${url}/credential?id=${id}`, {
+    const response = await axios(`${url}/credential?credential_id=${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id }),
     });
 
     return response.data.id;

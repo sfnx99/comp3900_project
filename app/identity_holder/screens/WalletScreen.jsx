@@ -1,25 +1,23 @@
-import PropTypes from 'prop-types';
+import { useContext } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import CredentialCard from '../components/CredentialCard';
+import { CredentialsContext } from '../context/CredentialsContext';
 
-const WalletScreen = ({ credentials }) => (
-  <ScrollView style={styles.container}>
-    {credentials.map((credential) => (
-      <CredentialCard
-        key={credential.id}
-        credential={credential}
-      />
-    ))}
-  </ScrollView>
-);
+const WalletScreen = () => {
+  const { credentials } = useContext(CredentialsContext);
 
-WalletScreen.propTypes = {
-  credentials: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    iss: PropTypes.string,
-    cred: PropTypes.shape(),
-  })).isRequired,
-};
+  return (
+    <ScrollView style={styles.container}>
+      {credentials.map((credential) => (
+        <CredentialCard
+          key={credential.id}
+          credential={credential}
+        />
+      ))}
+    </ScrollView>
+  );
+}
+
 const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
