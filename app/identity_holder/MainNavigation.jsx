@@ -15,13 +15,11 @@ import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import SearchButton from './components/SearchButton';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
-import { getCredential, getCredentials } from './scripts/api';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const MainApp = () => {
-  // const [credentials, setCredentials] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const { theme } = useContext(ThemeContext);
 
@@ -78,42 +76,7 @@ const MainApp = () => {
       setNotifications(notificationsWithCoordinates);
     };
 
-    // TODO: GET CREDENTIALS HERE
-    /*
-    const fetchCredentials = async () => {
-      const tempCredentials = [];
-      const credentialIds = await getCredentials();
-
-      const credentialPromises = credentialIds.map(async (id) => {
-        try {
-          const credential = await getCredential(id);
-          tempCredentials.push(credential);
-        } catch (error) {
-          console.error(error.message);
-        }
-      });
-
-      await Promise.all(credentialPromises);
-
-      // Add credential_id and favourite: false here
-      setCredentials(tempCredentials);
-      setCredentials([{
-        id: 'id',
-        favourite: false,
-        issuer: 'issue',
-        type: 'DriverLicenceCredential',
-        cryptosuite: 'string',
-        credential: {
-          id: '0123456789',
-          firstName: 'Jessica',
-          lastName: 'Brown',
-        },
-      }]);
-    };
-    */
-
     fetchNotifications();
-    // fetchCredentials();
   }, []);
 
   return (
