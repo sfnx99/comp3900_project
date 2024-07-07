@@ -18,17 +18,9 @@ const CredentialCard = ({ credential }) => {
   const { theme } = useContext(ThemeContext);
 
   const handlePress = () => {
-    const serializableCredential = {
-      ...credential,
-      cred: {
-        ...credential.cred,
-        expiryDate: credential.cred.expiryDate ? credential.cred.expiryDate.toISOString() : null,
-      },
-    };
-
     navigation.navigate('WalletStack', {
       screen: 'CredentialInformation',
-      params: { credential: serializableCredential },
+      params: { credential },
     });
   };
 

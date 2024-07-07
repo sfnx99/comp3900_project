@@ -21,7 +21,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const MainApp = () => {
-  const [credentials, setCredentials] = useState([]);
+  // const [credentials, setCredentials] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const { theme } = useContext(ThemeContext);
 
@@ -79,6 +79,7 @@ const MainApp = () => {
     };
 
     // TODO: GET CREDENTIALS HERE
+    /*
     const fetchCredentials = async () => {
       const tempCredentials = [];
       const credentialIds = await getCredentials();
@@ -94,78 +95,75 @@ const MainApp = () => {
 
       await Promise.all(credentialPromises);
 
+      // Add credential_id and favourite: false here
       setCredentials(tempCredentials);
       setCredentials([{
-        id: 'test',
-        iss: 'test',
-        cred: [
-          {
-            first_name: 'test',
-          },
-          {
-            last_name: 'test',
-          },
-          {
-            dob: 'test',
-          },
-        ],
+        id: 'id',
+        favourite: false,
+        issuer: 'issue',
+        type: 'DriverLicenceCredential',
+        cryptosuite: 'string',
+        credential: {
+          id: '0123456789',
+          firstName: 'Jessica',
+          lastName: 'Brown',
+        },
       }]);
-      console.log(tempCredentials);
     };
+    */
 
     fetchNotifications();
-    fetchCredentials();
+    // fetchCredentials();
   }, []);
 
   return (
-    <Tab.Navigator
+      <Tab.Navigator
       initialRouteName="Home"
       screenOptions={({ navigation }) => ({
         ...headerOptions(theme, navigation),
       })}
       backBehavior="history"
     >
-      <Tab.Screen
-        name="Home"
-        options={{
-          tabBarIcon: renderIconByName('home'),
-          headerShown: false,
-        }}
-      >
-        {() => <HomeStack credentials={credentials} notifications={notifications} />}
-      </Tab.Screen>
-      <Tab.Screen
-        name="Request Credentials"
-        component={RequestCredentialScreen}
-        options={{
-          tabBarIcon: renderIconByName('card-plus'),
-        }}
-      />
-      <Tab.Screen
-        name="WalletStack"
-        options={{
-          tabBarIcon: renderIconByName('wallet'),
-          headerShown: false,
-        }}
-      >
-        {() => <WalletStack credentials={credentials} />}
-      </Tab.Screen>
-      <Tab.Screen
-        name="Notifications"
-        options={{
-          tabBarIcon: renderIconByName('bell'),
-          headerRight: SearchButton(),
-        }}
-      >
-        {() => <NotificationsScreen notifications={notifications} />}
-      </Tab.Screen>
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: renderIconByName('cog'),
-        }}
-      />
+        <Tab.Screen
+          name="Home"
+          options={{
+            tabBarIcon: renderIconByName('home'),
+            headerShown: false,
+          }}
+        >
+          {() => <HomeStack notifications={notifications} />}
+        </Tab.Screen>
+        <Tab.Screen
+          name="Request Credentials"
+          component={RequestCredentialScreen}
+          options={{
+            tabBarIcon: renderIconByName('card-plus'),
+          }}
+        />
+        <Tab.Screen
+          name="WalletStack"
+          component={WalletStack}
+          options={{
+            tabBarIcon: renderIconByName('wallet'),
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen
+          name="Notifications"
+          options={{
+            tabBarIcon: renderIconByName('bell'),
+            headerRight: SearchButton(),
+          }}
+        >
+          {() => <NotificationsScreen notifications={notifications} />}
+        </Tab.Screen>
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: renderIconByName('cog'),
+          }}
+        />
     </Tab.Navigator>
   );
 };

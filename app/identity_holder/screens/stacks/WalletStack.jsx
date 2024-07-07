@@ -1,17 +1,16 @@
-import PropTypes from 'prop-types';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { ThemeContext } from '../../context/ThemeContext';
-import { credentialPropType, renderIconByName } from '../../scripts/util';
+import { renderIconByName } from '../../scripts/util';
 import WalletScreen from '../WalletScreen';
 import SearchButton from '../../components/SearchButton';
 import CredentialInformation from '../CredentialInformation';
 
 const Stack = createStackNavigator();
 
-const WalletStack = ({ credentials }) => {
+const WalletStack = () => {
   const { theme } = useContext(ThemeContext);
 
   const styles = StyleSheet.create({
@@ -31,9 +30,11 @@ const WalletStack = ({ credentials }) => {
     <Stack.Navigator
       screenOptions={styles.header}
       cardStyle
+      initialRouteName="Wallet"
     >
       <Stack.Screen
         name="Wallet"
+        component={WalletScreen}
         options={({ navigation }) => ({
           headerShown: true,
           tabBarStyle: '#F1F2EC',
@@ -48,32 +49,25 @@ const WalletStack = ({ credentials }) => {
           }),
           headerRight: SearchButton(),
         })}
-      >
-        {() => <WalletScreen credentials={credentials} />}
-      </Stack.Screen>
+      />
       <Stack.Screen
         name="CredentialInformation"
         component={CredentialInformation}
-        options={({ route, navigation }) => ({
+        options={({ navigation }) => ({
           headerShown: true,
           headerStyle: styles.header,
           headerShadowVisible: false,
           headerTitleAlign: 'center',
           headerTitleStyle: styles.text,
-          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
+          headerLeft: renderIconByName('arrow-left', () => navigation.navigate('WalletStack', { screen: 'Wallet' }), {
             paddingTop: 25,
             size: 30,
             color: theme.text,
           }),
-          title: route.params?.credential?.cred?.credName || 'Credential Information',
         })}
       />
     </Stack.Navigator>
   );
-};
-
-WalletStack.propTypes = {
-  credentials: PropTypes.arrayOf(credentialPropType),
 };
 
 export default WalletStack;

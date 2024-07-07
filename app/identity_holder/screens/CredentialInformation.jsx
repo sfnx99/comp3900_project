@@ -1,25 +1,39 @@
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext, useLayoutEffect } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../context/ThemeContext';
-import { credentialPropType } from '../scripts/util';
+import { credentialPropType, formatCamelCase, renderIconByName } from '../scripts/util';
+import TextButton from '../components/TextButton';
+import { CredentialsContext } from '../context/CredentialsContext';
 
-const CredentialInformation = ({ route }) => {
+const CredentialInformation = ({ route, navigation }) => {
   const { credential } = route.params;
+  const { toggleFavourite } = useContext(CredentialsContext);
   const { theme } = useContext(ThemeContext);
 
-  const credentialDetails = credential.cred;
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: formatCamelCase(credential.type),
+      headerRight: renderIconByName('dots-vertical', () => setModalOpen(true), {
+        paddingTop: 25,
+        size: 30,
+        color: theme.text,
+      }),
+    });
+  }, [navigation, credential.type]);
 
-  // deserialise expiry date - temporary measure
-  const expiryDate = credential.cred.expiryDate ? new Date(credentialDetails.expiryDate) : null;
-  // Function to format field names
-  const formatFieldName = (name) => name.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+  const credentialDetails = credential.credential;
+
+  const handlePress = () => {
+    toggleFavourite(credential.id);
+    credential.favourite = !credential.favourite;
+  };
 
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
+      paddingHorizontal: 20,
       backgroundColor: theme.background,
     },
     text: {
@@ -37,20 +51,26 @@ const CredentialInformation = ({ route }) => {
   });
 
   return (
+    <>
     <SafeAreaView style={styles.container}>
-      <View style={styles.field}>
-        <Text style={[styles.fieldName, styles.text]}>Expiry Date:</Text>
-        <Text style={styles.text}>{expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</Text>
-      </View>
-      {/*Object.entries(credentialDetails)
-        .filter(([key]) => !['fullName', 'expiryDate'].includes(key))
-        .map(([key, item]) => (
-          <View key={key} style={styles.field}>
-            <Text style={[styles.fieldName, styles.text]}>{`${formatFieldName(key)}:`}</Text>
-            <Text style={styles.text}>{item}</Text>
-          </View>
-        ))*/}
+      <ScrollView>
+        {Object.entries(credentialDetails)
+          .filter(([key]) => !['fullName', 'expiryDate'].includes(key))
+          .map(([key, item]) => (
+            <View key={key} style={styles.field}>
+              <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
+              <Text style={styles.text}>{item}</Text>
+            </View>
+        ))}
+        <TextButton
+          text={credential.favourite ? 'Remove from Favourites' : 'Add to Favourites'}
+          onPress={handlePress}
+          style={{ flex: 1 }}
+          inverted={credential.favourite}
+        />
+      </ScrollView>
     </SafeAreaView>
+    </>
   );
 };
 
@@ -58,6 +78,9 @@ CredentialInformation.propTypes = {
   route: PropTypes.shape({
     params: PropTypes.shape(credentialPropType.isRequired),
   }).isRequired,
+  navigation: PropTypes.shape({
+    setOptions: PropTypes.func.isRequired,
+  }),
 };
 
 export default CredentialInformation;

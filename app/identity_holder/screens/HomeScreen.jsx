@@ -10,14 +10,19 @@ import { ScrollView } from 'react-native-gesture-handler';
 import TextButton from '../components/TextButton';
 import CredentialsCarousel from '../components/CredentialsCarousel';
 import ActivityPreview from '../components/ActivityPreview';
-import { credentialPropType, notificationPropType } from '../scripts/util';
+import { notificationPropType } from '../scripts/util';
 import { useTheme } from '../context/ThemeContext';
 import { createHomeScreenStyles } from '../styles/homeScreenStyles';
+import { useContext } from 'react';
+import { CredentialsContext } from '../context/CredentialsContext';
 
-const HomeScreen = ({ credentials, activities }) => {
+const HomeScreen = ({ activities }) => {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { credentials } = useContext(CredentialsContext);
   const styles = createHomeScreenStyles(theme);
+
+  const favoriteCredentials = credentials.filter(cred => cred.favourite);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,7 +32,7 @@ const HomeScreen = ({ credentials, activities }) => {
           <Text style={styles.nameText}>Jessica</Text>
         </View>
         <View style={styles.credentialsSection}>
-          <CredentialsCarousel credentials={credentials} />
+          <CredentialsCarousel credentials={favoriteCredentials} />
           <TextButton
             text="View All Credentials"
             onPress={() => navigation.navigate('Wallet')}
@@ -50,7 +55,6 @@ const HomeScreen = ({ credentials, activities }) => {
 };
 
 HomeScreen.propTypes = {
-  credentials: PropTypes.arrayOf(credentialPropType),
   activities: PropTypes.arrayOf(notificationPropType),
 };
 
