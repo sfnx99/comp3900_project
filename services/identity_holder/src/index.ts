@@ -11,9 +11,9 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { authLogin, authLogout, authRegister } from "./auth";
+import { authLogin, authLogout, authLogoutV2, authRegister } from "./auth";
 import { deleteCredential, deleteCredentialV2, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
-import { getIssuers, getRequest, makeRequest } from './issuer';
+import { getIssuers, getIssuersV2, getRequest, getRequestV2, makeRequest, makeRequestV2 } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
 
@@ -143,6 +143,48 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
 });
 
 // V2 Code:
+
+// Authorization
+
+app.post('/v2/auth/register', (req: Request, res: Response) => {
+    const {email, password} = req.body;
+    const result = authRegister(email, password);
+    res.status(result.status).json(result.body);
+});
+
+app.post('/v2/auth/login', (req: Request, res: Response) => {
+    const {email, password} = req.body;
+    const result = authLogin(email, password);
+    res.status(result.status).json(result.body);
+});
+
+app.post('/v2/auth/logout', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, authLogoutV2, token);
+    res.status(result.status).json(result.body);
+});
+
+// Issuance
+
+app.get("/v2/issuers", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, getIssuersV2);
+    res.status(result.status).json(result.body);
+});
+
+app.get("/v2/issue", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const issuer_id = req.body.issuer_id;
+    const result = await wrapAuthorisation(token, getRequestV2, issuer_id);
+    res.status(result.status).json(result.body);
+});
+
+app.post("/v2/issue", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { issuer_id, auth_code, type, redirect_uri } = req.body;
+    const result = await wrapAuthorisation(token, makeRequestV2, issuer_id, auth_code, type, redirect_uri);
+    res.status(result.status).json(result.body);
+})
 
 // Presentation
 app.get("/v2/present", async (req: Request, res: Response) => {
