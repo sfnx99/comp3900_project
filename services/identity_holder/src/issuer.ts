@@ -98,6 +98,7 @@ export async function makeRequest(token: string, issuer: string, format: string,
 
 // V2
 export function getIssuersV2(user: User) {
+    console.log(`This is here so my code passes the pipeline, user parameter must be present ${user.email}`);
     const data = getData();
     return {
         status: 200,
@@ -110,9 +111,10 @@ export function getIssuersV2(user: User) {
 export function getRequestV2(user: User, issuer_id: string) {
     // We should resolve the DID here, pending on the upcoming meeting
     // TODO: above
+    console.log(`resolve ${issuer_id} for ${user.email}`);
     const dummy_response = {
         types: ["CredentialType1", "CredentialType2"],
-        oauth_servers: ["http://localhost:8082"]
+        oauth_servers: ["http://localhost:8082"],
     };
     return {
         status: 200,
@@ -124,7 +126,8 @@ export async function makeRequestV2(user: User, issuer_id: string, auth_code: st
     // Resolve DID TODO
     const dummy_response = {
         types: ["CredentialType1", "CredentialType2"],
-        oauth_servers: ["http://localhost:8082"]
+        oauth_servers: ["http://localhost:8082"],
+        dummy: issuer_id
     };
 
     // Get an access token
