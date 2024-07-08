@@ -1,23 +1,19 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import PropTypes from 'prop-types';
+import { useContext } from 'react';
+
 import theme from '../styles/colors';
 import ToggleSwitch from './ToggleSwitch';
+import { UserPreferenceContext } from '../context/UserPreferencesContext';
 
-const NotificationButton = ({
-  text,
-  toggle,
-  setToggle,
-}) => {
-  const handleOnPress = () => {
-    setToggle(!toggle);
-  };
+const NotificationButton = ({ text }) => {
+  const { notificationsOn, toggleNotifications } = useContext(UserPreferenceContext);
 
   return (
     <TouchableOpacity
-      onPress={handleOnPress}
+      onPress={toggleNotifications}
     >
       <View
         style={styles.viewOuter}
@@ -35,8 +31,8 @@ const NotificationButton = ({
           </Text>
         </View>
         <ToggleSwitch
-          toggle={toggle}
-          setToggle={handleOnPress}
+          toggle={notificationsOn}
+          setToggle={toggleNotifications}
         />
       </View>
     </TouchableOpacity>
@@ -68,8 +64,6 @@ const styles = StyleSheet.create({
 
 NotificationButton.propTypes = {
   text: PropTypes.string.isRequired,
-  toggle: PropTypes.bool.isRequired,
-  setToggle: PropTypes.func.isRequired,
 };
 
 export default NotificationButton;
