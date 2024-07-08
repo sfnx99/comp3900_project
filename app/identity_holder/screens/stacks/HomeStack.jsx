@@ -4,14 +4,15 @@ import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import ActivityHistory from '../ActivityHistory';
-import { credentialPropType, notificationPropType, renderIconByName } from '../../scripts/util';
+import { notificationPropType, renderIconByName } from '../../scripts/util';
 import HomeScreen from '../HomeScreen';
 import { ThemeContext } from '../../context/ThemeContext';
 
 const Stack = createStackNavigator();
 
-const HomeStack = ({ credentials, notifications }) => {
+const HomeStack = ({ notifications }) => {
   const { theme } = useContext(ThemeContext);
+
   const styles = StyleSheet.create({
     header: {
       backgroundColor: theme.background,
@@ -39,7 +40,7 @@ const HomeStack = ({ credentials, notifications }) => {
           headerTitleAlign: 'center',
         }}
       >
-        {() => <HomeScreen credentials={credentials} activities={notifications} />}
+        {() => <HomeScreen activities={notifications} />}
       </Stack.Screen>
       <Stack.Screen
         name="ActivityHistory"
@@ -64,7 +65,6 @@ const HomeStack = ({ credentials, notifications }) => {
 };
 
 HomeStack.propTypes = {
-  credentials: PropTypes.arrayOf(credentialPropType),
   notifications: PropTypes.arrayOf(notificationPropType),
 };
 

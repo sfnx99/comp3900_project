@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 import { ThemeContext } from '../context/ThemeContext';
+import { logoutUser } from '../scripts/api';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -19,12 +20,17 @@ const SettingsScreen = () => {
   // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {};
 
-  // TODO: Still WIP until authentication is implemented
-  const logout = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
+  const logout = async () => {
+    try {
+      await logoutUser();
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Authentication' }],
+      });
+    } catch (error) {
+      console.error('Could not log out user:', error);
+    }
   };
 
   return (
@@ -98,7 +104,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   view: {
-    // marginTop: -height * 0.04,
     marginHorizontal: 21,
     alignContent: 'center',
   },

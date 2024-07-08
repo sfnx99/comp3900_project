@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import Activity from './Activity';
 import { notificationPropType } from '../scripts/util';
@@ -18,7 +18,7 @@ const ActivityPreview = ({ activities }) => {
     setDisplayed(newDisplayed);
   }, [activities]);
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       {displayed.map((activity) => (
         <Activity key={activity.id} notification={activity} />
       ))}
@@ -29,5 +29,11 @@ const ActivityPreview = ({ activities }) => {
 ActivityPreview.propTypes = {
   activities: PropTypes.arrayOf(notificationPropType).isRequired,
 };
+
+const styles = StyleSheet.create({
+  container: {
+    height: 150,
+  },
+});
 
 export default ActivityPreview;

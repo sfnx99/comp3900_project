@@ -4,17 +4,22 @@ import {
   Text,
   Alert,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import styles from '../styles/loginStyles';
-import CustomButton from '../components/CustomButton'; // Adjust the path as necessary
 import Logo from '../images/logo3.png';
+import TextInputField from '../components/TextInputField';
+import { loginUser } from '../scripts/api';
+import TextButton from '../components/TextButton';
 
 const LoginScreen = () => {
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const navigation = useNavigation();
+  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  const [email, setEmail] = useState('email');
+  const [password, setPassword] = useState('password');
 
   useEffect(() => {
     (async () => {
@@ -40,6 +45,20 @@ const LoginScreen = () => {
     }
   };
 
+  const login = async () => {
+    try {
+      if (!email || !password) {
+        Alert.alert('Fill in all fields!');
+        return;
+      }
+
+      await loginUser(email, password);
+      navigation.replace('MainApp');
+    } catch (error) {
+      Alert.alert('Could not login:', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -47,18 +66,37 @@ const LoginScreen = () => {
         style={styles.logo}
       />
       <Text style={styles.text}> BW Credentials</Text>
-      {isBiometricSupported && (
-        <CustomButton
-          style={styles.button}
-          title="Login with Face ID"
-          onPress={authenticate}
-        />
-      )}
-      <CustomButton
-        style={styles.button}
-        title="Proceed without login (for computer testing)"
-        onPress={() => navigation.replace('MainApp')}
+
+      <TextInputField
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email address"
       />
+      <TextInputField
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Password"
+        isPassword
+      />
+
+      <View>
+        <TextButton
+          style={styles.button}
+          text="Login"
+          onPress={login}
+        />
+        {isBiometricSupported && (
+          <TextButton
+            style={styles.buttonInverted}
+            text="Login with Face ID"
+            onPress={authenticate}
+            inverted
+          />
+        )}
+        <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerText}>Register</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
