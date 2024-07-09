@@ -1,7 +1,7 @@
-import { getData, toUser, FORMAT_MAP } from './data';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from './interface';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { FORMAT_MAP, getData, toUser } from './data';
+import { User } from './interface';
 export function getIssuers(token: string) {
     const data = getData();
     const user = toUser(token);
@@ -97,8 +97,7 @@ export async function makeRequest(token: string, issuer: string, format: string,
 }
 
 // V2
-export function getIssuersV2(user: User) {
-    console.log(`This is here so my code passes the pipeline, user parameter must be present ${user.email}`);
+export function getIssuersV2(user: User) { // eslint-disable-line @typescript-eslint/no-unused-vars
     const data = getData();
     return {
         status: 200,
