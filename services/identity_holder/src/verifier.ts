@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
 import { FORMAT_MAP, toUser } from './data';
-import { CredentialSubject, Presentation, PresentationSubmission, PresentationSubmissionDescriptor, ResponseV2, SSI_ID, User, VerifierV2RequestReturn } from './interface';
+import { CredentialSubject, Presentation, PresentationSubmission, PresentationSubmissionDescriptor, ResponseV2, SessionData, SSI_ID, VerifierV2RequestReturn } from './interface';
 
 export async function getPresentation(token: string, verifier: string) {
     const user = toUser(token);
@@ -93,11 +93,11 @@ export async function makePresentation(token: string, verifier: string, format: 
 
 
 
-export async function getPresentationV2(user: User, verifier: string): Promise<ResponseV2> {
+export async function getPresentationV2(session_data: SessionData, verifier: string): Promise<ResponseV2> {
     const verifierRequest = verifier + "/v2/request";
     const res: VerifierV2RequestReturn = JSON.parse(await axios.get(verifierRequest));
     const descriptor = res.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
-    const userCred = user.credentialsV2.find(
+    const userCred = session_data.user.credentialsV2.find(
         c => c.type.includes(descriptor.id)
         && descriptor.contraints.fields.every(
             f => getRelativeCredentialValue(f.path, c.credentialSubject) !== undefined)
@@ -121,9 +121,9 @@ export async function getPresentationV2(user: User, verifier: string): Promise<R
     }
 }
 
-export async function postPresentationV2(user: User, verifier: string, credential_id: SSI_ID): Promise<ResponseV2> {
+export async function postPresentationV2(session_data: SessionData, verifier: string, credential_id: SSI_ID): Promise<ResponseV2> {
     const verifierPresent = verifier + "/v2/present";
-    const verifiable_credential = user.credentialsV2[0] //TODO: In sprint 3, make this support multiple credentials.
+    const verifiable_credential = session_data.user.credentialsV2[0] //TODO: In sprint 3, make this support multiple credentials.
     if (verifiable_credential === undefined) {
         return {
             status: HttpStatusCode.BadRequest,
