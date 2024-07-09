@@ -58,7 +58,7 @@ export function authLoginV2(email: string, password: string): ResponseV2 {
     const session_data: SessionData = {
         session_id: session,
         user: associated_user,
-        active_presentation: undefined
+        active_presentation_request: undefined
     }
     data.sessions.push(session_data);
     setData(data);
