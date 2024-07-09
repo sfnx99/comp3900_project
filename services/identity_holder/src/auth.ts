@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { SALT_ROUNDS, getData, setData, toUser } from './data';
-import { ResponseV2, User } from './interface';
+import { SALT_ROUNDS, getData, setData } from './data';
+import { ResponseV2, SessionData } from './interface';
 
-export function authRegister(email: string, password: string) : ResponseV2 {
+export function authRegisterV2(email: string, password: string) : ResponseV2 {
     const data = getData();
 
     // Check email already exists
@@ -20,16 +20,16 @@ export function authRegister(email: string, password: string) : ResponseV2 {
     const hash = bcrypt.hashSync(password, SALT_ROUNDS);
 
     // Store in memory and generate session
-    const session = uuidv4();
     data.users.push({
         email: email,
         hash: hash,
         credentials: [],
-        credentialsV2: [],
-        sessions: [session]
+        credentialsV2: []
     });
     setData(data);
 
+    // Login to new account
+    const session = authLoginV2(email, password).body.token
     return {
         status: 200,
         body: {
@@ -37,23 +37,14 @@ export function authRegister(email: string, password: string) : ResponseV2 {
         }
     };
 }
+// V2
 
-export function authLogin(email: string, password: string) { 
-
+export function authLoginV2(email: string, password: string): ResponseV2 { 
     const data = getData();
-    let invalidFlag = false;
-    // Check email exists
-    if (!data.users.map(e => e.email).includes(email)) {
-        invalidFlag = true;
-    } else {
-        // Check password correct
-        if (!bcrypt.compareSync(password, data.users.find(e => e.email === email)!.hash)) {
-            invalidFlag = true
-        }
-    }
-
+    const associated_user = data.users.find(e => e.email === email)
+    const password_correct = bcrypt.compareSync(password, associated_user!.hash)
     // Something went wrong
-    if (invalidFlag) {
+    if (associated_user === undefined || !password_correct) {
         return {
             status: 401,
             body: {
@@ -64,7 +55,12 @@ export function authLogin(email: string, password: string) {
 
     // Log in and generate session
     const session = uuidv4();
-    data.users.find(e => e.email === email)?.sessions.push(session);
+    const session_data: SessionData = {
+        session_id: session,
+        user: associated_user,
+        active_presentation: undefined
+    }
+    data.sessions.push(session_data);
     setData(data);
 
     return {
@@ -75,39 +71,11 @@ export function authLogin(email: string, password: string) {
     };
 }
 
-export function authLogout(token: string) {
-    // Find user in question
-    const data = getData();
-    const user = toUser(token);
-
-    // Bad token
-    if (user === undefined) {
-        return {
-            status: 400,
-            body: {
-                error: "Cannot invalidate session; session does not exist"
-            }
-
-        }
-    }
-
+export function authLogoutV2(session_data: SessionData): ResponseV2 {
     // Invalidate session
-    user.sessions = user.sessions.filter(e => e != token);
-    setData(data);
-
-    return {
-        status: 200,
-        body: {}
-    }
-}
-
-// V2
-
-export function authLogoutV2(user: User, token: string|undefined) {
-    // Invalidate session
-    if (token !== undefined) {
-        user.sessions = user.sessions.filter(e => e != token);
-    }
+    const data = getData()
+    data.sessions = data.sessions.filter(s => s !== session_data)
+    setData(data)
     return {
         status: 200,
         body: {}

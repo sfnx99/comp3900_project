@@ -15,12 +15,12 @@ export interface User {
     hash: string,
     credentials: Credential[]
     credentialsV2: CredentialV2[]
-    sessions: string[]
 }
 
 export interface Data {
     users: User[],
-    issuers: string[]
+    issuers: string[],
+    sessions: SessionData[]
 }
 
 export interface ResponseV2 {
@@ -91,4 +91,11 @@ interface CredentialProof {
     verificationMethod: string,
     proofPurpose: string,
     proofValue: string
+}
+
+// V2: Session Data
+export type SessionData = {
+    session_id: string,
+    user: User
+    active_presentation: SSI_ID | undefined
 }

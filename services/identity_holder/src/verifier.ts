@@ -147,8 +147,8 @@ export async function postPresentationV2(user: User, verifier: string, credentia
         })
     }
     const presentation_submission: PresentationSubmission = {
-        id: credential_id,
-        definition_id: '', //not sure how i would even get this, considering the spec.
+        id: '', //TODO
+        definition_id: credential_id,
         descriptor_map: descriptor_map
     }
     const verifierData = {
