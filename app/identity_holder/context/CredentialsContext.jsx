@@ -1,4 +1,9 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import { getCredential, getCredentials } from '../scripts/api';
 import { getValueFor, save } from '../scripts/util';
@@ -12,27 +17,30 @@ const CredentialsProvider = ({ children }) => {
    * Fetches all the credentials and formats them with the
    * id and favourite fields.
    */
-  const fetchCredentials = async () => {
+  const fetchCredentials = async (localCredentials) => {
     const tempCredentials = [];
     const credentialIds = await getCredentials();
 
-    const credentialPromises = credentialIds.map(async (id) => {
-      try {
-        const credential = await getCredential(id);
-        tempCredentials.push({
-          id,
-          favourite: false,
-          credential,
-        });
-      } catch (error) {
-        console.error(error.message);
-      }
-    });
+    const localCredentialIds = localCredentials.map((cred) => cred.id);
+
+    const credentialPromises = credentialIds
+      .filter((id) => !localCredentialIds.includes(id))
+      .map(async (id) => {
+        try {
+          const credential = await getCredential(id);
+          tempCredentials.push({
+            id,
+            favourite: false,
+            ...credential,
+          });
+        } catch (error) {
+          console.error(error.message);
+        }
+      });
 
     await Promise.all(credentialPromises);
-    setCredentials(tempCredentials);
 
-    return credentials;
+    return tempCredentials;
   };
 
   /**
@@ -40,9 +48,11 @@ const CredentialsProvider = ({ children }) => {
    * @param {string} id - the id of the credential (obtained by credential.id).
    */
   const toggleFavourite = (id) => {
-    setCredentials(credentials.map((cred) => (
+    const newCredentials = credentials.map((cred) => (
       cred.id === id ? { ...cred, favourite: !cred.favourite } : cred
-    )));
+    ));
+    setCredentials(newCredentials);
+    saveCredentialsLocally(newCredentials);
   };
 
   // TODO: Add delete function + API call here
@@ -75,14 +85,14 @@ const CredentialsProvider = ({ children }) => {
 
   useEffect(() => {
     const loadCredentials = async () => {
-      const [apiCredentials, localCredentials] = await Promise.all([
-        fetchCredentials(),
-        loadLocalCredentials(),
-      ]);
+      // await save('credentials', ''); // TODO: Remove - placed here to clear the credentials
+      const localCredentials = await loadLocalCredentials();
+      const apiCredentials = await fetchCredentials(localCredentials);
 
       const allCredentials = [...localCredentials, ...apiCredentials];
+
       setCredentials(allCredentials);
-      // saveCredentialsLocally(allCredentials);
+      saveCredentialsLocally(allCredentials);
     };
 
     loadCredentials();

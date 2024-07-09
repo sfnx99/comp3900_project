@@ -66,7 +66,7 @@ export const formatCamelCase = (str) => {
 export const credentialPropType = PropTypes.exact({
   id: PropTypes.string.isRequired,
   issuer: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  type: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   favourite: PropTypes.bool,
   cryptosuite: PropTypes.string.isRequired,
   credential: PropTypes.shape({

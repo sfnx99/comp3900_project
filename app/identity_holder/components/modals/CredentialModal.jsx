@@ -9,7 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const CredentialModal = ({ modalVisible, handleModalClose }) => (
   <Modal

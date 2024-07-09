@@ -10,13 +10,13 @@ const WalletScreen = () => {
     <ScrollView style={styles.container}>
       {credentials.map((credential) => (
         <CredentialCard
-          key={credential.id}
+          key={credential.credential.id}
           credential={credential}
         />
       ))}
     </ScrollView>
   );
-}
+};
 
 const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
