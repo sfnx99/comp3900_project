@@ -106,7 +106,7 @@ export function authLogout(token: string) {
 export function authLogoutV2(user: User, token: string|undefined) {
     // Invalidate session
     if (token !== undefined) {
-        user.sessions = user.sessions.filter(e => e != token);
+        user.sessions = user.sessions.filter(e => e != token.slice(7));
     }
     return {
         status: 200,

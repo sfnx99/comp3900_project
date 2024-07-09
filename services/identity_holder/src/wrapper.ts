@@ -27,6 +27,7 @@ export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation
             }
         }
     }
+    token = token.slice(7); // Cut off "Bearer "
     const user = toUser(token);
     if (user === undefined) {
         return {
