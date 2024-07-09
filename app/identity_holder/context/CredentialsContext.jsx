@@ -8,65 +8,31 @@ const CredentialsContext = createContext();
 const CredentialsProvider = ({ children }) => {
   const [credentials, setCredentials] = useState([]);
 
-  // TODO: Uncomment API functions when v2 is implemented.
+  /**
+   * Fetches all the credentials and formats them with the
+   * id and favourite fields.
+   */
   const fetchCredentials = async () => {
-    /*
     const tempCredentials = [];
     const credentialIds = await getCredentials();
 
     const credentialPromises = credentialIds.map(async (id) => {
       try {
         const credential = await getCredential(id);
-        tempCredentials.push(credential);
+        tempCredentials.push({
+          id,
+          favourite: false,
+          credential,
+        });
       } catch (error) {
         console.error(error.message);
       }
     });
 
     await Promise.all(credentialPromises);
-
-    // Add credential_id and favourite: false here
     setCredentials(tempCredentials);
-    setCredentials([{
-      id: 'id',
-      favourite: false,
-      issuer: 'issue',
-      type: 'DriverLicenceCredential',
-      cryptosuite: 'string',
-      credential: {
-        id: '0123456789',
-        firstName: 'Jessica',
-        lastName: 'Brown',
-      },
-    }]);
-    */
 
-    return [
-      {
-        id: '1',
-        favourite: false,
-        type: 'NSWDriverLicense',
-        issuer: 'String',
-        cryptosuite: 'string',
-        credential: {
-          id: 'a1234',
-          firstName: 'Jessica',
-          lastName: 'Brown'
-        }
-      },
-      {
-        id: '2',
-        favourite: false,
-        type: 'BoatingLicense',
-        issuer: 'String',
-        cryptosuite: 'string',
-        credential: {
-          id: 'b1234',
-          firstName: 'Jessica',
-          lastName: 'Brown'
-        }
-      },
-    ];
+    return credentials;
   };
 
   /**
