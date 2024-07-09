@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useContext } from 'react';
 
 import TextButton from '../components/TextButton';
 import CredentialsCarousel from '../components/CredentialsCarousel';
@@ -13,23 +14,24 @@ import ActivityPreview from '../components/ActivityPreview';
 import { notificationPropType } from '../scripts/util';
 import { useTheme } from '../context/ThemeContext';
 import { createHomeScreenStyles } from '../styles/homeScreenStyles';
-import { useContext } from 'react';
 import { CredentialsContext } from '../context/CredentialsContext';
+import { UserPreferenceContext } from '../context/UserPreferencesContext';
 
 const HomeScreen = ({ activities }) => {
   const navigation = useNavigation();
   const theme = useTheme();
   const { credentials } = useContext(CredentialsContext);
+  const { displayName } = useContext(UserPreferenceContext);
   const styles = createHomeScreenStyles(theme);
 
-  const favoriteCredentials = credentials.filter(cred => cred.favourite);
+  const favoriteCredentials = credentials.filter((cred) => cred.favourite);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStylestyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome back,</Text>
-          <Text style={styles.nameText}>Jessica</Text>
+          <Text style={styles.nameText}>{displayName}</Text>
         </View>
         <View style={styles.credentialsSection}>
           <CredentialsCarousel credentials={favoriteCredentials} />

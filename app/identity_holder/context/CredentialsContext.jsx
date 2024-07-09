@@ -1,4 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { getCredential, getCredentials } from '../scripts/api';
 import { getValueFor, save } from '../scripts/util';
 
@@ -87,24 +88,24 @@ const CredentialsProvider = ({ children }) => {
   const loadLocalCredentials = async () => {
     try {
       const loadedCredentials = await getValueFor('credentials');
-      return loadedCredentials ? JSON.parse(localStorage) : [];
+      return loadedCredentials ? JSON.parse(loadedCredentials) : [];
     } catch (error) {
       console.error('Could not load local credentials:', error);
       return [];
     }
-  }
+  };
 
   /**
    * Saves credentials locally to the device.
    * @param {Array} credentials - the updated array of credentials.
    */
-  const saveCredentialsLocally = async (credentials) => {
+  const saveCredentialsLocally = async (newCredentials) => {
     try {
-      await save('credentials', JSON.stringify(credentials));
+      await save('credentials', JSON.stringify(newCredentials));
     } catch (error) {
       console.error('Could not save credentials locally:', error);
     }
-  }
+  };
 
   useEffect(() => {
     const loadCredentials = async () => {
@@ -128,6 +129,10 @@ const CredentialsProvider = ({ children }) => {
       {children}
     </CredentialsContext.Provider>
   );
+};
+
+CredentialsProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export { CredentialsContext, CredentialsProvider };

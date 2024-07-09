@@ -1,13 +1,17 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
+<<<<<<< HEAD
   Share,
   Modal,
   Text, 
   Button, 
   TouchableOpacity,
+=======
+  Alert,
+>>>>>>> 06ba79a832a35330c3db60cce8cf8ffb41bc2569
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -19,7 +23,6 @@ import { logoutUser } from '../scripts/api';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const [toggle, setToggle] = useState(false);
   const { toggleTheme } = useContext(ThemeContext);
   const [modalfirstVisible, setfirstModalVisible] = useState(false);
   const [modalsecondVisible, setsecondModalVisible] = useState(false);
@@ -37,7 +40,7 @@ const SettingsScreen = () => {
         routes: [{ name: 'Authentication' }],
       });
     } catch (error) {
-      console.error('Could not log out user:', error);
+      Alert.alert(`Could not log out user: ${error}`);
     }
   };
 
@@ -67,8 +70,6 @@ const SettingsScreen = () => {
           <NotificationButton
             text="Notifications"
             icon="bell-outline"
-            toggle={toggle}
-            setToggle={() => setToggle(!toggle)}
           />
           <SettingButton
             text="Activity Share Preferences"

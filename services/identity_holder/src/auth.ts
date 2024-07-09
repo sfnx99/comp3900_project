@@ -1,9 +1,9 @@
-import { Response } from './interface';
-import { getData, setData, toUser, SALT_ROUNDS } from './data';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { SALT_ROUNDS, getData, setData, toUser } from './data';
+import { ResponseV2, User } from './interface';
 
-export function authRegister(email: string, password: string) : Response {
+export function authRegister(email: string, password: string) : ResponseV2 {
     const data = getData();
 
     // Check email already exists
@@ -25,6 +25,7 @@ export function authRegister(email: string, password: string) : Response {
         email: email,
         hash: hash,
         credentials: [],
+        credentialsV2: [],
         sessions: [session]
     });
     setData(data);
@@ -94,6 +95,19 @@ export function authLogout(token: string) {
     user.sessions = user.sessions.filter(e => e != token);
     setData(data);
 
+    return {
+        status: 200,
+        body: {}
+    }
+}
+
+// V2
+
+export function authLogoutV2(user: User, token: string|undefined) {
+    // Invalidate session
+    if (token !== undefined) {
+        user.sessions = user.sessions.filter(e => e != token);
+    }
     return {
         status: 200,
         body: {}

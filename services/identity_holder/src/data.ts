@@ -1,6 +1,6 @@
 import { Data, User } from './interface'
 
-let data: Data = {
+export const DEFAULT_DATA: Data = {
     users: [
         {
             email: "email",
@@ -10,12 +10,29 @@ let data: Data = {
                     id: "test",
                     iss: "test",
                     cred: [
-                        {first_name: "test"},
-                        {last_name: "test"},
-                        {dob: "test"}
+                        { first_name: "test" },
+                        { last_name: "test" },
+                        { dob: "test" }
                     ]
                 }
             ],
+            credentialsV2: [{
+                '@context': [],
+                id: 'e8b08949-8369-48d2-9d6f-2a1c2f1d52ec',
+                type: ["VerifiableCredential", "CredentialType1"],
+                issuer: 'did:exampleissuer:12345',
+                credentialSubject: {
+                    "firstName": "John",
+                    "lastName": "Smith"
+                },
+                proof: {
+                    type: '',
+                    cryptosuite: 't11a-bookworms-bbs',
+                    verificationMethod: '',
+                    proofPurpose: '',
+                    proofValue: ''
+                }
+            }],
             sessions: []
         }
     ],
@@ -23,6 +40,8 @@ let data: Data = {
         "http://localhost:8082" // hardcoded
     ]
 }
+
+let data = DEFAULT_DATA
 
 export function setData(newData: Data) {
     data = newData
