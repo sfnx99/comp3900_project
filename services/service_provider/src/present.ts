@@ -16,13 +16,14 @@ function getRequiredAttributes(): string[] {
     return presDesc.input_descriptors[0].contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
-function getGivenAttributes(): string[] {
-    const 
+function getGivenAttributes(pres: Presentation): string[] {
+    const keysArray: string[] = Object.keys(pres.verifiableCredential[0].credentialSubject);
+    return keysArray;
 }
 
 function checkCredentialFields(presSub: PresentationSubmission, pres: Presentation): Boolean {
     const requiredCredentialFields = getRequiredAttributes();
-    const givenCredentialFields = getGivenAttributes();
+    const givenCredentialFields = getGivenAttributes(pres);
 
     let checkSubset = (parentArray: string[], subsetArray: string[]) => {
         return subsetArray.every((el) => {
@@ -50,7 +51,12 @@ async function obtainKey(pres: Presentation) {
     }
 }
 
-function constructChunks(): disclosedMessages {
+function constructChunks(pres: Presentation, presSub: PresentationSubmission): disclosedMessages {
+    const initialChunk = JSON.stringify({
+        "@context": pres['@context'],
+        "type": pres.type,
+    })
+
     return {
         disclosedMessages: '',
         disclosedMessageIndexes: ''
@@ -82,7 +88,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
 
     const publicKey = obtainKey(pres);
     const proof = '';
-    if (!validateProof(await publicKey, proof, constructChunks())) {
+    if (!validateProof(await publicKey, proof, constructChunks(pres, presSub))) {
         return {
             status: 400,
             body: {

@@ -35,9 +35,9 @@ app.get("/v2/request", (req: Request, res: Response) => {
     res.status(result.status).json(result.body);
 });
 
-app.post("/v2/present", (req: Request, res: Response) => {
+app.post("/v2/present", async (req: Request, res: Response) => {
     const { pres_sub, pres, state } = req.body;
     const result = presentSubmission(pres_sub, pres, state);
-    res.status(result.status).json(result.body);
+    res.status((await result).status).json((await result).body);
 });
 

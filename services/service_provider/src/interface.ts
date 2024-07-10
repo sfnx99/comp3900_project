@@ -1,5 +1,4 @@
-import { HttpStatusCode } from "axios";
-import { ListenOptions } from "net";
+import { HttpStatusCode } from "axios"
 
 export type Attribute = {
     [attr: string] : string,
@@ -16,12 +15,12 @@ export interface User {
     hash: string,
     credentials: Credential[]
     credentialsV2: CredentialV2[]
-    sessions: string[]
 }
 
 export interface Data {
     users: User[],
-    issuers: string[]
+    issuers: string[],
+    sessions: SessionData[]
 }
 
 export interface ResponseV2 {
@@ -33,7 +32,7 @@ export interface ResponseV2 {
 export type SSI_ID = string // e.g. ef54dea5-4b6c-4447-b46f-4600edbc93a8
 type CredentialType = string // e.g. Somethng like "VerifiableCredential" or "DriversLicense"
 
-export interface VerifierV2RequestReturn {
+export interface VerifierV2Request {
     presentation_definition: PresentationDefinition,
     state: string
 }
@@ -43,8 +42,8 @@ export interface PresentationDefinition {
     input_descriptors: PresentationDescriptor[]
 }
 
-export interface PresentationDescriptor {
-    id: CredentialType, // Should be type, but spec requires this to be id :(
+interface PresentationDescriptor {
+    id: CredentialType,
     contraints: {
         fields: DescriptorField[]
     }
@@ -55,8 +54,8 @@ interface DescriptorField {
 }
 
 export interface PresentationSubmission {
-    id: SSI_ID,
-    definition_id: SSI_ID,
+    id: SSI_ID, // Create specifically for this presentation
+    definition_id: SSI_ID, // The ID of the presentation you are creating a submission for.
     descriptor_map: PresentationSubmissionDescriptor[]
 }
 
@@ -69,7 +68,7 @@ export interface PresentationSubmissionDescriptor {
 export interface Presentation {
     "@context": string[],
     type: CredentialType[],
-    verifiableCredential: CredentialV2[]
+    verifiableCredential: VerifiableCredentialV2[]
 }
 
 // V2 Credentials
@@ -86,12 +85,27 @@ export interface CredentialSubject {
     [attr: string] : string
 }
 
-interface CredentialProof {
+export interface CredentialProof {
     type: string,
     cryptosuite: string,
     verificationMethod: string,
     proofPurpose: string,
     proofValue: string
+}
+
+export interface VerifiableCredentialProof extends Omit<CredentialProof,"proofValue"> {
+    proofValue: string[]
+}
+
+export interface VerifiableCredentialV2 extends Omit<CredentialV2,"proof"> {
+    proof: VerifiableCredentialProof
+}
+
+// V2: Session Data
+export type SessionData = {
+    session_id: string,
+    user: User
+    active_presentation_request: PresentationDefinition | undefined
 }
 
 export interface disclosedMessages {
