@@ -5,6 +5,7 @@ const theme = {
   background: '#F6F8FA',
   accent: '#000000',
   nav: '#F1F2EC',
+  white: '#FFFFFF',
 };
 
 export default theme;
