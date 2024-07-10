@@ -41,12 +41,12 @@ const RegisterScreen = () => {
     }
 
     if (!isEmailValid(email)) {
-      Alert.alert('Invalid email address.');
+      Alert.alert('Invalid email address. ');
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert('Passwords don\'t match.');
+     if (password !== confirmPassword) {
+      Alert.alert('The Passwords don\'t match.');
       return;
     }
 
