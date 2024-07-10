@@ -1,4 +1,5 @@
-import { HttpStatusCode } from "axios"
+import { HttpStatusCode } from "axios";
+import { ListenOptions } from "net";
 
 export type Attribute = {
     [attr: string] : string,
@@ -42,7 +43,7 @@ export interface PresentationDefinition {
     input_descriptors: PresentationDescriptor[]
 }
 
-interface PresentationDescriptor {
+export interface PresentationDescriptor {
     id: CredentialType, // Should be type, but spec requires this to be id :(
     contraints: {
         fields: DescriptorField[]
@@ -91,4 +92,9 @@ interface CredentialProof {
     verificationMethod: string,
     proofPurpose: string,
     proofValue: string
+}
+
+export interface disclosedMessages {
+    disclosedMessages: string[],
+    disclosedMessageIndexes: number[]
 }

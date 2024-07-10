@@ -15,9 +15,6 @@ import express, { Express, Request, Response } from "express";
 import { requestMetadata } from "./request";
 import { presentSubmission } from "./present";
 
-
-import * as fs from "fs";
-
 dotenv.config();
 
 const app: Express = express();
@@ -33,14 +30,14 @@ app.listen(port, () => {
     console.log(`[server]: Service Provider is running at http://localhost:${port}`);
 });
 
-app.post("/v2/request", (req: Request, res: Response) => {
+app.get("/v2/request", (req: Request, res: Response) => {
     const result = requestMetadata();
     res.status(result.status).json(result.body);
 });
 
 app.post("/v2/present", (req: Request, res: Response) => {
-    const { pres_def, state } = req.body;
-    const result = presentSubmission(pres_def, state);
+    const { pres_sub, pres, state } = req.body;
+    const result = presentSubmission(pres_sub, pres, state);
     res.status(result.status).json(result.body);
 });
 
