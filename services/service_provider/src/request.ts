@@ -1,5 +1,7 @@
-export function requestMetadata() {
-    fs.readFile("./metadata.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
+import { v4 as uuidv4 } from 'uuid';
+
+export function requestMetadata(): PresentationDefinition {
+    fs.readFile("./presentationDefinitions.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
         if (err) {
             return {
                 status: 500
@@ -12,9 +14,13 @@ export function requestMetadata() {
 
         try {
             const jsonObject = JSON.parse(data.toString());
+            const session = uuidv4();
             return {
                 status: 200
-                body: jsonObject
+                body: {
+                    "id": session,
+                    "input_descriptors": jsonObject[0]
+                }
             }
         } catch (parseErr) {
             return {

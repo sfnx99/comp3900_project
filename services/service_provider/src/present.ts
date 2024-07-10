@@ -1,3 +1,5 @@
+import { resolve } from "@decentralized-identity/ion-tools";
+
 export function presentSubmission(pres_def: PresentationDefinition, state: String) {
     fs.readFile("./trusted.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
         if (err) {
@@ -37,4 +39,27 @@ export function presentSubmission(pres_def: PresentationDefinition, state: Strin
             }
         }
     });
+}
+
+function checkDescriptor() {
+    /* 
+        Check decriptor map in presentation submission, obtain presentation definition.
+        Check required fields in presentation definition match/exceed credential subject list
+        In veriableCredential 
+    */
+}
+
+function obtainKey() {
+    // obtain uri from verifiableCredential[issuer]
+    // derefence DIDDoc with uri.
+    // let doc = await resolve()
+    // Take public key out of doc and return.
+}
+
+function constructChunks() {
+
+}
+
+function validateProof() {
+
 }
