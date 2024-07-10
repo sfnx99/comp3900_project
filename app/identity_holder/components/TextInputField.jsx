@@ -51,6 +51,7 @@ const TextInputField = ({
         style={styles.input}
         secureTextEntry={isPassword}
         placeholder={placeholder}
+        placeholderTextColor="#000000" 
       />
     </View>
   );

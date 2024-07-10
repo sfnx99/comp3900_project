@@ -18,8 +18,8 @@ import TextButton from '../components/TextButton';
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  const [email, setEmail] = useState('email');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     (async () => {

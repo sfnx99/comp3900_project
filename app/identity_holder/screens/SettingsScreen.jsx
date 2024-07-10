@@ -1,17 +1,13 @@
-import { useContext } from 'react';
+import { useState, useContext } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-<<<<<<< HEAD
   Share,
   Modal,
   Text, 
   Button, 
   TouchableOpacity,
-=======
-  Alert,
->>>>>>> 06ba79a832a35330c3db60cce8cf8ffb41bc2569
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 

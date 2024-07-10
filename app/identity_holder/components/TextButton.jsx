@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, Dimensions } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PropTypes from 'prop-types';
 
@@ -11,14 +11,19 @@ const TextButton = ({
   style,
 }) => {
   const backgroundColour = inverted ? theme.background : theme.primary;
+  const { width } = Dimensions.get('window');
 
   const styles = StyleSheet.create({
     view: {
       padding: 10,
+      alignContent: 'center',
       backgroundColor: backgroundColour,
       borderColor: theme.primary,
       borderWidth: 1,
       borderRadius: 10,
+      width: width*0.9,
+      justifyContent: 'center',
+      
     },
     text: {
       color: theme.text,

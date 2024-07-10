@@ -29,14 +29,29 @@ const RegisterScreen = () => {
     setConfirmPassword('');
   };
 
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const submitForm = async () => {
-    // Check all fields filled and password matches
     if (!displayName || !email || !password || !confirmPassword) {
       Alert.alert('Please fill in all fields.');
       return;
     }
+
+    if (!isEmailValid(email)) {
+      Alert.alert('Invalid email address.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       Alert.alert('Passwords don\'t match.');
+      return;
+    }
+
+    if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      Alert.alert('Password must be at least 8 characters long and include a number and special character.');
       return;
     }
 
@@ -52,12 +67,16 @@ const RegisterScreen = () => {
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: theme.background,
-      marginTop: 20,
+      backgroundColor: '#FFFFFF',
+      paddingTop: 20,
     },
     inputContainer: {
       marginHorizontal: 24,
     },
+    buttonContainer: {
+      alignItems: 'center', 
+      marginTop: 10,
+    }
   });
 
   return (
@@ -87,10 +106,12 @@ const RegisterScreen = () => {
         />
       </View>
 
+    <View style = {styles.buttonContainer}>
       <TextButton
         text="Submit"
         onPress={submitForm}
       />
+      </View> 
     </View>
   );
 };
