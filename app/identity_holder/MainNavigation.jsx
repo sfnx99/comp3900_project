@@ -15,6 +15,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import SearchButton from './components/SearchButton';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import { CredentialsProvider } from './context/CredentialsContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -80,13 +81,14 @@ const MainApp = () => {
   }, []);
 
   return (
+    <CredentialsProvider>
       <Tab.Navigator
-      initialRouteName="Home"
-      screenOptions={({ navigation }) => ({
-        ...headerOptions(theme, navigation),
-      })}
-      backBehavior="history"
-    >
+        initialRouteName="Home"
+        screenOptions={({ navigation }) => ({
+          ...headerOptions(theme, navigation),
+        })}
+        backBehavior="history"
+      >
         <Tab.Screen
           name="Home"
           options={{
@@ -127,7 +129,8 @@ const MainApp = () => {
             tabBarIcon: renderIconByName('cog'),
           }}
         />
-    </Tab.Navigator>
+      </Tab.Navigator>
+    </CredentialsProvider>
   );
 };
 

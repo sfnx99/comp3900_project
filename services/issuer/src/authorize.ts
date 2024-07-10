@@ -1,7 +1,10 @@
 
-let tokens = new Set<string>();
+const tokens = new Set<string>();
 
 export function authorize(email: string, password: string): { access_token: string } {
+    if (email === undefined || password === undefined) {
+        // Do nothing.
+    }
     const access_token = (Math.random() + 1).toString(36).substring(2);
     tokens.add(access_token);
     return { access_token };
