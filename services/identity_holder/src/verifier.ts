@@ -1,9 +1,11 @@
+// @ts-ignore
 import * as bbs from '@digitalbazaar/bbs-signatures';
+// @ts-ignore
+import * as did from '@decentralized-identity/ion-tools';
 import axios, { HttpStatusCode } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { FORMAT_MAP, getData, setData, toUser } from './data';
 import { CredentialSubject, CredentialV2, Presentation, PresentationDefinition, PresentationSubmission, PresentationSubmissionDescriptor, ResponseV2, SessionData, SSI_ID, VerifiableCredentialProof, VerifiableCredentialV2, VerifierV2Request } from './interface';
-
 
 
 export async function getPresentation(token: string, verifier: string) {
@@ -248,11 +250,14 @@ function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,
  * @param presentation_request 
  * @returns 
  */
-async function create_verifiable_credential(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialV2> {
+async function create_verifiable_credential(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialV2 | undefined> {
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))    
     const proof = await create_verifiable_credential_proof(credential, presentation_request)
+    if (proof === undefined) {
+        return undefined
+    }
     return {
         '@context': credential['@context'],
         id: credential.id,
@@ -294,23 +299,46 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     })
     const last_chunk_index = non_did_credentialSubject.map(i => i.index).reduce((acc, val) => Math.max(acc, val)) + 1
     const header = new Uint8Array();
-    const issuer_publicKey = dereference_did(credential.proof.verificationMethod)
+    const issuer_publicKey = dereference_DID_to_public_key(credential.proof.verificationMethod)
     const ciphersuite = "BLS12-381-SHA-256"
     const all_chunks = [initial_chunk, ...all_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunks = [initial_chunk, ...filtered_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
-    const verified = await bbs.verifySignature(
-        issuer_publicKey,
-        credential.proof.proofValue,
-        header,
-        ...all_chunks,
-        ciphersuite
+    const filtered_chunk_indexes = [0,...filtered_credentialSubject.map(cs => cs.index).sort((a,b) => a-b), last_chunk_index]
+    const verified = await bbs.verifySignature({
+        publicKey: issuer_publicKey,
+        signature: credential.proof.proofValue,
+        header: header,
+        messages: all_chunks,
+        ciphersuite: ciphersuite
+      }
     )
     if (!verified) {
         return undefined
     }
-    const proof = bbs.bbs.deriveProof(
-        publicKey, signature, header, messages,
-        presentationHeader, disclosedMessageIndexes,
-        ciphersuite: 'BLS12-381-SHA-256'
-    );
+    const proof: string = await bbs.deriveProof({
+        publicKey: issuer_publicKey,
+        signature: credential.proof.proofValue,
+        header: header,
+        messages: filtered_chunks,
+        presentationHeader: header,
+        disclosedMessageIndexes: filtered_chunk_indexes,
+        ciphersuite: ciphersuite
+    });
+    const verifiable_credential_proof: VerifiableCredentialProof = {
+        proofValue: [proof, credential.proof.proofValue],
+        type: credential.proof.type,
+        cryptosuite: credential.proof.cryptosuite,
+        verificationMethod: credential.proof.verificationMethod,
+        proofPurpose: credential.proof.proofPurpose
+    }
+    return verifiable_credential_proof
+}
+
+/**
+ * This function takes in a did_uri, and then returns the public key associated.
+ * @param did_uri The did, ie. "did:issuer:12345" or smth
+ */
+async function dereference_DID_to_public_key(did_uri: string) {
+    const didDoc = await did.resolve(did_uri)
+    return didDoc.didDocument.service[0].serviceEndpoint
 }
