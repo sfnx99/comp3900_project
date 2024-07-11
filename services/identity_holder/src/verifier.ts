@@ -299,7 +299,7 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     })
     const last_chunk_index = non_did_credentialSubject.map(i => i.index).reduce((acc, val) => Math.max(acc, val)) + 1
     const header = new Uint8Array();
-    const issuer_publicKey = dereference_DID_to_public_key(credential.proof.verificationMethod)
+    const issuer_publicKey = await dereference_DID_to_public_key(credential.proof.verificationMethod)
     const ciphersuite = "BLS12-381-SHA-256"
     const all_chunks = [initial_chunk, ...all_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunks = [initial_chunk, ...filtered_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
