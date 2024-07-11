@@ -164,7 +164,10 @@ app.get("/v2/issuers", async (req: Request, res: Response) => {
 
 app.get("/v2/issue", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const issuer_id = req.body.issuer_id;
+    let issuer_id = req.query.issuer_id;
+    if (typeof issuer_id !== "string") {
+        issuer_id = ""
+    }
     const result = await wrapAuthorisation(token, getRequestV2, issuer_id);
     res.status(result.status).json(result.body);
 });
@@ -179,7 +182,10 @@ app.post("/v2/issue", async (req: Request, res: Response) => {
 // Presentation
 app.get("/v2/present", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const { verifier_uri } = req.body;
+    let verifier_uri = req.query.verifier_uri;
+    if (typeof verifier_uri !== "string") {
+        verifier_uri = "";
+    }
     const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
     res.status(result.status).json(result.body);
 });
@@ -200,7 +206,10 @@ app.get("/v2/credentials", async (req: Request, res: Response) => {
 
 app.get("/v2/credential", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const { credential_id } = req.body;
+    let credential_id = req.query.credential_id;
+    if (typeof credential_id !== "string") {
+        credential_id = "";
+    }
     const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
     res.status(result.status).json(result.body);
 });
