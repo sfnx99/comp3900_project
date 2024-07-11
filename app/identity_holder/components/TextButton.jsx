@@ -21,7 +21,7 @@ const TextButton = ({
       borderColor: theme.primary,
       borderWidth: 1,
       borderRadius: 10,
-      width: width*0.9,
+      width: width*0.85,
       justifyContent: 'center',
       
     },

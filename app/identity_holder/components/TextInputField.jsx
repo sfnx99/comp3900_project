@@ -1,13 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   StyleSheet,
+  Dimensions,
   Text,
   TextInput,
   View,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 
+const { width, height } = Dimensions.get('window');
+
 import { ThemeContext } from '../context/ThemeContext';
+import show from '../images/hide.png'; 
+import hide from '../images/show.png'; 
 
 const TextInputField = ({
   label,
@@ -19,9 +26,15 @@ const TextInputField = ({
 }) => {
   const { theme } = useContext(ThemeContext);
 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   const styles = StyleSheet.create({
     container: {
-      width: '95%',
+      width: '97%',
       marginBottom: 20,
       borderRadius: 0,
     },
@@ -31,28 +44,54 @@ const TextInputField = ({
       color: theme.text,
       textAlign,
     },
-    input: {
-      width: '100%',
-      paddingVertical: 10,
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
       borderBottomWidth: 0.2,
       borderColor: '#000000',
-      paddingLeft: 10,
       borderRadius: 10,
       backgroundColor: '#F5FFB9',
+      paddingHorizontal: 10,
+      height: height*0.052 ,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: 10,
+      color: theme.text,
+    },
+    toggleButton: {
+      paddingHorizontal: 10,
+    },
+    eyeIcon: {
+      width: 24,
+      height: 24,
     },
   });
 
   return (
     <View style={styles.container}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        style={styles.input}
-        secureTextEntry={isPassword}
-        placeholder={placeholder}
-        placeholderTextColor="#000000" 
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          style={styles.input}
+          secureTextEntry={isPassword && !isPasswordVisible}
+          placeholder={placeholder}
+          placeholderTextColor="#000000"
+        />
+        {isPassword && (
+          <TouchableOpacity
+            style={styles.toggleButton}
+            onPress={togglePasswordVisibility}
+          >
+            <Image
+              source={isPasswordVisible ? show : hide}
+              style={styles.eyeIcon}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };

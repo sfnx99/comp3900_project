@@ -84,7 +84,7 @@ export const registerUser = async (email, password) => {
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/login`, { email, password });
-    const token = response.data.token;
+    const { token } = response.data;
 
     if (token) {
       setToken(token);
@@ -104,7 +104,7 @@ export const logoutUser = async () => {
     const token = await getToken();
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     });
     removeToken();
@@ -135,7 +135,6 @@ export const getCredentials = async () => {
 
 export const getCredential = async (id) => {
   try {
-    console.log('Credential id: ', id);
     const token = await getToken();
     const response = await axios(`${url}/credential?credential_id=${id}`, {
       headers: {
@@ -143,7 +142,7 @@ export const getCredential = async (id) => {
       },
     });
 
-    return response.data.id;
+    return response.data;
   } catch (error) {
     handleError(error);
     return null;
