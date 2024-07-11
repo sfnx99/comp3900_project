@@ -147,6 +147,6 @@ const TEST_DATA: Data = {
     sessions: [{
         session_id: "aaaaa-aaaa-aaaaaa-aaaaa",
         user: TEST_USER_1,
-        active_presentation: undefined
+        active_presentation_request: undefined
     }]
 }

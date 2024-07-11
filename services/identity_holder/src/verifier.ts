@@ -1,6 +1,6 @@
-// @ts-ignore
+// @ts-expect-error Module does not support typescript.
 import * as bbs from '@digitalbazaar/bbs-signatures';
-// @ts-ignore
+// @ts-expect-error Module does not support typescript.
 import * as did from '@decentralized-identity/ion-tools';
 import axios, { HttpStatusCode } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
@@ -138,7 +138,7 @@ function get_required_attributes(definition: PresentationDefinition): string[] {
 
 export async function postPresentationV2(session_data: SessionData, verifier: string, credential_id: SSI_ID): Promise<ResponseV2> {
     const verifierPresent = verifier + "/v2/present";
-    const credential = session_data.user.credentialsV2[0] //TODO: In sprint 3, make this support multiple credentials.
+    const credential = session_data.user.credentialsV2.find(c => c.id === credential_id) //TODO: In sprint 3, make this support multiple credentials.
     if (credential === undefined) {
         return {
             status: HttpStatusCode.BadRequest,
