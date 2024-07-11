@@ -68,5 +68,6 @@ export function toUser(token: string): User | undefined {
 
 export function toSessionData(token: string): SessionData | undefined {
     const data = getData();
-    return data.sessions.find(s => s.session_id === token)
+    const sliced_token = token.slice(7)
+    return data.sessions.find(s => s.session_id === sliced_token)
 }

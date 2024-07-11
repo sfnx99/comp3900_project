@@ -71,6 +71,7 @@ export function authLoginV2(email: string, password: string): ResponseV2 {
     };
 }
 
+// V2
 export function authLogoutV2(session_data: SessionData): ResponseV2 {
     // Invalidate session
     const data = getData()
