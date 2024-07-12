@@ -6,10 +6,10 @@
             "constraints": {
                 "fields": [
                     {
-                        "path": [
-                            "$.firstName",
-                            "$.lastName"
-                        ]
+                        "path": ["$.firstName"]
+                    },
+                    {
+                        "path": ["$.lastName"]
                     }
                 ]
             }

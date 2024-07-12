@@ -1,7 +1,7 @@
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import { resolve } from '@decentralized-identity/ion-tools';
 import { readDefinitions } from './request';
-import { disclosedMessages, Presentation, PresentationDefinition, PresentationSubmission, ResponseV2 } from './interface';
+import { CredentialSubject, disclosedMessages, Presentation, PresentationDefinition, PresentationSubmission, ResponseV2 } from './interface';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
@@ -16,14 +16,14 @@ function getRequiredAttributes(): string[] {
     return presDesc.input_descriptors[0].contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
-function getGivenAttributes(pres: Presentation): string[] {
-    const keysArray: string[] = Object.keys(pres.verifiableCredential[0].credentialSubject);
+function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
+    const keysArray: string[] = Object.keys(pres.verifiableCredential[vcIndex].credentialSubject);
     return keysArray;
 }
 
-function checkConstraints(pres: Presentation): Boolean {
+function checkConstraints(pres: Presentation, vcIndex: number): Boolean {
     const requiredCredentialFields = getRequiredAttributes();
-    const givenCredentialFields = getGivenAttributes(pres);
+    const givenCredentialFields = getGivenAttributes(pres, vcIndex);
 
     let checkSubset = (parentArray: string[], subsetArray: string[]) => {
         return subsetArray.every((el) => {
@@ -34,9 +34,9 @@ function checkConstraints(pres: Presentation): Boolean {
     return checkSubset(givenCredentialFields, requiredCredentialFields);
 }
 
-async function obtainKey(pres: Presentation) {
+async function obtainKey(pres: Presentation, vcIndex: number) {
     try {
-        const uri = pres.verifiableCredential[0].issuer;
+        const uri = pres.verifiableCredential[vcIndex].issuer;
         let doc = await resolve(uri);
         return doc.didDocument.service[0].serviceEndpoint;
     } catch (error) {
@@ -51,15 +51,50 @@ async function obtainKey(pres: Presentation) {
     }
 }
 
-function constructChunks(pres: Presentation): disclosedMessages {
+function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) {
+    const key_value_pairs = Object.entries(credentialSubject);
+    const result = []
+    for (let index = 0; index < key_value_pairs.length; index++) {
+        const kvp = key_value_pairs[index]
+        const key = kvp[0]
+        if (key === "id") {
+            // Dont allow Verifier to inspect did.
+            continue
+        }
+        result.push({
+            index: index + 1, // BBS is zero-indexed, and index 0 is the header of the payload. Thus, credentialSubject is 1-indexed.
+            key: key,
+            value: kvp[1]
+        })
+    }
+    return result
+}
+
+function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
+    return kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+}
+
+function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages {
+    const vc = pres.verifiableCredential[vcIndex];
+    const filteredCredSubject = credentialSubject_to_indexed_kvp(vc.credentialSubject);
+
     const initialChunk = JSON.stringify({
-        "@context": pres['@context'],
-        "type": pres.type,
+        "@context": vc['@context'],
+        "type": vc.type,
+        "issuer": vc.issuer
     })
 
+    const dataChunks = filteredCredSubject
+        .map(cs => indexed_key_value_pairs_to_object([cs]))
+        .map(obj => JSON.stringify(obj));
+
+    const finalChunk = JSON.stringify(vc.proof)
+
+    const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
+
     return {
-        disclosedMessages: '',
-        disclosedMessageIndexes: pres.verifiableCredential[0].proof.proofValue[0]
+        disclosedMessages: filteredChunks,
+        disclosedMessageIndexes: pres.verifiableCredential[vcIndex].proof.proofValue[0]
     }
 }
 
@@ -120,7 +155,6 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     */
     let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)[0], 10) : null);
     const vcIndex = extractFirstNumber(identifyVC(presSub));
-
     if (vcIndex === null) {
         return {
             status: 400,
@@ -134,7 +168,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Confirm that the returned Credential(s) meet all criteria sent
     //  in the Presentation Definition in the Authorization Request.
     */
-    if (!checkConstraints(pres)) {
+    if (!checkConstraints(pres, vcIndex)) {
         return {
             status: 400,
             body: {
@@ -147,9 +181,9 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  If applicable, perform the checks on the Credential(s) specific to the Credential Format
     //  (i.e., validation of the signature(s) on each VC).
     */
-    const publicKey = obtainKey(pres);
+    const publicKey = obtainKey(pres, vcIndex);
     const proof = pres.verifiableCredential[vcIndex].proof.proofValue[1];
-    if (!validateProof(await publicKey, proof, constructChunks(pres))) {
+    if (!validateProof(await publicKey, proof, constructChunks(pres, vcIndex))) {
         return {
             status: 400,
             body: {

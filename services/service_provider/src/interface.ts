@@ -109,6 +109,6 @@ export type SessionData = {
 }
 
 export interface disclosedMessages {
-    disclosedMessages: string[],
+    disclosedMessages: Uint8Array[],
     disclosedMessageIndexes: string
 }
