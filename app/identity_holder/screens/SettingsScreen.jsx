@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Alert,
   Share,
   Modal,
+  Alert,
   Text,
   TouchableOpacity,
 } from 'react-native';

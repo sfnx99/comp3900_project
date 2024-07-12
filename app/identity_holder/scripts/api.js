@@ -105,7 +105,7 @@ export const logoutUser = async () => {
     const token = await getToken();
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     });
     removeToken();
