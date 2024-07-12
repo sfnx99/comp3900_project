@@ -11,17 +11,28 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { metadata } from "./metadata";
 import { authorize } from "./authorize";
 import { issue } from "./issue";
 // @ts-ignore
 import { anchor, DID, generateKeyPair } from '@decentralized-identity/ion-tools';
 // import * as bbs from '@digitalbazaar/bbs-signatures';
+// import { Command } from 'commander';
+// @ts-ignore
+import ExpressOAuthServer from '@node-oauth/express-oauth-server';
+import { model } from "./model";
+
+// const program = new Command();
+
+// program.requiredOption()
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 8082;
+
+const oauth = new ExpressOAuthServer({
+    model: model,
+});
 
 let did_uri = '';
 
@@ -29,20 +40,19 @@ app.get("/", (req: Request, res: Response) => {
     res.json({ did_uri });
 });
 
-app.get("/v1/metadata", (req: Request, res: Response) => {
-    res.json(metadata());
+app.get("/v2/authorize", oauth.authorize(), (req: Request, res: Response) => {
+    res.send("secret");
 });
 
-app.get("/v1/authorize", (req: Request, res: Response) => {
-    const email = req.query.email as string;
-    const password = req.query.password as string;
-    res.json(authorize(email, password));
+app.post("/v2/token", oauth.authenticate(), (req: Request, res: Response) => {
 });
 
-app.get("/v1/credential/issue", (req: Request, res: Response) => {
-    const access_token = req.get('access_token') as string;
-    res.json(issue(access_token));
+app.post("/v2/credential", oauth.token(), (req: Request, res: Response) => {
 });
+
+app.post("/v2/credential", oauth.token(), (req: Request, res: Response) => {
+});
+
 
 app.listen(port, async () => {
     console.log(`[server]: Issuer Server is running at http://localhost:${port}`);
