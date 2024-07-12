@@ -21,7 +21,7 @@ function getGivenAttributes(pres: Presentation): string[] {
     return keysArray;
 }
 
-function checkCredentialFields(presSub: PresentationSubmission, pres: Presentation): Boolean {
+function checkConstraints(pres: Presentation): Boolean {
     const requiredCredentialFields = getRequiredAttributes();
     const givenCredentialFields = getGivenAttributes(pres);
 
@@ -51,7 +51,7 @@ async function obtainKey(pres: Presentation) {
     }
 }
 
-function constructChunks(pres: Presentation, presSub: PresentationSubmission): disclosedMessages {
+function constructChunks(pres: Presentation): disclosedMessages {
     const initialChunk = JSON.stringify({
         "@context": pres['@context'],
         "type": pres.type,
@@ -59,7 +59,7 @@ function constructChunks(pres: Presentation, presSub: PresentationSubmission): d
 
     return {
         disclosedMessages: '',
-        disclosedMessageIndexes: ''
+        disclosedMessageIndexes: pres.verifiableCredential[0].proof.proofValue[0]
     }
 }
 
@@ -76,19 +76,80 @@ async function validateProof(publicKey: string, proof: string, messages: disclos
     return verified_selective;
 }
 
+function validateDefinition(presSub: PresentationSubmission): Boolean {
+    return presSub.definition_id === readDefinitions().id;
+}
+
+function identifyVC(presSub: PresentationSubmission): string {
+    const presDesc = readDefinitions().input_descriptors;
+    const presMap = presSub.descriptor_map;
+    let commonFormats: string[] = [];
+
+    presMap.forEach(function (descriptor, i) {
+        for (let value of presDesc) {
+            if (value.id === descriptor.id) {
+                commonFormats.push(descriptor.path);
+            }
+        }
+    });
+
+    if (commonFormats[0] === null) {
+        return "invalid";
+    }
+
+    return commonFormats[0];
+}
+
 export async function presentSubmission(presSub: PresentationSubmission, pres: Presentation, state: String): Promise<ResponseV2> {
-    if (!checkCredentialFields(presSub, pres)) {
+    /*
+    //  Validate ID of presentation definition matches the one provided as
+    //  compared to the one given in the presentation submission.
+    */
+    if (!validateDefinition(presSub)) {
         return {
             status: 500,
+            body: {
+                message: "Incorrect presentation definition."
+            }
+        }
+    }
+
+    /*
+    //  Determine the number of VPs returned in the VP Token and identify in which VP which requested VC is included,
+    //  using the Input Descriptor Mapping Object(s) in the Presentation Submission.
+    */
+    let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)[0], 10) : null);
+    const vcIndex = extractFirstNumber(identifyVC(presSub));
+
+    if (vcIndex === null) {
+        return {
+            status: 400,
+            body: {
+                message: "Provided verifiable credential does not match to a credential provided in the Presentation Definition."
+            }
+        }
+    }
+
+    /*
+    //  Confirm that the returned Credential(s) meet all criteria sent
+    //  in the Presentation Definition in the Authorization Request.
+    */
+    if (!checkConstraints(pres)) {
+        return {
+            status: 400,
             body: {
                 message: "Not all required credentials disclosed."
             }
         }
     }
 
+    /*
+    //  If applicable, perform the checks on the Credential(s) specific to the Credential Format
+    //  (i.e., validation of the signature(s) on each VC).
+    */
     const publicKey = obtainKey(pres);
-    const proof = '';
-    if (!validateProof(await publicKey, proof, constructChunks(pres, presSub))) {
+    const proof = pres.verifiableCredential[vcIndex].proof.proofValue[1];
+    if (!validateProof(await publicKey, proof, constructChunks(pres))) {
         return {
             status: 400,
             body: {
@@ -103,4 +164,9 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
             message: "Proof successfully recreated. Credential verified."
         }
     }
+
+    /*
+    //  Perform the checks required by the Verifier's policy,
+    //  based on the set of trust requirements such as trust frameworks it belongs to (i.e., revocation checks), if applicable.
+    */
 }

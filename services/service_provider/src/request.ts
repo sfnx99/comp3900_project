@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PresentationDefinition, PresentationDescriptor, ResponseV2 } from './interface';
+import { PresentationDefinition, ResponseV2 } from './interface';
 import * as fs from 'fs';
 
 export function requestMetadata(): ResponseV2 {

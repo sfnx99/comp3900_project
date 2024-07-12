@@ -1,14 +1,15 @@
 {
+    "id": "wah00!",
     "input_descriptors": [
         {
             "id": "DriversLicenseCredential",
             "constraints": {
                 "fields": [
                     {
-                        "path": ["$.firstName"]
-                    },
-                    {
-                        "path": ["$.lastName"]
+                        "path": [
+                            "$.firstName",
+                            "$.lastName"
+                        ]
                     }
                 ]
             }
