@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useContext, useLayoutEffect } from 'react';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../context/ThemeContext';
@@ -12,9 +12,11 @@ const CredentialInformation = ({ route, navigation }) => {
   const { toggleFavourite } = useContext(CredentialsContext);
   const { theme } = useContext(ThemeContext);
 
+  const [modalOpen, setModalOpen] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: formatCamelCase(credential.type),
+      title: formatCamelCase(credential.type[0]),
       headerRight: renderIconByName('dots-vertical', () => setModalOpen(true), {
         paddingTop: 25,
         size: 30,
@@ -48,10 +50,12 @@ const CredentialInformation = ({ route, navigation }) => {
     fieldName: {
       fontWeight: 'bold',
     },
+    button: {
+      flex: 1,
+    },
   });
 
   return (
-    <>
     <SafeAreaView style={styles.container}>
       <ScrollView>
         {Object.entries(credentialDetails)
@@ -61,16 +65,15 @@ const CredentialInformation = ({ route, navigation }) => {
               <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
               <Text style={styles.text}>{item}</Text>
             </View>
-        ))}
+          ))}
         <TextButton
           text={credential.favourite ? 'Remove from Favourites' : 'Add to Favourites'}
           onPress={handlePress}
-          style={{ flex: 1 }}
+          style={styles.button}
           inverted={credential.favourite}
         />
       </ScrollView>
     </SafeAreaView>
-    </>
   );
 };
 

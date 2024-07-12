@@ -5,6 +5,7 @@ import { save, getValueFor } from './util';
 const port = WALLET_PORT || 7999;
 const url = `${WALLET_HOST || 'http://192.168.1.122'}:${port}/v2`;
 
+
 const getToken = async () => {
   try {
     const token = await getValueFor('token');
@@ -84,7 +85,7 @@ export const registerUser = async (email, password) => {
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/login`, { email, password });
-    const token = response.data.token;
+    const { token } = response.data;
 
     if (token) {
       setToken(token);
@@ -135,7 +136,6 @@ export const getCredentials = async () => {
 
 export const getCredential = async (id) => {
   try {
-    console.log('Credential id: ', id);
     const token = await getToken();
     const response = await axios(`${url}/credential?credential_id=${id}`, {
       headers: {
@@ -143,7 +143,7 @@ export const getCredential = async (id) => {
       },
     });
 
-    return response.data.id;
+    return response.data;
   } catch (error) {
     handleError(error);
     return null;

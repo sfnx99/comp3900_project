@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  Alert,
   Image,
   TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -14,12 +15,14 @@ import Logo from '../images/logo3.png';
 import TextInputField from '../components/TextInputField';
 import { loginUser } from '../scripts/api';
 import TextButton from '../components/TextButton';
+import ErrorMessage from '../components/ErrorMessage';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -38,66 +41,80 @@ const LoginScreen = () => {
       if (result.success) {
         navigation.replace('MainApp');
       } else {
-        Alert.alert('Authentication Failed', 'Please try again.');
+        setError('Authentication Failed, Please try again.');
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      setError(`Error: ${error.message}`);
     }
   };
 
   const login = async () => {
     try {
       if (!email || !password) {
-        Alert.alert('Fill in all fields!');
+        setError('Please fill in all fields!');
         return;
       }
 
       await loginUser(email, password);
       navigation.replace('MainApp');
     } catch (error) {
-      Alert.alert('Could not login:', error.message);
+      setError(`Could not login: ${error.message}`);
     }
   };
 
+  const clearError = () => {
+    setError('');
+  };
+
   return (
-    <View style={styles.container}>
-      <Image
-        source={Logo}
-        style={styles.logo}
-      />
-      <Text style={styles.text}> BW Credentials</Text>
-
-      <TextInputField
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Email address"
-      />
-      <TextInputField
-        value={password}
-        onChangeText={setPassword}
-        placeholder="Password"
-        isPassword
-      />
-
-      <View>
-        <TextButton
-          style={styles.button}
-          text="Login"
-          onPress={login}
+    <TouchableWithoutFeedback onPress={clearError}>
+      <View style={styles.container}>
+        <Image
+          source={Logo}
+          style={styles.logo}
         />
-        {isBiometricSupported && (
+        <Text style={styles.text}>BW Credentials</Text>
+
+        <TextInputField
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email address"
+        />
+        <TextInputField
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          isPassword
+        />
+
+        <Modal
+          visible={!!error}
+          transparent={true}
+          animationType="fade"
+        >
+          <ErrorMessage message={error} onPress={clearError} />
+        </Modal>
+
+        <View>
           <TextButton
-            style={styles.buttonInverted}
-            text="Login with Face ID"
-            onPress={authenticate}
-            inverted
+            style={styles.button}
+            text="Login"
+            onPress={login}
           />
-        )}
-        <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.registerText}>Register</Text>
-        </TouchableOpacity>
+          {isBiometricSupported && (
+            <TextButton
+              style={styles.buttonInverted}
+              text="Login with Face ID"
+              onPress={authenticate}
+              inverted
+            />
+          )}
+          <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
+            <Text style={styles.registerText}>Register</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
