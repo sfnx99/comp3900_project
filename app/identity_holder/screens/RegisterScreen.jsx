@@ -1,9 +1,11 @@
+import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
   Alert,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import { useContext, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import TextInputField from '../components/TextInputField';
@@ -11,6 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 import TextButton from '../components/TextButton';
 import { registerUser } from '../scripts/api';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
+import ErrorMessage from '../components/ErrorMessage';
 
 const RegisterScreen = () => {
   const theme = useTheme();
@@ -21,12 +24,17 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
   const clearForm = () => {
     setDisplayName('');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+  };
+
+  const clearError = () => {
+    setError('');
   };
 
   const isEmailValid = (email) => {
@@ -36,22 +44,22 @@ const RegisterScreen = () => {
 
   const submitForm = async () => {
     if (!displayName || !email || !password || !confirmPassword) {
-      Alert.alert('Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
 
     if (!isEmailValid(email)) {
-      Alert.alert('Invalid email address. ');
+      setError('Invalid email address.');
       return;
     }
 
-     if (password !== confirmPassword) {
-      Alert.alert('The Passwords don\'t match.');
+    if (password !== confirmPassword) {
+      setError('The passwords don\'t match.');
       return;
     }
 
     if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      Alert.alert('Password must be at least 8 characters long and include a number and special character.');
+      setError('Password must be at least 8 characters long and include a number and special character.');
       return;
     }
 
@@ -61,7 +69,7 @@ const RegisterScreen = () => {
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
     } catch (error) {
-      Alert.alert(String(error));
+      setError(`Could not register: ${error.message}`);
     }
   };
 
@@ -69,50 +77,61 @@ const RegisterScreen = () => {
     container: {
       backgroundColor: '#FFFFFF',
       paddingTop: 20,
+      flex: 1,
     },
     inputContainer: {
       marginHorizontal: 24,
     },
     buttonContainer: {
-      alignItems: 'center', 
+      alignItems: 'center',
       marginTop: 10,
-    }
+    },
   });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInputField
-          label="Display Name"
-          value={displayName}
-          onChangeText={setDisplayName}
-        />
-        <TextInputField
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInputField
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          isPassword
-        />
-        <TextInputField
-          label="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          isPassword
-        />
-      </View>
+    <TouchableWithoutFeedback onPress={clearError}>
+      <View style={styles.container}>
+        <View style={styles.inputContainer}>
+          <TextInputField
+            label="Display Name"
+            value={displayName}
+            onChangeText={setDisplayName}
+          />
+          <TextInputField
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInputField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            isPassword
+          />
+          <TextInputField
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            isPassword
+          />
+        </View>
 
-    <View style = {styles.buttonContainer}>
-      <TextButton
-        text="Submit"
-        onPress={submitForm}
-      />
-      </View> 
-    </View>
+        <Modal
+          visible={!!error}
+          transparent={true}
+          animationType="fade"
+        >
+          <ErrorMessage message={error} onPress={clearError} />
+        </Modal>
+
+        <View style={styles.buttonContainer}>
+          <TextButton
+            text="Submit"
+            onPress={submitForm}
+          />
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
