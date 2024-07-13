@@ -3,8 +3,7 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor } from './util';
 
 const port = WALLET_PORT || 7999;
-const url = `${WALLET_HOST || 'http://192.168.1.122'}:${port}/v2`;
-
+const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
   try {
@@ -84,6 +83,7 @@ export const registerUser = async (email, password) => {
  */
 export const loginUser = async (email, password) => {
   try {
+    console.log(`${url}/auth/login`);
     const response = await axios.post(`${url}/auth/login`, { email, password });
     const { token } = response.data;
 

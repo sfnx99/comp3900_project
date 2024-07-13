@@ -4,9 +4,10 @@ import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import ActivityHistory from '../ActivityHistory';
-import { notificationPropType, renderIconByName } from '../../scripts/util';
 import HomeScreen from '../HomeScreen';
+import { notificationPropType, renderIconByName } from '../../scripts/util';
 import { ThemeContext } from '../../context/ThemeContext';
+import PresentationScreen from '../PresentationScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ const HomeStack = ({ notifications }) => {
       fontSize: 20,
     },
   });
+
   return (
     <Stack.Navigator
       screenOptions={styles.header}
@@ -60,6 +62,18 @@ const HomeStack = ({ notifications }) => {
       >
         {() => <ActivityHistory notifications={notifications} />}
       </Stack.Screen>
+      <Stack.Screen
+        name="PresentationScreen"
+        component={PresentationScreen}
+        options={{
+          tabBarIcon: renderIconByName('home'),
+          headerShown: true,
+          headerStyle: styles.header,
+          headerTitleStyle: styles.text,
+          headerTitleAlign: 'center',
+          title: 'Verify',
+        }}
+      />
     </Stack.Navigator>
   );
 };
