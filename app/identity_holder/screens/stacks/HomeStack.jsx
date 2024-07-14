@@ -8,6 +8,7 @@ import HomeScreen from '../HomeScreen';
 import { notificationPropType, renderIconByName } from '../../scripts/util';
 import { ThemeContext } from '../../context/ThemeContext';
 import PresentationScreen from '../PresentationScreen';
+import SelectCredentialScreen from '../SelectCredentialScreen';
 
 const Stack = createStackNavigator();
 
@@ -73,6 +74,24 @@ const HomeStack = ({ notifications }) => {
           headerTitleAlign: 'center',
           title: 'Verify',
         }}
+      />
+      <Stack.Screen
+        name="SelectCredentialScreen"
+        component={SelectCredentialScreen}
+        options={({ navigation }) => ({
+          title: 'Present Credential',
+          headerShown: true,
+          tabBarStyle: '#F1F2EC',
+          headerStyle: styles.header,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+          headerTitleStyle: styles.text,
+          headerLeft: renderIconByName('arrow-left', () => navigation.navigate('Home', {screen: 'PresentationScreen'}), {
+            paddingTop: 25,
+            size: 30,
+            color: theme.text,
+          }),
+        })}
       />
     </Stack.Navigator>
   );

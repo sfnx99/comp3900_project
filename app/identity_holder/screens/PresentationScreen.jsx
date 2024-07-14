@@ -5,15 +5,14 @@ import {
   View,
 } from 'react-native';
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import TextInputField from '../components/TextInputField';
 import TextButton from '../components/TextButton';
-import SelectCredentialModal from '../components/modals/SelectCredentialModal';
 
 const PresentationScreen = () => {
+  const navigation = useNavigation();
   const [url, setUrl] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [presentData, setPresentData] = useState(null);
 
   const submit = () => {
     if (!url) {
@@ -22,45 +21,36 @@ const PresentationScreen = () => {
     }
 
     setUrl('');
+
     // Fetch to present
-    setPresentData({
-      type: 'CredentialType1',
-      requiredAttributes: ['firstName', 'lastName'],
+    // TODO: call the fetch on the url
+
+    navigation.navigate('Home', {
+      screen: 'SelectCredentialScreen',
+      params: {
+        presentData: {
+          type: 'CredentialType1',
+          requiredAttributes: ['firstName', 'lastName'],
+        },
+        url,
+      },
     });
-
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setPresentData(null);
-    setModalOpen(false);
   };
 
   return (
-    <>
-      {
-        presentData ? (
-          <SelectCredentialModal
-            modalVisible={modalOpen}
-            handleModalClose={handleModalClose}
-            presentData={presentData}
-          />
-        ) : null
-      }
-      <SafeAreaView>
-        <View style={styles.container}>
-          <TextInputField
-            label="URL"
-            value={url}
-            onChangeText={setUrl}
-          />
-          <TextButton
-            text="Submit"
-            onPress={submit}
-          />
-        </View>
-      </SafeAreaView>
-    </>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <TextInputField
+          label="URL"
+          value={url}
+          onChangeText={setUrl}
+        />
+        <TextButton
+          text="Submit"
+          onPress={submit}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
