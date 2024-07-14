@@ -83,7 +83,6 @@ export const registerUser = async (email, password) => {
  */
 export const loginUser = async (email, password) => {
   try {
-    console.log(`${url}/auth/login`);
     const response = await axios.post(`${url}/auth/login`, { email, password });
     const { token } = response.data;
 
@@ -105,7 +104,7 @@ export const logoutUser = async () => {
     const token = await getToken();
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     removeToken();
@@ -144,6 +143,37 @@ export const getCredential = async (id) => {
     });
 
     return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const getPresentation = async (verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present?verifier_uri=${verifier_uri}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const postPresentation = async (credential_id, verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: JSON.stringify(credential_id, verifier_uri),
+    });
   } catch (error) {
     handleError(error);
     return null;
