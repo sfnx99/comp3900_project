@@ -149,6 +149,25 @@ export const getCredential = async (id) => {
   }
 };
 
+/**
+ * Deletes the credential through the wallet API.
+ * @param {string} credential_id - the id of the credential to be deleted.
+ */
+export const deleteCredential = async (credential_id) => {
+  try {
+    const token = await getToken();
+    const response = await axios.delete(`${url}/credential`, { 
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: { credential_id },
+     });
+
+  } catch (error) {
+    handleError(error);
+  }
+};
+
 export const getPresentation = async (verifier_uri) => {
   try {
     const token = await getToken();
@@ -172,7 +191,7 @@ export const postPresentation = async (credential_id, verifier_uri) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: JSON.stringify(credential_id, verifier_uri),
+      data: {credential_id, verifier_uri},
     });
   } catch (error) {
     handleError(error);
