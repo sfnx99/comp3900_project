@@ -51,7 +51,29 @@ export const DEFAULT_DATA: Data = {
                         proofValue: ''
                     }
                 }
+<<<<<<< Updated upstream
             ],
+=======
+            },
+            {
+                '@context': [],
+                id: 'e8b06949-8369-48d2-9d6f-2a1c2f1d52ec',
+                type: ["VerifiableCredential", "CredentialType1"],
+                issuer: 'did:exampleissuer:12345',
+                credentialSubject: {
+                    "firstName": "John",
+                    "lastName": "Smith"
+                },
+                proof: {
+                    type: '',
+                    cryptosuite: 't11a-bookworms-bbs',
+                    verificationMethod: '',
+                    proofPurpose: '',
+                    proofValue: ''
+                }
+            }
+        ],
+>>>>>>> Stashed changes
             sessions: []
         }
     ],
