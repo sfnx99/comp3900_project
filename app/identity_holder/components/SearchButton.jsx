@@ -1,12 +1,17 @@
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { renderIconByName } from '../scripts/util';
+
+const SearchButton = ({ onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.searchButton}>
+    {renderIconByName('magnify', onPress, { size: 30 })}
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   searchButton: {
-    paddingTop: 25,
+    paddingRight: 15,
   },
 });
-
-const SearchButton = (onPress) => renderIconByName('magnify', onPress, { size: 30, style: styles.searchButton });
 
 export default SearchButton;
