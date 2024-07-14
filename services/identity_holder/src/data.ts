@@ -34,14 +34,32 @@ export const DEFAULT_DATA: Data = {
                         proofValue: ''
                     }
                 },
+                // New credential
                 {
                     '@context': [],
-                    id: 'a3c88949-1234-48d2-9d6f-4f1a2f1d52ab', // New unique ID
+                    id: 'new-credential-id',
                     type: ["VerifiableCredential", "CredentialType2"],
-                    issuer: 'did:exampleissuer:67890',
+                    issuer: 'did:newissuer:67890',
                     credentialSubject: {
-                        "firstName": "Jane",
-                        "lastName": "Doe"
+                        "firstName": "Alice",
+                        "lastName": "Johnson"
+                    },
+                    proof: {
+                        type: '',
+                        cryptosuite: 't11a-bookworms-bbs',
+                        verificationMethod: '',
+                        proofPurpose: '',
+                        proofValue: ''
+                    }
+                }, 
+                {
+                    '@context': [],
+                    id: 'new-credential-id2',
+                    type: ["VerifiableCredential", "CredentialType2"],
+                    issuer: 'did:newissuer:67820',
+                    credentialSubject: {
+                        "firstName": "Aliasdsce",
+                        "lastName": "Johasdasnson"
                     },
                     proof: {
                         type: '',
@@ -51,29 +69,7 @@ export const DEFAULT_DATA: Data = {
                         proofValue: ''
                     }
                 }
-<<<<<<< Updated upstream
             ],
-=======
-            },
-            {
-                '@context': [],
-                id: 'e8b06949-8369-48d2-9d6f-2a1c2f1d52ec',
-                type: ["VerifiableCredential", "CredentialType1"],
-                issuer: 'did:exampleissuer:12345',
-                credentialSubject: {
-                    "firstName": "John",
-                    "lastName": "Smith"
-                },
-                proof: {
-                    type: '',
-                    cryptosuite: 't11a-bookworms-bbs',
-                    verificationMethod: '',
-                    proofPurpose: '',
-                    proofValue: ''
-                }
-            }
-        ],
->>>>>>> Stashed changes
             sessions: []
         }
     ],
