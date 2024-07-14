@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  ts-node-docker:
+  server:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,8 +9,10 @@ services:
     volumes:
       - ./src:/home/node/app/src
     container_name: issuer
+    stdin_open: true
+    tty: true
     expose:
       - '8082'
     ports:
       - '8082:8082'
-    command: npx ts-node src/index.ts
+    command: bun run src/index.ts -f formats.json

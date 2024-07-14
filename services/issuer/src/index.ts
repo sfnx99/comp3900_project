@@ -14,16 +14,13 @@ import express, { Express, Request, Response } from "express";
 import path from "path";
 import fs from "fs";
 import cors from "cors";
-import { authenticate, authorize, token } from "./oauth";
-// @ts-ignore
-import { anchor, DID, generateKeyPair } from '@decentralized-identity/ion-tools';
-// @ts-ignore
-import { bbs } from '@digitalbazaar/bbs-signatures';
+import { authenticate, authorize, token } from "./oauth.js";
+import { DID, generateKeyPair } from '@decentralized-identity/ion-tools';
+import * as bbs from '@digitalbazaar/bbs-signatures';
+// import { input } from '@inquirer/prompts';
 import { Command } from 'commander';
-import * as readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
-import { addCredential, getCredential, getCredentials, getFormats, setFormats } from "./db";
-import { Format, Credential } from "./types";
+import { getCredential, getCredentials, getFormats, setFormats } from "./db.js";
+import { Format } from "./types.js";
 
 const program = new Command();
 
@@ -35,7 +32,7 @@ const options = program.opts();
 const formats: Format[] = JSON.parse(fs.readFileSync(options.formats, { encoding: 'utf8', flag: 'r' })).formats;
 setFormats(formats);
 
-let metadata_formats: { [key:string] : any }= {};
+const metadata_formats: { [key:string] : { "format": "ldp_vc" } }= {};
 for (const format of formats) {
     metadata_formats[format.id] = { "format": "ldp_vc" };
 }
@@ -50,14 +47,14 @@ const port = process.env.PORT || 8082;
 // });
 
 let did_uri = '';
-let secretKey: any;
-let publicKey: any;
+let secretKey = new Uint8Array();
+let publicKey = new Uint8Array();
 
 app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
-    res.json({ did_uri });
+    res.json({ did_uri, bbs_public_key: publicKey });
 });
 
 app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
@@ -68,13 +65,17 @@ app.post("/v2/authorize", (req: Request, res: Response) => {
 })
 
 app.post("/v2/token", (req: Request, res: Response) => {
-    const { grant_type, code, redirect_uri, client_id } = req.body;
+    const { code, client_id } = req.body;
     res.json({ access_token: token(client_id, code), token_type: 'bearer' })
 });
 
 app.post("/v2/credential", async (req: Request, res: Response) => {
-    const access_token = req.get('access_token') as string;
-    res.json(await issue(access_token));
+    try {
+        const access_token = req.get('access_token') as string;
+        res.json(await issue(access_token));
+    } catch (e) {
+        res.sendStatus(403);
+    }
 });
 
 app.get("/debug/formats", (req: Request, res: Response) => {
@@ -89,14 +90,15 @@ app.get("/debug/credentials", (req: Request, res: Response) => {
 
 
 app.listen(port, async () => {
-    const {bbs_secretKey, bbs_publicKey} = await bbs.generateKeyPair({
+    console.log("Issuer Started on localhost:8082");
+    const keyPair = await bbs.generateKeyPair({
         ciphersuite: 'BLS12-381-SHA-256'
     });
-    secretKey = bbs_secretKey;
-    publicKey = bbs_publicKey;
+    secretKey = keyPair.secretKey;
+    publicKey = keyPair.publicKey;
 
-    let authKeys = await generateKeyPair();
-    let did = new DID({
+    const authKeys = await generateKeyPair();
+    const did = new DID({
         content: {
             publicKeys: [
                 {
@@ -110,7 +112,6 @@ app.listen(port, async () => {
                 {
                     id: 'bbs-key-1',
                     type: 'BBSKey',
-                    publicKey: publicKey,
                     serviceEndpoint: {
                         "credential_endpoint": "localhost:8082",
                         "credential_configurations_supported": metadata_formats,
@@ -122,27 +123,29 @@ app.listen(port, async () => {
 
     did_uri = await did.getURI();
 
-    console.log('Enter credentials of the form <client_id>;<credentialType>;<fields>');
-    const rl = readline.createInterface({ input, output });
+    // This isn't working on docker
+    // console.log('Enter credentials of the form <client_id>;<credentialType>;<fields>');
+    // while (true) {
+    //     const answer = await input({ message: '' });
+    //     try {
+    //         let split_input = answer.split(';');
+    //         addCredential(split_input[0], split_input[1], JSON.parse(split_input[2]));
+    //     } catch (e) {
+    //         console.error("\nError: Could not parse data. Please try again.")
+    //     }
+    // }
 
-    rl.on('line', (input) => {
-        try {
-            let split_input = input.split(';');
-            addCredential(split_input[0], split_input[1], JSON.parse(split_input[2]));
-        } catch (e) {
-            console.error("\nError: Could not parse data. Please try again.")
-        }
-    }); 
+
 });
 
 async function issue(access_token: string) {
-    // let request = authenticate(access_token);
-    // const credential = getCredential(request.client_id, request.scope);
-    // if (credential === undefined) {
-    //     throw new Error("Credential Does not exist");
-    // }
+    const request = authenticate(access_token);
+    const credential = getCredential(request.client_id, request.scope);
+    if (credential === undefined) {
+        throw new Error("Credential Does not exist");
+    }
     
-    const credential: Credential = {client_id: "bob@test.com", format: "DriverLicenceCredential", fields: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"}}
+    // const credential: Credential = {client_id: "bob@test.com", format: "DriverLicenceCredential", fields: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"}}
     
     const header = new Uint8Array();
     const messages = Object.entries(credential.fields).map((e) => new TextEncoder().encode(JSON.stringify(e)));
@@ -158,7 +161,7 @@ async function issue(access_token: string) {
         "proof": {
             "type": "DataIntegrityProof",
             "cryptosuite": "t11a-bookworms-bbs",
-            "verificationMethod": "https://issuer.com/bbs-publickey.json",
+            "verificationMethod": did_uri,
             "proofPurpose": "assertionMethod",
             "proofValue": signature,
         }

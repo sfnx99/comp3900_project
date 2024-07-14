@@ -1,6 +1,6 @@
 
-let auth_codes: Map<string, {client_id: string, scope: string}> = new Map();
-let tokens: Map<string, {client_id: string, scope: string}> = new Map();
+const auth_codes: Map<string, {client_id: string, scope: string}> = new Map();
+const tokens: Map<string, {client_id: string, scope: string}> = new Map();
 
 export function authorize(client_id: string, client_secret: string, redirect_uri: string, state: string, scope: string): string {
     // do stuff
