@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Issuer Authorize</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <form>
+                <div>
+                    <label for="mail">Email:</label>
+                    <input type="email" id="mail"/>
+                </div>
+
+                <div>
+                    <label for="mail">Password:</label>
+                    <input type="password" id="password"/>
+                </div>
+            </form>
+            <div>
+                <button onclick="submit()">submit</button>
+            </div>
+    </body>
+    <script>
+        async function submit() {
+            const query = window.location.search.substring(1);
+            const get_params = new URLSearchParams(query);
+            console.log(get_params);
+            fetch('/v2/authorize', {
+                method: 'POST',
+                mode: 'cors',
+                redirect: 'follow',
+                body: JSON.stringify({
+                    client_id: get_params.get('client_id'),
+                    redirect_uri: get_params.get('redirect_uri'),
+                    state: get_params.get('state'),
+                    scope: get_params.get('scope'),
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then((res) => console.log(res))
+            .catch((e) => console.log(e));
+        }
+    </script>
+</html>

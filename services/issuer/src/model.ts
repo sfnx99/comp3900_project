@@ -1,3 +1,5 @@
+// none of this is working, go to oauth.ts to see a pseudo oauth system.
+
 import { Client, User, Token, AuthorizationCode, Falsey } from '@node-oauth/oauth2-server'
 
 let tokens: Map<string, Token> = new Map();
