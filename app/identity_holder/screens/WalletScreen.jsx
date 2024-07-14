@@ -1,20 +1,35 @@
-import { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import CredentialCard from '../components/CredentialCard';
 import { CredentialsContext } from '../context/CredentialsContext';
+import SearchBar from '../components/SearchBar';
+import SearchButton from '../components/SearchButton';
 
-const WalletScreen = () => {
+const WalletScreen = ({ navigation }) => {
   const { credentials } = useContext(CredentialsContext);
+  const [filteredCredentials, setFilteredCredentials] = useState(credentials);
+
+  const handleSearch = (query) => {
+    if (!query) {
+      setFilteredCredentials(credentials);
+      return;
+    }
+
+    const filtered = credentials.filter((credential) =>
+      credential.id.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCredentials(filtered);
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      {credentials.map((credential) => (
-        <CredentialCard
-          key={credential.credential.id}
-          credential={credential}
-        />
-      ))}
-    </ScrollView>
+    <>
+      <SearchBar onChange={handleSearch} />
+      <ScrollView style={styles.container}>
+        {filteredCredentials.map((credential) => (
+          <CredentialCard key={credential.id} credential={credential} />
+        ))}
+      </ScrollView>
+    </>
   );
 };
 

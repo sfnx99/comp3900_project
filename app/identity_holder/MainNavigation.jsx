@@ -117,7 +117,7 @@ const MainApp = () => {
           name="Notifications"
           options={{
             tabBarIcon: renderIconByName('bell'),
-            headerRight: SearchButton(),
+            
           }}
         >
           {() => <NotificationsScreen notifications={notifications} />}

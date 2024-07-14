@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
     padding: 10,
-    backgroundColor: '#6c9897',
+    backgroundColor: 'white',
   },
   input: {
     height: 40,
-    backgroundColor: '#8ecbc7 ',
+    backgroundColor: 'white ',
     paddingHorizontal: 10,
     borderRadius: 5,
     borderWidth: 1,
