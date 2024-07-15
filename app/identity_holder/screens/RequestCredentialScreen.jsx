@@ -1,60 +1,62 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
   ScrollView,
   Modal,
+  StyleSheet,
+  TextInput,
+  Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {getIssuers} from '../scripts/api'
-import styles from '../styles/request';
+import { Picker } from '@react-native-picker/picker';
+import { getIssuers, getIssue } from '../scripts/api'; // Adjust paths as needed
+import styles from '../styles/request'; // Your global styles
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
-import ErrorMessage from '../components/ErrorMessage'; // Ensure correct import path
+import ErrorMessage from '../components/ErrorMessage';
 
 const RequestCredentialScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [typeofID, setID] = useState('');
   const [docnumb, setdocnumb] = useState('');
-  const [FullName, setFullName] = useState('');
-  const [Pnumber, setPnumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [isPressed, setIsPressed] = useState(false);
+  const [issuers, setIssuers] = useState([]);
+  const [selectedIssuer, setSelectedIssuer] = useState('');
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const [additionalDetails, setAdditionalDetails] = useState([]);
+  const [selectedDetail, setSelectedDetail] = useState('');
+  const [detailsPickerVisible, setDetailsPickerVisible] = useState(false);
   const [error, setError] = useState('');
-  const [emptyFields, setEmptyFields] = useState([]);
 
-  const clearForm = () => {
-    setID('');
-    setdocnumb('');
-    setFullName('');
-    setPnumber('');
-    setAddress('');
-    setError('');
-    setEmptyFields([]);  // Clear the fields tracking array
-  };
+  useEffect(() => {
+    const loadIssuers = async () => {
+      try {
+        const result = await getIssuers();
+        if (result && result.issuers) {
+          setIssuers(result.issuers);
+          setSelectedIssuer(result.issuers[0]);
+        } else {
+          throw new Error('No issuer data found');
+        }
+      } catch (error) {
+        setError('Failed to fetch issuers: ' + error.message);
+      }
+    };
+    loadIssuers();
+  }, []);
 
-  const handleSubmit = () => {
-    const fields = [];
-    if (!typeofID) fields.push('Type of ID');
-    if (!docnumb) fields.push('Document number');
-   
-    if (fields.length > 0) {
-      setError(`Please fill the following fields: ${fields.join(', ')}`);
-      setEmptyFields(fields);
-      return;  
+  const handleIssuerSelection = async (itemValue) => {
+    setSelectedIssuer(itemValue);
+    setPickerVisible(false); // Close issuer picker after selection
+    try {
+      const details = await getIssue(); // This should be modified to use the itemValue if necessary
+      if (details && details.types) {
+        setAdditionalDetails(details.types);
+        setSelectedDetail(details.types[0]); // Optionally pre-select the first detail
+      } else {
+        throw new Error('No details found for this issuer');
+      }
+    } catch (error) {
+      setError('Failed to fetch details: ' + error.message);
     }
-
-    setError('');
-    setEmptyFields([]);
-    clearForm();
-    setModalVisible(!modalVisible);
-  };
-
-  const clearError = () => {
-    setError('');
-    setEmptyFields([]);
   };
 
   return (
@@ -62,7 +64,6 @@ const RequestCredentialScreen = ({ navigation }) => {
       <RequestSuccessModal
         modalVisible={modalVisible}
         handleModalClose={() => {
-          clearForm();
           setModalVisible(false);
           navigation.navigate('Home');
         }}
@@ -73,51 +74,149 @@ const RequestCredentialScreen = ({ navigation }) => {
         transparent={true}
         animationType="fade"
       >
-        <ErrorMessage message={error} onPress={clearError} />
+        <ErrorMessage message={error} onPress={() => setError('')} />
+      </Modal>
+
+      <Modal
+        visible={pickerVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setPickerVisible(false)}
+      >
+        <View style={localStyles.modalOverlay}>
+          <View style={localStyles.pickerContainer}>
+            <Text style={localStyles.pickerTitle}>Select an Issuer</Text>
+            <Picker
+              selectedValue={selectedIssuer}
+              onValueChange={handleIssuerSelection}
+              style={localStyles.pickerStyle}>
+              {issuers.map((issuer, index) => (
+                <Picker.Item label={issuer} value={issuer} key={index} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={detailsPickerVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setDetailsPickerVisible(false)}
+      >
+        <View style={localStyles.modalOverlay}>
+          <View style={localStyles.pickerContainer}>
+            <Text style={localStyles.pickerTitle}>Select Type of Credential</Text>
+            <Picker
+              selectedValue={selectedDetail}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedDetail(itemValue);
+                setDetailsPickerVisible(false);
+              }}
+              style={localStyles.pickerStyle}>
+              {additionalDetails.map((detail, index) => (
+                <Picker.Item label={detail} value={detail} key={index} />
+              ))}
+            </Picker>
+          </View>
+        </View>
       </Modal>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Form Of Identification Required</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('Type of ID') && styles.inputError,
-              ]}
-              value={typeofID}
-              onChangeText={setID}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Document Number</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('Document number') && styles.inputError,
-              ]}
-              value={docnumb}
-              onChangeText={setdocnumb}
-            />
-          </View>
+          <Pressable
+            style={({ pressed }) => [
+              localStyles.inputLikePicker,
+              pressed ? localStyles.pressed : {}
+            ]}
+            onPress={() => setPickerVisible(true)}
+          >
+            <Text style={localStyles.label}>Issuer of Identification Required</Text>
+            <Text style={localStyles.inputText}>{selectedIssuer || 'Select an issuer...'}</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              localStyles.inputLikePicker,
+              pressed ? localStyles.pressed : {}
+            ]}
+            onPress={() => setDetailsPickerVisible(true)}
+          >
+            <Text style={localStyles.label}>Type of Credential Required</Text>
+            <Text style={localStyles.inputText}>{selectedDetail || 'Select a credential...'}</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed ? styles.buttonPressed : {}
+            ]}
+            onPress={() => {
+              if (selectedIssuer && selectedDetail) {
+                console.log("Submission", { issuer: selectedIssuer, detail: selectedDetail, docNumber: docnumb });
+                setModalVisible(true);
+              } else {
+                setError('Please select an issuer and a detail.');
+              }
+            }}
+          >
+            <Text style={styles.buttonText}>Submit Request</Text>
+          </Pressable>
         </View>
-        <TouchableOpacity
-          style={[styles.button, isPressed && styles.buttonHover]}
-          onPress={handleSubmit}
-          onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
-        >
-          <Text style={styles.buttonText}>Submit Request</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-RequestCredentialScreen.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
-};
+// Local styles specific for modal and picker
+const localStyles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+  },
+  pickerContainer: {
+    backgroundColor: 'white',
+    borderColor: '#D6EE41',
+    borderWidth: 10,
+    padding: 10,
+    borderRadius: 10,
+  },
+  pickerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingTop: 10,
+    backgroundColor: 'white'
+  },
+  pickerStyle: {
+    width: 330,
+    height: 216, 
+    backgroundColor: 'white',
+  },
+  inputLikePicker: {
+    borderWidth: 0.5,
+    width: '95%',
+    borderColor: 'gray',
+    backgroundColor: '#eeffa1',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+    flexDirection: 'column', 
+    alignItems: 'flex-start', 
+  },
+  label: {
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 5,
+  },
+  inputText: {
+    fontSize: 16,
+  },
+  pressed: {
+    opacity: 0.5
+  }
+});
 
 export default RequestCredentialScreen;
