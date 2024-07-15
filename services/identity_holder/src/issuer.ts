@@ -2,6 +2,8 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { FORMAT_MAP, getData, toUser } from './data';
 import { SessionData } from './interface';
+// @ts-expect-error typescript
+import { resolve } from '@decentralized-identity/ion-tools';
 export function getIssuers(token: string) {
     const data = getData();
     const user = toUser(token);
@@ -107,28 +109,25 @@ export function getIssuersV2(session_data: SessionData) { // eslint-disable-line
     };
 }
 
-export function getRequestV2(session_data: SessionData, issuer_id: string) {
-    // We should resolve the DID here, pending on the upcoming meeting
-    // TODO: above
-    console.log(`resolve ${issuer_id} for ${session_data.user.email}`);
-    const dummy_response = {
-        types: ["CredentialType1", "CredentialType2"],
-        oauth_servers: ["http://localhost:8082"],
-    };
+export async function getRequestV2(session_data: SessionData, issuer_id: string) {
+    // Resolve DID
+    const doc = await resolve(issuer_id);
+    const oauth_servers = [doc.didDocument.service[0].serviceEndpoint.credential_endpoint];
+    const types = Object.keys(doc.didDocument.service[0].serviceEndpoint.credential_configurations_supported);
+    // Format response
     return {
         status: 200,
-        body: dummy_response
+        body: {
+            types,
+            oauth_servers
+        }
     };
 }
 
 export async function makeRequestV2(session_data: SessionData, issuer_id: string, auth_code: string, type: string, redirect_uri: string) {
-    // Resolve DID TODO
-    const dummy_response = {
-        types: ["CredentialType1", "CredentialType2"],
-        oauth_servers: ["http://localhost:8082"],
-        dummy: issuer_id
-    };
-
+    // Resolve DID for oauth servers
+    const doc = await resolve(issuer_id);
+    const oauth_servers = [doc.didDocument.service[0].serviceEndpoint.credential_endpoint];
     // Get an access token
     const token_body = {
         grant_type: "authorization_code",
@@ -138,7 +137,7 @@ export async function makeRequestV2(session_data: SessionData, issuer_id: string
     }
 
     try {
-        const resp = await axios.post(dummy_response.oauth_servers[0] + "/v2/token", token_body);
+        const resp = await axios.post(oauth_servers[0] + "/v2/token", token_body);
         const access_token = resp.data.access_token;
         if (access_token === undefined) {
             throw Error("Couldn't parse access token");
@@ -152,7 +151,7 @@ export async function makeRequestV2(session_data: SessionData, issuer_id: string
             format: "ldp_vc"
         }
 
-        const c_resp = await axios.post(dummy_response.oauth_servers[0] + "/v2/credential", cred_body, {headers: cred_headers});
+        const c_resp = await axios.post(oauth_servers[0] + "/v2/credential", cred_body, {headers: cred_headers});
         const cred = c_resp.data.credential;
         if (cred === undefined) {
             throw Error("Couldn't parse credential");
