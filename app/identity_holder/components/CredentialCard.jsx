@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { ThemeContext } from '../context/ThemeContext';
 import { credentialPropType, formatCamelCase } from '../scripts/util';
+import PropTypes from 'prop-types';
 
 import Card from '../images/Credential.png';
 
