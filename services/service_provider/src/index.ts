@@ -7,7 +7,7 @@ TO RUN:
 Install node.js, then restart your computer
 cd into the service_provider directory
 $ npm i
-$ npx ts-node src/index.ts
+$ npx ts-node src/index.ts hi
 */
 
 import dotenv from "dotenv";
