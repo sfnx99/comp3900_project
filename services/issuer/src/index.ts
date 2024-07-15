@@ -113,7 +113,7 @@ app.listen(port, async () => {
                     id: 'bbs-key-1',
                     type: 'BBSKey',
                     serviceEndpoint: {
-                        "credential_endpoint": "localhost:8082",
+                        "credential_endpoint": "http://localhost:8082",
                         "credential_configurations_supported": metadata_formats,
                     }
                 }
@@ -134,7 +134,7 @@ app.listen(port, async () => {
     //         console.error("\nError: Could not parse data. Please try again.")
     //     }
     // }
-
+    console.log(did_uri);
 
 });
 
