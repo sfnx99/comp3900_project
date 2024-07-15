@@ -9,7 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import {getIssuers} from '../scripts/api'
 import styles from '../styles/request';
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage'; // Ensure correct import path
