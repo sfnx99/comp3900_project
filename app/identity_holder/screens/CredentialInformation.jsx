@@ -6,6 +6,7 @@ import { ThemeContext } from '../context/ThemeContext';
 import { credentialPropType, formatCamelCase, renderIconByName } from '../scripts/util';
 import TextButton from '../components/TextButton';
 import { CredentialsContext } from '../context/CredentialsContext';
+import CredentialModal from '../components/modals/CredentialModal';
 
 const CredentialInformation = ({ route, navigation }) => {
   const { credential } = route.params;
@@ -56,6 +57,12 @@ const CredentialInformation = ({ route, navigation }) => {
   });
 
   return (
+    <>
+    <CredentialModal
+      modalVisible={modalOpen}
+      handleModalClose={() => setModalOpen(false)}
+      credentialId={credential.id}
+    />
     <SafeAreaView style={styles.container}>
       <ScrollView>
         {Object.entries(credentialDetails)
@@ -74,6 +81,7 @@ const CredentialInformation = ({ route, navigation }) => {
         />
       </ScrollView>
     </SafeAreaView>
+    </>
   );
 };
 

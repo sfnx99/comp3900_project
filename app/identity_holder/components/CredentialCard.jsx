@@ -9,7 +9,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 import { ThemeContext } from '../context/ThemeContext';
-import PropTypes from 'prop-types';
+import { credentialPropType, formatCamelCase } from '../scripts/util';
+
 import Card from '../images/Credential.png';
 
 const CredentialCard = ({ credential }) => {
@@ -61,7 +62,7 @@ const CredentialCard = ({ credential }) => {
       </TouchableOpacity>
 
       <View style={styles.details}>
-        <Text style={styles.text}>Credential {sequenceNumber -1}</Text>
+        <Text style={styles.text}>{formatCamelCase(credential.type[0])}</Text>
       </View>
     </View>
   );

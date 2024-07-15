@@ -2,9 +2,14 @@ import axios from 'axios';
 import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor } from './util';
 
+<<<<<<< HEAD
 const port = WALLET_PORT || 8081;
 const url = `${WALLET_HOST || 'http://172.20.10.2'}:${port}/v2`;
 
+=======
+const port = WALLET_PORT || 7999;
+const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
+>>>>>>> 70285be266ee08f7b53eac065debfa9c5d63520c
 
 const getToken = async () => {
   try {
@@ -105,7 +110,7 @@ export const logoutUser = async () => {
     const token = await getToken();
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     removeToken();
@@ -144,6 +149,56 @@ export const getCredential = async (id) => {
     });
 
     return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+/**
+ * Deletes the credential through the wallet API.
+ * @param {string} credential_id - the id of the credential to be deleted.
+ */
+export const deleteCredential = async (credential_id) => {
+  try {
+    const token = await getToken();
+    const response = await axios.delete(`${url}/credential`, { 
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: { credential_id },
+     });
+
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getPresentation = async (verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present?verifier_uri=${verifier_uri}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const postPresentation = async (credential_id, verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {credential_id, verifier_uri},
+    });
   } catch (error) {
     handleError(error);
     return null;
