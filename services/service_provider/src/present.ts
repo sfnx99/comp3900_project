@@ -89,12 +89,13 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
         .map(obj => JSON.stringify(obj));
 
     const finalChunk = JSON.stringify(vc.proof)
-
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
+
+    const indexes = JSON.parse(vc.proof.proofValue[0]);
 
     return {
         disclosedMessages: filteredChunks,
-        disclosedMessageIndexes: pres.verifiableCredential[vcIndex].proof.proofValue[0]
+        disclosedMessageIndexes: indexes
     }
 }
 
