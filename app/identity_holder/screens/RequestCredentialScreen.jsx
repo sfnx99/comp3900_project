@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { getIssuers, getIssue } from '../scripts/api'; // Ensure paths are correct
-import styles from '../styles/request'; // Ensure you have your global styles setup
+import { getIssuers, getIssue } from '../scripts/api'; 
+import styles from '../styles/request'; 
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -49,6 +49,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       const details = await getIssue();
       if (details && details.types) {
         setAdditionalDetails(details.types);
+        setDetailsPickerVisible(true);
       } else {
         throw new Error('No details found for this issuer');
       }
@@ -164,7 +165,6 @@ const RequestCredentialScreen = ({ navigation }) => {
 };
 
 
-// Local styles specific for modal and picker
 const localStyles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
