@@ -46,7 +46,7 @@ const WalletStack = () => {
             size: 30,
             color: 'black',
           }),
-          headerRight: () => <SearchButton onPress={() => navigation.navigate('Search')} />, // Adjusted to use SearchButton with onPress navigation
+          headerRight: () => <SearchButton onPress={() => navigation.navigate('Search')} />, 
         })}
       />
       <Stack.Screen
