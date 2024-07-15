@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Card from '../images/Credential.png';
 
 import { CredentialsContext } from '../context/CredentialsContext';
-import TextButton from '../components/TextButton';
 import { formatCamelCase } from '../scripts/util';
 import { postPresentation } from '../scripts/api';
 import { useTheme } from '../context/ThemeContext';
@@ -14,122 +13,80 @@ const SelectCredentialScreen = ({ route }) => {
   const navigation = useNavigation();
   const { presentData, url } = route.params;
   const { credentials } = useContext(CredentialsContext);
-  const [presentingCredential, setPresentingCredential] = useState(null);
-  const [attributes, setAttributes] = useState([]);
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricSupported(compatible);
-    })();
-  }, []);
-
-  useEffect(() => {
-    /**
-     * Load the credential with the matching type of the presentation.
-     */
-    const loadPresentingCredential = () => {
-      const credential = credentials.find((cred) => (
-        cred.type.includes(presentData.type)
-      ));
-      setPresentingCredential(credential);
-
-      // TODO: Give message if there is no credential!
-      if (!presentingCredential) {
-        Alert.alert('ERROR', 'You do not own the necessary credential for this presentation.');
-        navigation.navigate('Home', { screen: 'PresentationScreen' });
-      }
-    };
-
-    loadPresentingCredential();
-  }, [presentData]);
-
-  useEffect(() => {
-    const loadAttributes = () => {
-      if (!presentingCredential) { return; }
-      const filteredAttributes = presentData.requiredAttributes.reduce((acc, key) => {
-        if (presentingCredential.credential[key] !== undefined) {
-          acc[key] = presentingCredential.credential[key];
-        }
-        return acc;
-      }, {});
-      setAttributes(filteredAttributes);
-    };
-  
-    loadAttributes();
-  }, [presentingCredential]);
+  const [compatibleCredentials, setCompatibleCredentials] = useState([]);
 
   /**
-   * Handles the events following the submit button involving
-   * authentication before sending the presentation.
+   * Get all the compatible credentials to the current presentation.
    */
-  const handlePress = async () => {
-    try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Authenticate with Face ID',
-        fallbackLabel: 'Enter Password',
-      });
+  useEffect(() => {
+    const getCompatibleCredentials = () => {
+      const compatibleTypes = presentData.type;
+      setCompatibleCredentials(credentials.filter((cred) => (cred.type.includes(compatibleTypes))));
+    };
 
-      if (result.success) {
-        // TODO: uncomment once the service provider is implemented
-        // await postPresentation(presentingCredential.id, url);
-        Alert.alert('Success', 'Verification success!');
-        navigation.navigate('Home', { screen: 'PresentationScreen' });
-      } else {
-        Alert.alert('Authentication Failed, Please try again.');
-      }
-    } catch (error) {
-      Alert.alert(`Error: ${error.message}`);
-    }
+    getCompatibleCredentials();
+  }, [credentials]);
+
+  /**
+   * Handles the press event on a credential. Will send the user to the
+   * presentation screen with the selected credential.
+   * @param {object} cred - the credential object
+   */
+  const handlePress = (cred) => {
+    navigation.navigate('Home', {
+      screen: 'PresentCredentialScreen',
+      params: {
+        presentData: {
+          type: 'CredentialType1',
+          requiredAttributes: ['firstName', 'lastName'],
+        },
+        url,
+        credential: cred,
+      },
+    });
   };
 
   const styles = StyleSheet.create({
     container: {
-      marginHorizontal: 23,
-      justifyContent: 'space-between',
-      height: '100%',
-      paddingBottom: 30,
+      width: '100%',
+      alignItems: 'center',
     },
-    fields: {
-      flex: 1,
-      marginTop: 20,
+    card: {
+      height: 190,
+      width: '100%',
+    },
+    cardImage: {
+      height: '100%',
+      width: '100%',
+      resizeMode: 'contain',
+    },
+    details: {
+      marginTop: 10,
+      alignItems: 'center',
     },
     text: {
       color: theme.text,
-      fontSize: 16,
-      marginBottom: 10,
-    },
-    field: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    fieldName: {
-      fontWeight: 'bold',
     },
   });
 
   return (
-      presentingCredential ? (
-        <SafeAreaView>
-        <View style={styles.container}>
-          <Text style={styles.text}>Use your credential, {presentingCredential.type} to present the following information?</Text>
-          <View style={styles.fields}>
-            {attributes ? Object.entries(attributes)
-              .map(([key, item]) => (
-              <View key={key} style={styles.field}>
-                <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
-                <Text style={styles.text}>{item}</Text>
-              </View>
-            )) : null}
+    <SafeAreaView>
+      {compatibleCredentials.map((cred) => (
+        <View style={styles.container} key={cred.id}>
+          <TouchableOpacity
+            onPress={() => handlePress(cred)}
+            style={styles.card}
+          >
+            <Image source={Card} style={styles.cardImage} />
+          </TouchableOpacity>
+
+          <View style={styles.details}>
+            <Text style={styles.text}>{formatCamelCase(cred.type[0])}</Text>
           </View>
-          <TextButton
-            text="Submit"
-            onPress={handlePress}
-          />
         </View>
-      </SafeAreaView>
-      ) : null
+      ))}
+    </SafeAreaView>
   );
 };
 
