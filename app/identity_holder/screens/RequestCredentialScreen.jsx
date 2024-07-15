@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { getIssuers, getIssue } from '../scripts/api'; // Adjust paths as needed
-import styles from '../styles/request'; // Your global styles
+import { getIssuers, getIssue } from '../scripts/api'; // Ensure paths are correct
+import styles from '../styles/request'; // Ensure you have your global styles setup
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -32,7 +32,6 @@ const RequestCredentialScreen = ({ navigation }) => {
         const result = await getIssuers();
         if (result && result.issuers) {
           setIssuers(result.issuers);
-          setSelectedIssuer(result.issuers[0]);
         } else {
           throw new Error('No issuer data found');
         }
@@ -45,12 +44,11 @@ const RequestCredentialScreen = ({ navigation }) => {
 
   const handleIssuerSelection = async (itemValue) => {
     setSelectedIssuer(itemValue);
-    setPickerVisible(false); // Close issuer picker after selection
+    setPickerVisible(false);
     try {
-      const details = await getIssue(); // This should be modified to use the itemValue if necessary
+      const details = await getIssue();
       if (details && details.types) {
         setAdditionalDetails(details.types);
-        setSelectedDetail(details.types[0]); // Optionally pre-select the first detail
       } else {
         throw new Error('No details found for this issuer');
       }
@@ -80,11 +78,11 @@ const RequestCredentialScreen = ({ navigation }) => {
       <Modal
         visible={pickerVisible}
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setPickerVisible(false)}
       >
-        <View style={localStyles.modalOverlay}>
-          <View style={localStyles.pickerContainer}>
+        <Pressable style={localStyles.modalOverlay} onPress={() => setPickerVisible(false)}>
+          <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
             <Text style={localStyles.pickerTitle}>Select an Issuer</Text>
             <Picker
               selectedValue={selectedIssuer}
@@ -95,31 +93,28 @@ const RequestCredentialScreen = ({ navigation }) => {
               ))}
             </Picker>
           </View>
-        </View>
+        </Pressable>
       </Modal>
 
       <Modal
         visible={detailsPickerVisible}
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setDetailsPickerVisible(false)}
       >
-        <View style={localStyles.modalOverlay}>
-          <View style={localStyles.pickerContainer}>
+        <Pressable style={localStyles.modalOverlay} onPress={() => setDetailsPickerVisible(false)}>
+          <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
             <Text style={localStyles.pickerTitle}>Select Type of Credential</Text>
             <Picker
               selectedValue={selectedDetail}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedDetail(itemValue);
-                setDetailsPickerVisible(false);
-              }}
+              onValueChange={(itemValue) => setSelectedDetail(itemValue)}
               style={localStyles.pickerStyle}>
               {additionalDetails.map((detail, index) => (
                 <Picker.Item label={detail} value={detail} key={index} />
               ))}
             </Picker>
           </View>
-        </View>
+        </Pressable>
       </Modal>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -167,6 +162,7 @@ const RequestCredentialScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 
 // Local styles specific for modal and picker
 const localStyles = StyleSheet.create({
