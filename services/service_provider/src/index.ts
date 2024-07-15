@@ -12,8 +12,8 @@ $ npx ts-node src/index.ts hi
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { requestMetadata } from "./request";
 import { presentSubmission } from "./present";
+import { requestMetadata } from "./request";
 
 dotenv.config();
 
@@ -30,8 +30,9 @@ app.listen(port, () => {
     console.log(`[server]: Service Provider is running at http://localhost:${port}`);
 });
 
-app.get("/v2/request", (req: Request, res: Response) => {
-    const result = requestMetadata();
+app.get("/v2/request", async (req: Request, res: Response) => {
+    console.log("Received Request")
+    const result = await requestMetadata();
     res.status(result.status).json(result.body);
 });
 

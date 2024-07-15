@@ -1,17 +1,21 @@
+import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { PresentationDefinition, ResponseV2 } from './interface';
-import * as fs from 'fs';
 
-export function requestMetadata(): ResponseV2 {
+export async function requestMetadata(): Promise<ResponseV2> {
     try {
-        const presDesc = readDefinitions().input_descriptors;
+        const presDesc = await readDefinitions();
         const session = uuidv4();
-
+        console.log(presDesc.input_descriptors)
+        console.log(presDesc.input_descriptors[0].constraints.fields)
         return {
             status: 200,
             body: {
-                "id": session,
-                "input_descriptors": presDesc
+                presentation_definition: {
+                    "id": session,
+                    "input_descriptors": presDesc.input_descriptors
+                },
+                "state": "smurgle"
             }
         }
     } catch (parseErr) {
@@ -25,21 +29,11 @@ export function requestMetadata(): ResponseV2 {
     }
 }
 
-export function readDefinitions(): PresentationDefinition {
-    fs.readFile("./presentationDefinitions.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
-        if (err) {
-            return {
-                status: 500,
-                body: {
-                    message: 'Internal Server Error',
-                    error: err
-                }
-            }
-        }
+export async function readDefinitions(): Promise<PresentationDefinition> {
+    const val = await fs.promises.readFile("./presentationDefinitions.json");
+    const jsonObject = JSON.parse(val.toString());
+    console.log(jsonObject)
+    return jsonObject;
+    
 
-        const jsonObject = JSON.parse(data.toString());
-        return jsonObject;
-    });
-
-    throw new Error("Uh oh!!!! Whoopsie!!!!");
 }

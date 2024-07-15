@@ -9,14 +9,14 @@ $ npm i
 $ npx ts-node src/index.ts 
 */
 
-import dotenv from "dotenv";
-import express, { Express, Request, Response } from "express";
-import path from "path";
-import fs from "fs";
-import cors from "cors";
-import { authenticate, authorize, token } from "./oauth.js";
 import { DID, generateKeyPair } from '@decentralized-identity/ion-tools';
 import * as bbs from '@digitalbazaar/bbs-signatures';
+import cors from "cors";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+import { authenticate, authorize, token } from "./oauth.js";
 // import { input } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { getCredential, getCredentials, getFormats, setFormats } from "./db.js";
@@ -54,7 +54,7 @@ app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
-    res.json({ did_uri, bbs_public_key: publicKey });
+    res.json({ did_uri, bbs_public_key: publicKey});
 });
 
 app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
@@ -71,7 +71,7 @@ app.post("/v2/token", (req: Request, res: Response) => {
 
 app.post("/v2/credential", async (req: Request, res: Response) => {
     try {
-        const access_token = req.get('access_token') as string;
+        const access_token = req.headers.authorization!.slice(7);
         res.json(await issue(access_token));
     } catch (e) {
         res.sendStatus(403);
@@ -139,8 +139,11 @@ app.listen(port, async () => {
 });
 
 async function issue(access_token: string) {
+    console.log(`Issuing with access_token: ${access_token}`)
     const request = authenticate(access_token);
+    console.log(request)
     const credential = getCredential(request.client_id, request.scope);
+    console.log(credential)
     if (credential === undefined) {
         throw new Error("Credential Does not exist");
     }
@@ -149,21 +152,24 @@ async function issue(access_token: string) {
     
     const header = new Uint8Array();
     const messages = Object.entries(credential.fields).map((e) => new TextEncoder().encode(JSON.stringify(e)));
-    const signature = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
-
+    console.log(messages)
+    const signature: Uint8Array = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
+    console.log(signature, signature.toString())
     return {
-        "@context": [
-            "https://www.w3.org/ns/credentials/v2"
-        ],
-        "type": [credential.format],
-        "issuer": did_uri,
-        "credentialSubject": credential.fields,
-        "proof": {
-            "type": "DataIntegrityProof",
-            "cryptosuite": "t11a-bookworms-bbs",
-            "verificationMethod": did_uri,
-            "proofPurpose": "assertionMethod",
-            "proofValue": signature,
+        credential: {
+            "@context": [
+                "https://www.w3.org/ns/credentials/v2"
+            ],
+            "type": [credential.format],
+            "issuer": did_uri,
+            "credentialSubject": credential.fields,
+            "proof": {
+                "type": "DataIntegrityProof",
+                "cryptosuite": "t11a-bookworms-bbs",
+                "verificationMethod": did_uri,
+                "proofPurpose": "assertionMethod",
+                "proofValue": signature.toString(),
+            }
         }
     }
 }

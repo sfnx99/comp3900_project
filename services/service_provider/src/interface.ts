@@ -44,7 +44,7 @@ export interface PresentationDefinition {
 
 interface PresentationDescriptor {
     id: CredentialType,
-    contraints: {
+    constraints: {
         fields: DescriptorField[]
     }
 }

@@ -1,7 +1,8 @@
+// import { resolve } from '@decentralized-identity/ion-tools';
 import * as bbs from '@digitalbazaar/bbs-signatures';
-import { resolve } from '@decentralized-identity/ion-tools';
+import axios from 'axios';
+import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
 import { readDefinitions } from './request';
-import { CredentialSubject, disclosedMessages, Presentation, PresentationDefinition, PresentationSubmission, ResponseV2 } from './interface';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
@@ -13,7 +14,7 @@ function getCredentialSubjectName(input: string): string {
 
 function getRequiredAttributes(): string[] {
     const presDesc = readDefinitions();
-    return presDesc.input_descriptors[0].contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
+    return presDesc.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
 function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
@@ -36,9 +37,11 @@ function checkConstraints(pres: Presentation, vcIndex: number): Boolean {
 
 async function obtainKey(pres: Presentation, vcIndex: number) {
     try {
-        const uri = pres.verifiableCredential[vcIndex].issuer;
+        /*const uri = pres.verifiableCredential[vcIndex].issuer;
         let doc = await resolve(uri);
-        return doc.didDocument.service[0].serviceEndpoint;
+        return doc.didDocument.service[0].serviceEndpoint;*/
+        const resp = await axios.get("http://localhost:8082/");
+        return resp.data.bbs_public_key;
     } catch (error) {
         if (error) {
             return {
