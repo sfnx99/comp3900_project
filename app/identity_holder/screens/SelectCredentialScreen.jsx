@@ -37,7 +37,8 @@ const SelectCredentialScreen = ({ route }) => {
 
       // TODO: Give message if there is no credential!
       if (!presentingCredential) {
-        //Alert.alert('ERROR', 'You do not own the necessary credential for this presentation.');
+        Alert.alert('ERROR', 'You do not own the necessary credential for this presentation.');
+        navigation.navigate('Home', { screen: 'PresentationScreen' });
       }
     };
 
@@ -59,6 +60,10 @@ const SelectCredentialScreen = ({ route }) => {
     loadAttributes();
   }, [presentingCredential]);
 
+  /**
+   * Handles the events following the submit button involving
+   * authentication before sending the presentation.
+   */
   const handlePress = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
