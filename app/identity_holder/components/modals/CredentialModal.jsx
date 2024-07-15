@@ -1,78 +1,103 @@
+import React, { useContext } from 'react';
 import {
   Modal,
   StyleSheet,
   Text,
-  Dimensions,
-  View,
+  Alert,
   TouchableOpacity,
+  View,
+  Dimensions,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CredentialsContext } from '../../context/CredentialsContext';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-const CredentialModal = ({ modalVisible, handleModalClose }) => (
-  <Modal
-    animationType="slide"
-    transparent
-    visible={modalVisible}
-    onRequestClose={handleModalClose}
-  >
-    <TouchableWithoutFeedback onPress={handleModalClose}>
-      <View style={styles.overlay}>
-        <TouchableWithoutFeedback>
-          <View style={[styles.container, styles.modalView]}>
-            <Text style={styles.text}>This is the modal content</Text>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Button 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Button 2</Text>
+const CredentialModal = ({ modalVisible, handleModalClose, credentialId }) => {
+  const { removeCredential } = useContext(CredentialsContext);
+  const navigation = useNavigation();
+
+  const handleDelete = () => {
+    navigation.navigate('Wallet');
+    try {
+      removeCredential(credentialId);
+    } catch (error) {
+      Alert.alert('Error', error)
+    }
+  };
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent
+      visible={modalVisible}
+      onRequestClose={() => {
+        Alert.alert('Modal has been closed.');
+        handleModalClose();
+      }}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.modalContent}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={handleModalClose}
+            >
+              <MaterialCommunityIcons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </TouchableWithoutFeedback>
-  </Modal>
-);
+          <View style={styles.settingsContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleDelete}
+            >
+              <Text style={styles.text}>Delete Credential</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    backgroundColor: '#F6F8FA',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    width: width * 0.8,
-  },
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  text: {
-    fontSize: 26,
-    textAlign: 'center',
-    color: 'black',
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+    width: '100%',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 20,
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#D6EE41',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 5,
-    width: width * 0.7,
-    alignItems: 'center',
+  closeButton: {
+    padding: 5,
   },
-  buttonText: {
-    color: 'black',
+  settingsContainer: {
+    width: '100%',
+  },
+  button: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  text: {
     fontSize: 18,
-    fontWeight: 'bold',
+    color: 'black',
   },
 });
 

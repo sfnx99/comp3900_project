@@ -5,7 +5,7 @@ import {
   useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import { getCredential, getCredentials } from '../scripts/api';
+import { deleteCredential, getCredential, getCredentials } from '../scripts/api';
 import { getValueFor, save } from '../scripts/util';
 
 const CredentialsContext = createContext();
@@ -55,7 +55,16 @@ const CredentialsProvider = ({ children }) => {
     saveCredentialsLocally(newCredentials);
   };
 
-  // TODO: Add delete function + API call here
+  const removeCredential = async (credential_id) => {
+    try {
+      await deleteCredential(credential_id);
+      const updatedCredentials = credentials.filter(cred => cred.id !== credential_id);
+      setCredentials(updatedCredentials);
+      saveCredentialsLocally(updatedCredentials);
+    } catch (error) {
+      console.error('Failed to delete credential:', error);
+    }
+  };
 
   /**
    * Fetches all the credentials from the local device.
@@ -98,7 +107,7 @@ const CredentialsProvider = ({ children }) => {
     loadCredentials();
   }, []);
 
-  const contextValue = useMemo(() => ({ credentials, toggleFavourite }), [credentials]);
+  const contextValue = useMemo(() => ({ credentials, toggleFavourite, removeCredential }), [credentials]);
 
   return (
     <CredentialsContext.Provider value={contextValue}>

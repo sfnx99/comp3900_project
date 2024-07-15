@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import {
   View,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,12 +17,14 @@ import { useTheme } from '../context/ThemeContext';
 import { createHomeScreenStyles } from '../styles/homeScreenStyles';
 import { CredentialsContext } from '../context/CredentialsContext';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
+import CircleIcon from '../components/CircleIcon';
 
 const HomeScreen = ({ activities }) => {
   const navigation = useNavigation();
-  const theme = useTheme();
   const { credentials } = useContext(CredentialsContext);
   const { displayName } = useContext(UserPreferenceContext);
+
+  const theme = useTheme();
   const styles = createHomeScreenStyles(theme);
 
   const favoriteCredentials = credentials.filter((cred) => cred.favourite);
@@ -37,7 +40,7 @@ const HomeScreen = ({ activities }) => {
           <CredentialsCarousel credentials={favoriteCredentials} />
           <TextButton
             text="View All Credentials"
-            onPress={() => navigation.navigate('Wallet')}
+            onPress={() => navigation.navigate('WalletStack', { screen: 'Wallet' })}
             style={styles.button}
           />
         </View>
@@ -52,6 +55,22 @@ const HomeScreen = ({ activities }) => {
           />
         </View>
       </ScrollView>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PresentationScreen')}
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          right: 20,
+          zIndex: 1,
+        }}
+      >
+        <CircleIcon
+          name="qrcode-scan"
+          size={24}
+          backgroundColor="#D6EE41"
+          padding={20}
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
