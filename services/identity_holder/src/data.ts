@@ -74,7 +74,8 @@ export const DEFAULT_DATA: Data = {
         }
     ],
     issuers: [
-        "http://localhost:8082" // hardcoded
+        "http://localhost:8082", 
+        "http://localhost:8083" // hardcoded
     ]
 };
 
