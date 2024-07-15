@@ -1,7 +1,7 @@
-import { getData, toUser, FORMAT_MAP } from './data';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from './interface';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { FORMAT_MAP, getData, toUser } from './data';
+import { SessionData } from './interface';
 export function getIssuers(token: string) {
     const data = getData();
     const user = toUser(token);
@@ -97,8 +97,7 @@ export async function makeRequest(token: string, issuer: string, format: string,
 }
 
 // V2
-export function getIssuersV2(user: User) {
-    console.log(`This is here so my code passes the pipeline, user parameter must be present ${user.email}`);
+export function getIssuersV2(session_data: SessionData) { // eslint-disable-line @typescript-eslint/no-unused-vars
     const data = getData();
     return {
         status: 200,
@@ -108,10 +107,10 @@ export function getIssuersV2(user: User) {
     };
 }
 
-export function getRequestV2(user: User, issuer_id: string) {
+export function getRequestV2(session_data: SessionData, issuer_id: string) {
     // We should resolve the DID here, pending on the upcoming meeting
     // TODO: above
-    console.log(`resolve ${issuer_id} for ${user.email}`);
+    console.log(`resolve ${issuer_id} for ${session_data.user.email}`);
     const dummy_response = {
         types: ["CredentialType1", "CredentialType2"],
         oauth_servers: ["http://localhost:8082"],
@@ -122,7 +121,7 @@ export function getRequestV2(user: User, issuer_id: string) {
     };
 }
 
-export async function makeRequestV2(user: User, issuer_id: string, auth_code: string, type: string, redirect_uri: string) {
+export async function makeRequestV2(session_data: SessionData, issuer_id: string, auth_code: string, type: string, redirect_uri: string) {
     // Resolve DID TODO
     const dummy_response = {
         types: ["CredentialType1", "CredentialType2"],
@@ -135,7 +134,7 @@ export async function makeRequestV2(user: User, issuer_id: string, auth_code: st
         grant_type: "authorization_code",
         code: auth_code,
         redirect_uri: redirect_uri,
-        client_id: user.email
+        client_id: session_data.user.email
     }
 
     try {
@@ -160,7 +159,7 @@ export async function makeRequestV2(user: User, issuer_id: string, auth_code: st
         }
 
         // Save credential to user (maybe add some error checking?)
-        user.credentialsV2.push(cred);
+        session_data.user.credentialsV2.push(cred);
 
         // Return ID
         return {

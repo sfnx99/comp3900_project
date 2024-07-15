@@ -9,9 +9,10 @@ $ npm i
 $ npx ts-node src/index.ts 
 */
 
+import { HttpStatusCode } from "axios";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { authLogin, authLogout, authLogoutV2, authRegister } from "./auth";
+import { authLoginV2, authLogoutV2, authRegisterV2 } from "./auth";
 import { deleteCredential, deleteCredentialV2, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
 import { getIssuers, getIssuersV2, getRequest, getRequestV2, makeRequest, makeRequestV2 } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
@@ -26,26 +27,15 @@ const port = process.env.PORT || 8081;
 app.use(express.json())
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
-    const {email, password} = req.body;
-    const result = authRegister(email, password);
-    res.status(result.status).json(result.body);
+    res.status(HttpStatusCode.PermanentRedirect).set("Location", "/v2/auth/register");
 });
 
 app.post('/v1/auth/login', (req: Request, res: Response) => {
-    const {email, password} = req.body;
-    const result = authLogin(email, password);
-    res.status(result.status).json(result.body);
+    res.status(HttpStatusCode.PermanentRedirect).set("Location", "/v2/auth/login");
 });
 
 app.post('/v1/auth/logout', (req: Request, res: Response) => {
-    const token = req.headers.authorization;
-    if (token !== undefined) {
-        // Cut off "Bearer "{token}
-        const result = authLogout(token.slice(7));
-        res.status(result.status).json(result.body);
-    } else {
-        res.status(401).json({error: "User is not logged in"});
-    }
+    res.status(HttpStatusCode.PermanentRedirect).set("Location", "/v2/auth/logout");
 });
 
 app.get('/v1/credentials', (req: Request, res: Response) => {
@@ -148,19 +138,19 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
 
 app.post('/v2/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
-    const result = authRegister(email, password);
+    const result = authRegisterV2(email, password);
     res.status(result.status).json(result.body);
 });
 
 app.post('/v2/auth/login', (req: Request, res: Response) => {
     const {email, password} = req.body;
-    const result = authLogin(email, password);
+    const result = authLoginV2(email, password);
     res.status(result.status).json(result.body);
 });
 
 app.post('/v2/auth/logout', async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const result = await wrapAuthorisation(token, authLogoutV2, token);
+    const result = await wrapAuthorisation(token, authLogoutV2);
     res.status(result.status).json(result.body);
 });
 
@@ -174,7 +164,10 @@ app.get("/v2/issuers", async (req: Request, res: Response) => {
 
 app.get("/v2/issue", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const issuer_id = req.body.issuer_id;
+    let issuer_id = req.query.issuer_id;
+    if (typeof issuer_id !== "string") {
+        issuer_id = ""
+    }
     const result = await wrapAuthorisation(token, getRequestV2, issuer_id);
     res.status(result.status).json(result.body);
 });
@@ -189,7 +182,10 @@ app.post("/v2/issue", async (req: Request, res: Response) => {
 // Presentation
 app.get("/v2/present", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const { verifier_uri } = req.body;
+    let verifier_uri = req.query.verifier_uri;
+    if (typeof verifier_uri !== "string") {
+        verifier_uri = "";
+    }
     const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
     res.status(result.status).json(result.body);
 });
@@ -210,7 +206,10 @@ app.get("/v2/credentials", async (req: Request, res: Response) => {
 
 app.get("/v2/credential", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
-    const { credential_id } = req.body;
+    let credential_id = req.query.credential_id;
+    if (typeof credential_id !== "string") {
+        credential_id = "";
+    }
     const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
     res.status(result.status).json(result.body);
 });

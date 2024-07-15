@@ -1,10 +1,10 @@
-FROM node:14 as base
+FROM oven/bun:1 AS base
 
 WORKDIR /home/node/app
 
 COPY package*.json ./
 
-RUN npm i
+RUN bun install
 
 COPY . .
 
@@ -12,4 +12,4 @@ FROM base as production
 
 ENV NODE_PATH=./dist
 
-RUN npx ts-node src/index.ts 
+RUN bun run src/index.ts -f formats.json
