@@ -1,11 +1,10 @@
+import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
-
 import { ThemeContext } from '../../context/ThemeContext';
 import { renderIconByName } from '../../scripts/util';
 import WalletScreen from '../WalletScreen';
-import SearchButton from '../../components/SearchButton';
+import SearchButton from '../../components/SearchButton'; // Ensure SearchButton is imported
 import CredentialInformation from '../CredentialInformation';
 
 const Stack = createStackNavigator();
@@ -19,7 +18,7 @@ const WalletStack = () => {
       height: 100,
     },
     text: {
-      color: theme.text,
+      color: 'black',
       fontWeight: 'bold',
       paddingTop: 25,
       fontSize: 20,
@@ -45,9 +44,9 @@ const WalletStack = () => {
           headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
             paddingTop: 25,
             size: 30,
-            color: theme.text,
+            color: 'black',
           }),
-          headerRight: SearchButton(),
+          headerRight: () => <SearchButton onPress={() => navigation.navigate('Search')} />, // Adjusted to use SearchButton with onPress navigation
         })}
       />
       <Stack.Screen
@@ -59,7 +58,7 @@ const WalletStack = () => {
           headerShadowVisible: false,
           headerTitleAlign: 'center',
           headerTitleStyle: styles.text,
-          headerLeft: renderIconByName('arrow-left', () => navigation.navigate('WalletStack', { screen: 'Wallet' }), {
+          headerLeft: renderIconByName('arrow-left', () => navigation.navigate('Wallet'), {
             paddingTop: 25,
             size: 30,
             color: theme.text,
