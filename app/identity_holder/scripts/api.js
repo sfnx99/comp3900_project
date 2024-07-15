@@ -2,7 +2,7 @@ import axios from 'axios';
 import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor } from './util';
 
-const port = WALLET_PORT || 7999;
+const port = WALLET_PORT || 8081;
 const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
@@ -196,5 +196,51 @@ export const postPresentation = async (credential_id, verifier_uri) => {
   } catch (error) {
     handleError(error);
     return null;
+  }
+};
+
+export const getIssuers = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.');
+    }
+    const response = await axios.get(`${url}/issuers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+
+/**
+ * Fetches issuer data from the API.
+ * @returns {Promise} A promise that resolves to the issuer data or an error object.
+ */
+export const getIssue = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.'); // Ensures that the function exits if no token is available
+    }
+
+    const response = await axios.get(`${url}/issue`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Uses the token for authorization
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch data: Status ${response.status}`);
+    }
+
+    return response.data; 
+  } catch (error) {
+    handleError(error); 
+    return { error: true, message: error.message };
   }
 };

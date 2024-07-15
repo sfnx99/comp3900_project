@@ -51,6 +51,7 @@ export const createHomeScreenStyles = (theme) => (
     button: {
       marginTop: 8,
       marginBottom: 0,
+      width: width * 0.9,
     },
   })
 );
