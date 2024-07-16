@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { StatusBar, StyleSheet} from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { renderIconByName } from './scripts/util';
@@ -14,17 +14,70 @@ import SearchButton from './components/SearchButton';
 import { ThemeContext } from './context/ThemeContext';
 import LoginScreen from './screens/LoginScreen';
 import HomeStack from './screens/stacks/HomeStack';
-import RequestStack from './screens/stacks/RequestStack';
+import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import { getCoordinates } from './components/Geocoding';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const MainApp = () => {
   const [credentials, setCredentials] = useState([]);
-
+  const [notifications, setNotifications] = useState([]);
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
+    const fetchNotifications = async () => {
+      const initialNotifications = [
+        {
+          id: 1,
+          name: 'Medicare Card',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'UNSW Medical Centre',
+        },
+        {
+          id: 2,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Joe Bar, Newtown',
+        },
+        {
+          id: 3,
+          name: 'NSW Drivers License',
+          type: 'location',
+          timestamp: new Date(),
+          detail: 'Woolworths, Newtown',
+        },
+        {
+          id: 4,
+          name: 'Credential Approved',
+          type: 'approval',
+          timestamp: new Date(),
+          detail: 'Your NSW Drivers License has been verified.',
+        },
+        {
+          id: 5,
+          name: 'Credential Pending',
+          type: 'pending',
+          timestamp: new Date(),
+          detail: 'Request for UNSW ID card pending approval.',
+        },
+      ];
+
+      const notificationsWithCoordinates = await Promise.all(
+        initialNotifications.map(async (notification) => {
+          if (notification.type === 'location' && notification.detail) {
+            const coordinates = await getCoordinates(notification.detail);
+            return { ...notification, coordinates };
+          }
+          return notification;
+        }),
+      );
+
+      setNotifications(notificationsWithCoordinates);
+    };
+
     // TODO: GET CREDENTIALS HERE
     const fetchCredentials = async () => {
       setCredentials([
@@ -41,9 +94,9 @@ const MainApp = () => {
       ]);
     };
 
+    fetchNotifications();
     fetchCredentials();
   }, []);
-
 
   const styles = StyleSheet.create({
     navBar: {
@@ -65,9 +118,11 @@ const MainApp = () => {
       size: 30,
       color: theme.text,
     },
+    /*
     headerRight: {
       paddingTop: 25,
     },
+    */
   });
 
   return (
@@ -93,11 +148,11 @@ const MainApp = () => {
           headerTitleAlign: 'center',
         }}
       >
-        {() => <HomeStack credentials={credentials} />}
+        {() => <HomeStack credentials={credentials} notifications={notifications} />}
       </Tab.Screen>
       <Tab.Screen
         name="Request Credentials"
-        component={RequestStack}
+        component={RequestCredentialScreen}
         options={{
           // headerShown: false,
           tabBarIcon: renderIconByName('card-plus'),
@@ -114,12 +169,13 @@ const MainApp = () => {
       </Tab.Screen>
       <Tab.Screen
         name="Notifications"
-        component={NotificationsScreen}
         options={{
           tabBarIcon: renderIconByName('bell'),
           headerRight: SearchButton(),
         }}
-      />
+      >
+        {() => <NotificationsScreen notifications={notifications} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}

@@ -1,4 +1,4 @@
-import React from 'react';
+import PropType from 'prop-types';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const CustomButton = ({ style, title, onPress }) => (
@@ -22,5 +22,19 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
   },
 });
+
+CustomButton.propTypes = {
+  style: PropType.shape({
+    backgroundColor: PropType.string,
+    paddingVertical: PropType.number,
+    paddingHorizontal: PropType.number,
+    marginVertical: PropType.number,
+    borderRadius: PropType.number,
+    width: PropType.number,
+    alignItems: PropType.string,
+  }),
+  title: PropType.string,
+  onPress: PropType.func,
+};
 
 export default CustomButton;

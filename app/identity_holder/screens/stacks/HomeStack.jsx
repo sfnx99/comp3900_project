@@ -1,66 +1,41 @@
 import PropTypes from 'prop-types';
+import { useContext } from 'react';
+import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useEffect, useState, StyleSheet } from 'react';
-import { getCoordinates } from '../../components/Geocoding';
+
 import ActivityHistory from '../ActivityHistory';
-import { credentialPropType, renderIconByName } from '../../scripts/util';
+import { credentialPropType, notificationPropType, renderIconByName } from '../../scripts/util';
 import HomeScreen from '../HomeScreen';
+import { ThemeContext } from '../../context/ThemeContext';
 
 const Stack = createStackNavigator();
 
-const HomeStack = ({ credentials }) => {
-  const [notifications, setNotifications] = useState([]);
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const initialNotifications = [
-        {
-          id: 1,
-          name: 'Medicare Card',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'UNSW Medical Centre',
-        },
-        {
-          id: 2,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Joe Bar, Newtown',
-        },
-        {
-          id: 3,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Woolworths, Newtown',
-        },
-      ];
-
-      const notificationsWithCoordinates = await Promise.all(
-        initialNotifications.map(async (notification) => {
-          if (notification.type === 'location' && notification.detail) {
-            const coordinates = await getCoordinates(notification.detail);
-            return { ...notification, coordinates };
-          }
-          return notification;
-        }),
-      );
-
-      setNotifications(notificationsWithCoordinates);
-    };
-
-    fetchNotifications();
-  }, []);
-
+const HomeStack = ({ credentials, notifications }) => {
+  const { theme } = useContext(ThemeContext);
+  const styles = StyleSheet.create({
+    header: {
+      backgroundColor: theme.background,
+      height: 100,
+    },
+    text: {
+      color: theme.text,
+      fontWeight: 'bold',
+      paddingTop: 25,
+      fontSize: 20,
+    },
+  });
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={styles.header}
+      cardStyle
+    >
       <Stack.Screen
         name="HomeMain"
         options={{
           tabBarIcon: renderIconByName('home'),
           headerShown: false,
-          headerStyle: { backgroundColor: 'black' },
+          headerStyle: styles.header,
+          headerTitleStyle: styles.text,
           headerTitleAlign: 'center',
         }}
       >
@@ -71,18 +46,15 @@ const HomeStack = ({ credentials }) => {
         options={({ navigation }) => ({
           headerShown: true,
           tabBarStyle: '#F1F2EC',
-          headerStyle: {backgroundColor: '#F6F8FA',  height: 100},
+          headerStyle: styles.header,
           headerShadowVisible: false,
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-                 color: '#000000',
-                 fontWeight: 'bold',
-                 paddingTop: 25,
-                 fontSize: 20},
+          headerTitleStyle: styles.text,
           headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
-                 paddingTop: 25,
-                 size: 30,
-                 color: '#000000'}),
+            paddingTop: 25,
+            size: 30,
+            color: theme.text,
+          }),
         })}
       >
         {() => <ActivityHistory notifications={notifications} />}
@@ -93,6 +65,7 @@ const HomeStack = ({ credentials }) => {
 
 HomeStack.propTypes = {
   credentials: PropTypes.arrayOf(credentialPropType),
+  notifications: PropTypes.arrayOf(notificationPropType),
 };
 
 export default HomeStack;

@@ -11,11 +11,11 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import { addOne } from "./extra";
-import { authRegister, authLogin, authLogout } from "./auth";
-import {getCredentials, getCredential, deleteCredential} from "./credentials";
-import {getIssuers, getRequest, makeRequest} from './issuer';
-import {getPresentation, makePresentation} from './verifier';
+import { authLogin, authLogout, authLogoutV2, authRegister } from "./auth";
+import { deleteCredential, deleteCredentialV2, getCredential, getCredentials, getCredentialsV2, getCredentialV2 } from "./credentials";
+import { getIssuers, getIssuersV2, getRequest, getRequestV2, makeRequest, makeRequestV2 } from './issuer';
+import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
+import { wrapAuthorisation } from "./wrapper";
 
 dotenv.config();
 
@@ -24,10 +24,6 @@ const port = process.env.PORT || 8081;
 
 // Parse request body
 app.use(express.json())
-
-app.get("/", (req: Request, res: Response) => {
-    res.send("Express + TypeScript Server : 2+1=" + addOne(2));
-});
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
@@ -146,6 +142,97 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
     }
 });
 
+// V2 Code:
+
+// Authorization
+
+app.post('/v2/auth/register', (req: Request, res: Response) => {
+    const {email, password} = req.body;
+    const result = authRegister(email, password);
+    res.status(result.status).json(result.body);
+});
+
+app.post('/v2/auth/login', (req: Request, res: Response) => {
+    const {email, password} = req.body;
+    const result = authLogin(email, password);
+    res.status(result.status).json(result.body);
+});
+
+app.post('/v2/auth/logout', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, authLogoutV2, token);
+    res.status(result.status).json(result.body);
+});
+
+// Issuance
+
+app.get("/v2/issuers", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, getIssuersV2);
+    res.status(result.status).json(result.body);
+});
+
+app.get("/v2/issue", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    let issuer_id = req.query.issuer_id;
+    if (typeof issuer_id !== "string") {
+        issuer_id = ""
+    }
+    const result = await wrapAuthorisation(token, getRequestV2, issuer_id);
+    res.status(result.status).json(result.body);
+});
+
+app.post("/v2/issue", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { issuer_id, auth_code, type, redirect_uri } = req.body;
+    const result = await wrapAuthorisation(token, makeRequestV2, issuer_id, auth_code, type, redirect_uri);
+    res.status(result.status).json(result.body);
+})
+
+// Presentation
+app.get("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    let verifier_uri = req.query.verifier_uri;
+    if (typeof verifier_uri !== "string") {
+        verifier_uri = "";
+    }
+    const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
+    res.status(result.status).json(result.body);
+});
+
+app.post("/v2/present", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { verifier_uri, credential_id } = req.body;
+    const result = await wrapAuthorisation(token, postPresentationV2, verifier_uri, credential_id);
+    res.status(result.status).json(result.body);
+});
+
+// Management of Credentials
+app.get("/v2/credentials", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const result = await wrapAuthorisation(token, getCredentialsV2);
+    res.status(result.status).json(result.body);
+});
+
+app.get("/v2/credential", async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    let credential_id = req.query.credential_id;
+    if (typeof credential_id !== "string") {
+        credential_id = "";
+    }
+    const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
+    res.status(result.status).json(result.body);
+});
+
+app.delete('/v2/credential', async (req: Request, res: Response) => {
+    const token = req.headers.authorization;
+    const { credential_id } = req.body;
+    const result = await wrapAuthorisation(token, deleteCredentialV2, credential_id);
+    res.status(result.status).json(result.body);
+});
+
+
 app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
+
