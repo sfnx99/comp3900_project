@@ -1,12 +1,13 @@
-import { StyleSheet } from 'react-native';
-import { renderIconByName } from '../scripts/util';
+// Example of SearchButton component
+import React from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 
-const styles = StyleSheet.create({
-  searchButton: {
-    paddingTop: 25,
-  },
-});
-
-const SearchButton = (onPress) => renderIconByName('magnify', onPress, { size: 30, style: styles.searchButton });
+const SearchButton = ({ onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <Text></Text>
+    </TouchableOpacity>
+  );
+};
 
 export default SearchButton;

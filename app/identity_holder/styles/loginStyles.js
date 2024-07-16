@@ -23,10 +23,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#D6EE41',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginVertical: 20,
+    marginVertical: 5, // 20
     borderRadius: 5,
     width: width * 0.95,
     alignItems: 'center',
+  },
+  buttonInverted: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 10, // 20
+    borderRadius: 5,
+    width: width * 0.95,
+    alignItems: 'center',
+  },
+  registerButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  registerText: {
+    color: '#D6EE41',
   },
 });
 
