@@ -1,4 +1,5 @@
 // import { resolve } from '@decentralized-identity/ion-tools';
+// @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import axios from 'axios';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
@@ -12,8 +13,8 @@ function getCredentialSubjectName(input: string): string {
     return input.substring(lastIndex + 1);
 }
 
-function getRequiredAttributes(): string[] {
-    const presDesc = readDefinitions();
+async function getRequiredAttributes(): Promise<string[]> {
+    const presDesc = await readDefinitions();
     return presDesc.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
@@ -22,8 +23,8 @@ function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
     return keysArray;
 }
 
-function checkConstraints(pres: Presentation, vcIndex: number): Boolean {
-    const requiredCredentialFields = getRequiredAttributes();
+async function checkConstraints(pres: Presentation, vcIndex: number): Promise<Boolean> {
+    const requiredCredentialFields = await getRequiredAttributes();
     const givenCredentialFields = getGivenAttributes(pres, vcIndex);
 
     let checkSubset = (parentArray: string[], subsetArray: string[]) => {
@@ -115,12 +116,14 @@ async function validateProof(publicKey: string, proof: string, messages: disclos
     return verified_selective;
 }
 
-function validateDefinition(presSub: PresentationSubmission): Boolean {
-    return presSub.definition_id === readDefinitions().id;
+async function validateDefinition(presSub: PresentationSubmission): Promise<Boolean> {
+    const defs = await readDefinitions();
+    return presSub.definition_id === defs.id;
 }
 
-function identifyVC(presSub: PresentationSubmission): string {
-    const presDesc = readDefinitions().input_descriptors;
+async function identifyVC(presSub: PresentationSubmission): Promise<string> {
+    const defs = await readDefinitions();
+    const presDesc = defs.input_descriptors;
     const presMap = presSub.descriptor_map;
     let commonFormats: string[] = [];
 
@@ -157,8 +160,9 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Determine the number of VPs returned in the VP Token and identify in which VP which requested VC is included,
     //  using the Input Descriptor Mapping Object(s) in the Presentation Submission.
     */
-    let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)[0], 10) : null);
-    const vcIndex = extractFirstNumber(identifyVC(presSub));
+    let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)![0], 10) : null);
+    const vcP = await identifyVC(presSub);
+    const vcIndex = extractFirstNumber(vcP);
     if (vcIndex === null) {
         return {
             status: 400,
@@ -185,9 +189,9 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  If applicable, perform the checks on the Credential(s) specific to the Credential Format
     //  (i.e., validation of the signature(s) on each VC).
     */
-    const publicKey = obtainKey(pres, vcIndex);
+    const publicKey = await obtainKey(pres, vcIndex);
     const proof = pres.verifiableCredential[vcIndex].proof.proofValue[1];
-    if (!validateProof(await publicKey, proof, constructChunks(pres, vcIndex))) {
+    if (!validateProof(publicKey, proof, constructChunks(pres, vcIndex))) {
         return {
             status: 400,
             body: {

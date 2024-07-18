@@ -6,8 +6,6 @@ export async function requestMetadata(): Promise<ResponseV2> {
     try {
         const presDesc = await readDefinitions();
         const session = uuidv4();
-        console.log(presDesc.input_descriptors)
-        console.log(presDesc.input_descriptors[0].constraints.fields)
         return {
             status: 200,
             body: {
@@ -32,7 +30,6 @@ export async function requestMetadata(): Promise<ResponseV2> {
 export async function readDefinitions(): Promise<PresentationDefinition> {
     const val = await fs.promises.readFile("./presentationDefinitions.json");
     const jsonObject = JSON.parse(val.toString());
-    console.log(jsonObject)
     return jsonObject;
     
 

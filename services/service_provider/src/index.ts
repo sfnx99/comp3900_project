@@ -31,7 +31,6 @@ app.listen(port, () => {
 });
 
 app.get("/v2/request", async (req: Request, res: Response) => {
-    console.log("Received Request")
     const result = await requestMetadata();
     res.status(result.status).json(result.body);
 });

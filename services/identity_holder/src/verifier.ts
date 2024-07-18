@@ -100,12 +100,8 @@ export async function makePresentation(token: string, verifier: string, format: 
 export async function getPresentationV2(session_data: SessionData, verifier: string): Promise<ResponseV2> {
     const verifierRequest = verifier + "/v2/request";
     const res = await axios.get(verifierRequest);
-    console.log(res)
     const res_data: VerifierV2Request = res.data;
-    console.log(res_data)
     const descriptor = res_data.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
-    console.log(session_data.user.credentialsV2[0])
-    console.log(descriptor)
     const userCred = session_data.user.credentialsV2.find(
         c => c.type.includes(descriptor.id)
         && descriptor.constraints.fields.every(
@@ -137,7 +133,6 @@ export async function getPresentationV2(session_data: SessionData, verifier: str
 
 function get_required_attributes(definition: PresentationDefinition): string[] {
     const val =definition.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
-    console.log(val)
     return val
 }
 
@@ -152,7 +147,6 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
             }
         }
     }
-    console.log(session_data)
     if (session_data.active_presentation_request === undefined) {
         return {
             status: HttpStatusCode.BadRequest,
@@ -170,9 +164,6 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
             }
         }
     }
-    console.log(verifiable_credential)
-    console.log(verifiable_credential.proof)
-    console.log(verifiable_credential.proof.proofValue)
     const presentation: Presentation = {
         '@context': ["https://www.w3.org/ns/credentials/v2"],
         type: ["VerifiablePresentation"],
@@ -187,19 +178,16 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
             path: '$.verifiableCredentials[' + i + ']'
         })
     }
-    console.log(descriptor_map)
     const presentation_submission: PresentationSubmission = {
         id: uuidv4(),
         definition_id: session_data.active_presentation_request.id,
         descriptor_map: descriptor_map
     }
-    console.log(presentation_submission)
     const verifierData = {
         "presentation_submission": presentation_submission,
         "vp_token": presentation,
         "state": "oeih1129"
     }
-    console.log(verifierData)
     const res = await axios.post(verifierPresent, verifierData)
     return {
         status: res.status,
@@ -212,7 +200,6 @@ function getRelativeCredentialValue(paths: string[], credential_subject: Credent
         const values = paths.map(path => {
             const keys = path.slice(2).split('.') // TODO: Remove $[] from path instead of slicing.
             let current: any = credential_subject // eslint-disable-line @typescript-eslint/no-explicit-any
-            console.log(keys)
             for (let i = 0; i < keys.length; i++) {
                 const element = keys[i];
                 current = current[element]
@@ -264,7 +251,6 @@ function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,
  * @returns 
  */
 async function create_verifiable_credential(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialV2 | undefined> {
-    console.log("called create_verifiable_credential")
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))   
@@ -294,13 +280,9 @@ async function create_verifiable_credential(credential: CredentialV2, presentati
  * @param presentation_request 
  */
 async function create_verifiable_credential_proof(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialProof | undefined> {
-    console.log("Called create_verifiable_credential_proof")
     const credentialSubject_attributes = get_required_attributes(presentation_request)
-    console.log(credentialSubject_attributes)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
-    console.log(non_did_credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))
-    console.log(filtered_credentialSubject)
 
     const initial_chunk = JSON.stringify({
         "@context": credential['@context'],
@@ -323,40 +305,21 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     const last_chunk_index = non_did_credentialSubject.map(i => i.index).reduce((acc, val) => Math.max(acc, val)) + 1
     const header = new Uint8Array();
     const issuer_publicKey: Uint8Array = await dereference_DID_to_public_key(credential.proof.verificationMethod)
-    console.log(all_data_chunks)
-    console.log(`Public key: listed below`)
-    console.log(issuer_publicKey)
     const ciphersuite = "BLS12-381-SHA-256"
-    console.log([initial_chunk, ...all_data_chunks, last_chunk])
     const all_chunks = [initial_chunk, ...all_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunks = [initial_chunk, ...filtered_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunk_indexes = [0,...filtered_credentialSubject.map(cs => cs.index).sort((a,b) => a-b), last_chunk_index]
-    console.log(all_chunks)
-    const proofValue: Uint8Array = new TextEncoder().encode(credential.proof.proofValue)
-    const signature = {
-        publicKey: issuer_publicKey,
-        signature: proofValue,
-        header: header,
-        messages: all_chunks,
-        ciphersuite: ciphersuite
-    }
-    // console.log(signature)
-    // const verifieda = bbs.verifySignature(signature)
-    // console.log(`Verified: ${verifieda}`)
-    // const verified = await verifieda;
-    // console.log(`Verified After: ${verified}`)
-    // if (!verified) {
-    //     return undefined
-    // }
+    const proofValue = new Uint8Array(credential.proof.proofValue.split(",").map(e => parseInt(e)));
     const proof: string = await bbs.deriveProof({
         publicKey: issuer_publicKey,
         signature: proofValue,
         header: header,
-        messages: filtered_chunks,
+        messages: all_chunks,
         presentationHeader: header,
         disclosedMessageIndexes: filtered_chunk_indexes,
         ciphersuite: ciphersuite
     });
+    console.log(`successfully created BBS proof: ${proof}`);
     const verifiable_credential_proof: VerifiableCredentialProof = {
         proofValue: [proof, credential.proof.proofValue],
         type: credential.proof.type,

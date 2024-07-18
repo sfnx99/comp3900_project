@@ -140,7 +140,6 @@ const token_body = {
     if (access_token === undefined) {
         throw Error("Couldn't parse access token");
     }
-    console.log(resp);
     // Use access token to request credential
     const cred_headers = {
         Authorization: `Bearer ${access_token}`
@@ -152,7 +151,6 @@ const token_body = {
     const c_resp = await axios.post(oauth_servers[0] + "/v2/credential", cred_body, {headers: cred_headers});
     const cred: CredentialV2 = c_resp.data.credential;
     cred.id = uuidv4();
-    console.log(`C_RESP: ${cred}.\n Also ${c_resp.data}`)
     if (cred === undefined) {
         throw Error("Couldn't parse credential");
     }
@@ -160,7 +158,6 @@ const token_body = {
     // Save credential to user (maybe add some error checking?)
     session_data.user.credentialsV2.push(cred);
 
-    console.log(`Pushed to session_data. Success. Returning ${cred.id}, ${cred}`)
     // Return ID
     return {
         status: 200,

@@ -134,16 +134,12 @@ app.listen(port, async () => {
     //         console.error("\nError: Could not parse data. Please try again.")
     //     }
     // }
-    console.log(did_uri);
 
 });
 
 async function issue(access_token: string) {
-    console.log(`Issuing with access_token: ${access_token}`)
     const request = authenticate(access_token);
-    console.log(request)
     const credential = getCredential(request.client_id, request.scope);
-    console.log(credential)
     if (credential === undefined) {
         throw new Error("Credential Does not exist");
     }
@@ -152,9 +148,7 @@ async function issue(access_token: string) {
     
     const header = new Uint8Array();
     const messages = Object.entries(credential.fields).map((e) => new TextEncoder().encode(JSON.stringify(e)));
-    console.log(messages)
     const signature: Uint8Array = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
-    console.log(signature, signature.toString())
     return {
         credential: {
             "@context": [
