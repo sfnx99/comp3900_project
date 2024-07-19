@@ -36,8 +36,10 @@ app.get("/v2/request", async (req: Request, res: Response) => {
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {
-    const { pres_sub, pres, state } = req.body;
-    const result = presentSubmission(pres_sub, pres, state);
-    res.status((await result).status).json((await result).body);
+    console.log("Received presentation");
+    const { presentation_submission, vp_token, state } = req.body;
+    const result = await presentSubmission(presentation_submission, vp_token, state);
+    console.log(`Presentation processed: ${JSON.stringify(result)}`);
+    res.status(result.status).json(result.body);
 });
 

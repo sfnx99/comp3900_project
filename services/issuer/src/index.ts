@@ -147,7 +147,44 @@ async function issue(access_token: string) {
     // const credential: Credential = {client_id: "bob@test.com", format: "DriverLicenceCredential", fields: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"}}
     
     const header = new Uint8Array();
-    const messages = Object.entries(credential.fields).map((e) => new TextEncoder().encode(JSON.stringify(e)));
+    // first
+    const firstChunk = JSON.stringify({
+        "@context": [
+            "https://www.w3.org/ns/credentials/v2"
+        ],
+        "type": [credential.format],
+        "issuer": did_uri,
+    });
+    // last
+    const lastChunk = JSON.stringify({
+            "type": "DataIntegrityProof",
+            "cryptosuite": "t11a-bookworms-bbs",
+            // "verificationMethod": did_uri,
+            "proofPurpose": "assertionMethod",
+    });
+    // convert middle to kvp
+    const key_value_pairs = Object.entries(credential.fields);
+    const result = []
+    for (let index = 0; index < key_value_pairs.length; index++) {
+        const kvp = key_value_pairs[index]
+        const key = kvp[0]
+        if (key === "id") {
+            // Dont allow Verifier to inspect did.
+            continue
+        }
+        result.push({
+            index: index + 1, // BBS is zero-indexed, and index 0 is the header of the payload. Thus, credentialSubject is 1-indexed.
+            key: key,
+            value: kvp[1]
+        })
+    }
+    // convert middle to chunks
+
+    const middleChunks = result
+        .map(cs => indexed_key_value_pairs_to_object([cs]))
+        .map(obj => JSON.stringify(obj));
+    const messages = [firstChunk, ...middleChunks, lastChunk].map(c => new TextEncoder().encode(c));
+    // console.log(`Signing with messages: ${JSON.stringify(messages)}`);
     const signature: Uint8Array = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
     return {
         credential: {
@@ -166,4 +203,16 @@ async function issue(access_token: string) {
             }
         }
     }
+}
+
+// bad style: copy pasted from IH
+
+
+function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
+    // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    const result = Object();
+    for (const {index, key, value} of kvp_list) {
+        result[key] = value;
+    }
+    return result;
 }

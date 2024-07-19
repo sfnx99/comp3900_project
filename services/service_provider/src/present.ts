@@ -75,7 +75,12 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
 }
 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
-    return kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    const result = Object();
+    for (const {index, key, value} of kvp_list) {
+        result[key] = value;
+    }
+    return result;
 }
 
 function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages {
@@ -92,10 +97,21 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
         .map(cs => indexed_key_value_pairs_to_object([cs]))
         .map(obj => JSON.stringify(obj));
 
-    const finalChunk = JSON.stringify(vc.proof)
+    // const finalChunk = JSON.stringify(vc.proof)
+    const finalChunk = JSON.stringify({
+        type: pres.verifiableCredential[0].proof.type,
+        cryptosuite: pres.verifiableCredential[0].proof.cryptosuite,
+        // verificationMethod: pres.verifiableCredential[0].proof.verificationMethod,
+        proofPurpose: pres.verifiableCredential[0].proof.proofPurpose
+    })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
-
     const indexes = JSON.parse(vc.proof.proofValue[0]);
+    // console.log(`indicies: ${indexes}`)
+    // for (const i in filteredChunks) {
+    //     console.log(`chunk ${i}`);
+    //     console.log(JSON.stringify(filteredChunks[i]));
+    // }
+    
 
     return {
         disclosedMessages: filteredChunks,
@@ -103,16 +119,20 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     }
 }
 
-async function validateProof(publicKey: string, proof: string, messages: disclosedMessages): Promise<Boolean> {
+async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages: disclosedMessages): Promise<Boolean> {
     const header = new Uint8Array();
     const presentationHeader = new Uint8Array();
     const { disclosedMessages, disclosedMessageIndexes } = messages;
-
+    console.log(`Validating proof...`);
+    // console.log(`Provided publicKey: ${JSON.stringify(publicKey)}`);
+    // console.log(`Provided proof: ${JSON.stringify(proof)}`);
+    // console.log(`Provided messages: ${JSON.stringify(disclosedMessages)}`);
+    // console.log(`Provided indicies: ${JSON.stringify(disclosedMessageIndexes)}`);
     const verified_selective = await bbs.verifyProof({
         publicKey, proof, header, presentationHeader, disclosedMessages, disclosedMessageIndexes,
         ciphersuite: 'BLS12-381-SHA-256'
     });
-
+    console.log(`Validation result: ${verified_selective}`);
     return verified_selective;
 }
 
@@ -189,9 +209,11 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  If applicable, perform the checks on the Credential(s) specific to the Credential Format
     //  (i.e., validation of the signature(s) on each VC).
     */
-    const publicKey = await obtainKey(pres, vcIndex);
-    const proof = pres.verifiableCredential[vcIndex].proof.proofValue[1];
-    if (!validateProof(publicKey, proof, constructChunks(pres, vcIndex))) {
+    const publicKeyObj = await obtainKey(pres, vcIndex);
+    const publicKey = new Uint8Array(Object.values(publicKeyObj));
+    const proofStr = pres.verifiableCredential[vcIndex].proof.proofValue[1];
+    const proof = new Uint8Array(Object.values(JSON.parse(proofStr)));
+    if (!await validateProof(publicKey, proof, constructChunks(pres, vcIndex))) {
         return {
             status: 400,
             body: {
