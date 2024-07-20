@@ -36,6 +36,16 @@ const removeToken = async () => {
 };
 
 /**
+ * Checks if the token is still valid for the session.
+ * @returns boolean determining the validity of the session.
+ */
+export const tokenActive = async () => {
+  const token = await getValueFor('token');
+  if (token) { return true }
+  return false;
+};
+
+/**
  * Handles error logging in the catch block for API calls to the
  * Wallet API.
  * @param {error} error - the error object from the catch block.

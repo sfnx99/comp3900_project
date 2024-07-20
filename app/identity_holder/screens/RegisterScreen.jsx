@@ -9,16 +9,16 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 import TextInputField from '../components/TextInputField';
-import { useTheme } from '../context/ThemeContext';
 import TextButton from '../components/TextButton';
 import { registerUser } from '../scripts/api';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
 import ErrorMessage from '../components/ErrorMessage';
+import { AccountContext } from '../context/AccountContext';
 
 const RegisterScreen = () => {
-  const theme = useTheme();
   const navigation = useNavigation();
   const { updateDisplayName } = useContext(UserPreferenceContext);
+  const { bindEmail } = useContext(AccountContext);
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -66,6 +66,7 @@ const RegisterScreen = () => {
     try {
       await registerUser(email, password);
       await updateDisplayName(displayName);
+      bindEmail(email);
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
     } catch (error) {
