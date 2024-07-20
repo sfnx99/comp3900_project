@@ -12,7 +12,8 @@ $ npx ts-node src/index.ts
 
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import * as fs from "fs";
+import { requestMetadata } from "./request";
+import { presentSubmission } from "./present";
 
 dotenv.config();
 
@@ -29,42 +30,14 @@ app.listen(port, () => {
     console.log(`[server]: Service Provider is running at http://localhost:${port}`);
 });
 
-app.post("/v1/metadata", (req: Request, res: Response) => {
-    fs.readFile("./metadata.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
-        if (err) {
-            console.error("Could not read file:", err);
-            return;
-        }
-
-        try {
-            const jsonObject = JSON.parse(data.toString());
-            res.status(200).json(jsonObject);
-        } catch (parseErr) {
-            res.status(500).json({ message: 'Internal Server Error', error: parseErr });;
-        }
-    });
+app.get("/v2/request", (req: Request, res: Response) => {
+    const result = requestMetadata();
+    res.status(result.status).json(result.body);
 });
 
-app.post("/v1/receive", (req: Request, res: Response) => {
-    const jsonData = req.body;
-
-    fs.readFile("./trusted.json", (err: NodeJS.ErrnoException | null, data: Buffer) => {
-        if (err) {
-            res.status(500).json({ message: 'Could not read file: ', error: err});
-            return;
-        }
-
-        try {
-            const trusted = JSON.parse(data.toString());
-            const issuer = jsonData.iss;
-            if (trusted.issuers.includes(issuer)) {
-                res.status(200).json({ message: 'Credential Accepted.' });
-            } else {
-                res.status(403).json({ message: 'Credential Denied.' });
-            }
-        } catch (parseErr) {
-            res.status(500).json({ message: 'Internal Server Error.' });;
-        }
-    });
+app.post("/v2/present", async (req: Request, res: Response) => {
+    const { pres_sub, pres, state } = req.body;
+    const result = presentSubmission(pres_sub, pres, state);
+    res.status((await result).status).json((await result).body);
 });
 

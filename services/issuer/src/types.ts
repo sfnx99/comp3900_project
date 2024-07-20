@@ -1,13 +1,10 @@
-export type IssuerMetadata = {
-    issuer_id: string,
-    formats_supported: string[],
+export type Format = {
+    id: string,
+    fields: string[]
 }
 
-export type SSICredential = {
-    issuer: string,
-    credential: Attribute[],
-}
-
-export type Attribute = {
-    [attr: string] : string,
+export type Credential = {
+    client_id: string,
+    format: string,
+    fields: {[key: string] : string}
 }

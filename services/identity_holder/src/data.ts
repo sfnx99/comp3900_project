@@ -1,4 +1,4 @@
-import { Data, User } from './interface';
+import { Data, SessionData, User } from './interface'
 
 export const DEFAULT_DATA: Data = {
     users: [
@@ -69,15 +69,13 @@ export const DEFAULT_DATA: Data = {
                         proofValue: ''
                     }
                 }
-            ],
-            sessions: []
-        }
-    ],
+            ]
+        }],
     issuers: [
-        "http://localhost:8082", 
-        "http://localhost:8083" // hardcoded
-    ]
-};
+        "http://localhost:8082" // hardcoded
+    ],
+    sessions: []
+}
 
 let data = DEFAULT_DATA;
 
@@ -100,6 +98,12 @@ export const FORMAT_MAP = {
 
 // helpers
 export function toUser(token: string): User | undefined {
+    const session_data = toSessionData(token)
+    return session_data?.user
+}
+
+export function toSessionData(token: string): SessionData | undefined {
     const data = getData();
-    return data.users.find(e => e.sessions.includes(token));
+    const sliced_token = token.slice(7)
+    return data.sessions.find(s => s.session_id === sliced_token)
 }
