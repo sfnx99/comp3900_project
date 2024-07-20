@@ -63,6 +63,7 @@ const CredentialsProvider = ({ children }) => {
       saveCredentialsLocally(updatedCredentials);
     } catch (error) {
       console.error('Failed to delete credential:', error);
+      throw error(error);
     }
   };
 
