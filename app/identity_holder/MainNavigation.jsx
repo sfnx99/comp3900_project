@@ -8,14 +8,15 @@ import { renderIconByName } from './scripts/util';
 import { ThemeContext } from './context/ThemeContext';
 import { getCoordinates } from './components/Geocoding';
 import { headerOptions } from './styles/headerOptions';
+import { CredentialsProvider } from './context/CredentialsContext';
+
 import HomeStack from './screens/stacks/HomeStack';
 import WalletStack from './screens/stacks/WalletStack';
 import AuthenticationStack from './screens/stacks/AuthenticationStack';
+
 import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
-import SearchButton from './components/SearchButton';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
-import { CredentialsProvider } from './context/CredentialsContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

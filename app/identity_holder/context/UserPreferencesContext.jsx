@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import { getValueFor, save } from '../scripts/util';
+import { deleteItem, getValueFor, save } from '../scripts/util';
 
 const UserPreferenceContext = createContext();
 
@@ -49,12 +49,23 @@ const UserPreferenceProvider = ({ children }) => {
     setDisplayName(name);
     await save('displayName', name);
   };
+  
+  /**
+   * Wipes the preference data from the device.
+   */
+  const wipePreferenceData = async () => {
+    setNotificationsOn(false);
+    setDisplayName('User');
+    await deleteItem('notificationsOn');
+    await deleteItem('displayName');
+  };
 
   const contextValues = useMemo(() => ({
     notificationsOn,
     toggleNotifications,
     displayName,
     updateDisplayName,
+    wipePreferenceData,
   }), [notificationsOn, displayName]);
 
   return (

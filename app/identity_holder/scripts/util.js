@@ -52,6 +52,14 @@ export const getValueFor = async (key) => {
 };
 
 /**
+ * Deletes a value from expo secure store.
+ * @param {string} key - key of the value being deleted.
+ */
+export const deleteItem = async(key) => {
+  await SecureStore.deleteItemAsync(key);
+};
+
+/**
  * Formats a camel case string into human readable text.
  * E.g. firstName to First Name.
  * @param {string} str - the string to be formatted

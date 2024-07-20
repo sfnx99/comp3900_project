@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -13,23 +13,42 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import styles from '../styles/loginStyles';
 import Logo from '../images/logo3.png';
 import TextInputField from '../components/TextInputField';
-import { loginUser } from '../scripts/api';
+import { tokenActive, loginUser } from '../scripts/api';
 import TextButton from '../components/TextButton';
 import ErrorMessage from '../components/ErrorMessage';
+import { AccountContext } from '../context/AccountContext';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { bindedEmail, bindEmail } = useContext(AccountContext);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(bindedEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [sessionValid, setSessionValid] = useState(false);
 
   useEffect(() => {
+    /**
+     * Checks the token is still active to allow biometrics or not.
+     */
+    const checkSessionActive = async () => {
+      const tokenExists = await tokenActive();
+      if (tokenExists) {
+        setSessionValid(true);
+      }
+    };
+
     (async () => {
       const compatible = await LocalAuthentication.hasHardwareAsync();
       setIsBiometricSupported(compatible);
     })();
+
+    checkSessionActive();
   }, []);
+
+  useEffect(() => {
+    setEmail(bindedEmail);
+  }, [bindedEmail]);
 
   const authenticate = async () => {
     try {
@@ -56,6 +75,7 @@ const LoginScreen = () => {
       }
 
       await loginUser(email, password);
+      bindEmail(email);
       navigation.replace('MainApp');
     } catch (error) {
       setError(`Could not login: ${error.message}`);
@@ -75,11 +95,13 @@ const LoginScreen = () => {
         />
         <Text style={styles.text}>BW Credentials</Text>
 
-        <TextInputField
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email address"
-        />
+        {!bindedEmail &&
+          <TextInputField
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email address"
+          />
+        }
         <TextInputField
           value={password}
           onChangeText={setPassword}
@@ -101,7 +123,7 @@ const LoginScreen = () => {
             text="Login"
             onPress={login}
           />
-          {isBiometricSupported && (
+          {isBiometricSupported && sessionValid && (
             <TextButton
               style={styles.buttonInverted}
               text="Login with Face ID"
@@ -109,9 +131,11 @@ const LoginScreen = () => {
               inverted
             />
           )}
-          <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.registerText}>Register</Text>
-          </TouchableOpacity>
+          {!bindedEmail &&
+            <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.registerText}>Register</Text>
+            </TouchableOpacity>
+          }
         </View>
       </View>
     </TouchableWithoutFeedback>
