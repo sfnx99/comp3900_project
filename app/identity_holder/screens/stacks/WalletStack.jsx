@@ -6,10 +6,12 @@ import { renderIconByName } from '../../scripts/util';
 import WalletScreen from '../WalletScreen';
 import SearchButton from '../../components/SearchButton'; // Ensure SearchButton is imported
 import CredentialInformation from '../CredentialInformation';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
 const WalletStack = () => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
 
   const styles = StyleSheet.create({
@@ -34,7 +36,7 @@ const WalletStack = () => {
       <Stack.Screen
         name="Wallet"
         component={WalletScreen}
-        options={({ navigation }) => ({
+        options={{
           headerShown: true,
           tabBarStyle: '#F1F2EC',
           headerStyle: styles.header,
@@ -47,7 +49,7 @@ const WalletStack = () => {
             color: 'black',
           }),
           headerRight: () => <SearchButton onPress={() => navigation.navigate('Search')} />, 
-        })}
+        }}
       />
       <Stack.Screen
         name="CredentialInformation"

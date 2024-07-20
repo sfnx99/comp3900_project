@@ -20,12 +20,14 @@ const CredentialModal = ({ modalVisible, handleModalClose, credentialId }) => {
   const { removeCredential } = useContext(CredentialsContext);
   const navigation = useNavigation();
 
-  const handleDelete = () => {
-    navigation.navigate('Wallet');
+  const handleDelete = async () => {
     try {
-      removeCredential(credentialId);
+      await removeCredential(credentialId);
+      handleModalClose();
+      navigation.navigate('Wallet');
+      Alert.alert('Success', 'Credential ws successfully removed.');
     } catch (error) {
-      Alert.alert('Error', error)
+      Alert.alert('Error', `Could not delete credential: ${error}`)
     }
   };
 
@@ -34,10 +36,7 @@ const CredentialModal = ({ modalVisible, handleModalClose, credentialId }) => {
       animationType="slide"
       transparent
       visible={modalVisible}
-      onRequestClose={() => {
-        Alert.alert('Modal has been closed.');
-        handleModalClose();
-      }}
+      onRequestClose={handleModalClose}
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.modalContent}>

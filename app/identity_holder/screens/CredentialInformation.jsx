@@ -15,6 +15,7 @@ const CredentialInformation = ({ route, navigation }) => {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Set the name of the credential information screen
   useLayoutEffect(() => {
     navigation.setOptions({
       title: formatCamelCase(credential.type[0]),
@@ -28,7 +29,7 @@ const CredentialInformation = ({ route, navigation }) => {
 
   const credentialDetails = credential.credential;
 
-  const handlePress = () => {
+  const handlePressFavourite = () => {
     toggleFavourite(credential.id);
     credential.favourite = !credential.favourite;
   };
@@ -75,7 +76,7 @@ const CredentialInformation = ({ route, navigation }) => {
           ))}
         <TextButton
           text={credential.favourite ? 'Remove from Favourites' : 'Add to Favourites'}
-          onPress={handlePress}
+          onPress={handlePressFavourite}
           style={styles.button}
           inverted={credential.favourite}
         />
