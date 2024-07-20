@@ -9,7 +9,7 @@ import {
 import PropTypes from 'prop-types';
 
 import { dark, light } from '../styles/themes';
-import { getValueFor, save } from '../scripts/util';
+import { deleteItem, getValueFor, save } from '../scripts/util';
 
 const ThemeContext = createContext();
 
@@ -26,6 +26,14 @@ const ThemeProvider = ({ children }) => {
 
   const theme = darkMode ? dark : light;
 
+  /**
+   * Wipes the theme data from the device.
+   */
+  const wipeThemeData = async () => {
+    setDarkMode(false);
+    await deleteItem('darkMode');
+  };
+
   useEffect(() => {
     const fetchTheme = async () => {
       const savedTheme = await getValueFor('darkMode');
@@ -35,7 +43,9 @@ const ThemeProvider = ({ children }) => {
     fetchTheme();
   }, []);
 
-  const contextValue = useMemo(() => ({ theme, darkMode, toggleTheme }), [darkMode]);
+  const contextValue = useMemo(() => ({
+    theme, darkMode, toggleTheme, wipeThemeData
+  }), [darkMode]);
 
   return (
     <ThemeContext.Provider value={contextValue}>

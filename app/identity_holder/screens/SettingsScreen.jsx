@@ -16,16 +16,63 @@ import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 import { ThemeContext } from '../context/ThemeContext';
 import { logoutUser } from '../scripts/api';
+import { UserPreferenceContext } from '../context/UserPreferencesContext';
+import { AccountContext } from '../context/AccountContext';
+import { CredentialsContext } from '../context/CredentialsContext';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const { toggleTheme } = useContext(ThemeContext);
+  const { toggleTheme, wipeThemeData } = useContext(ThemeContext);
+  const { wipePreferenceData } = useContext(UserPreferenceContext);
+  const { wipeAccountData } = useContext(AccountContext);
+  const { wipeCredentialData } = useContext(CredentialsContext);
+
   const [modalfirstVisible, setfirstModalVisible] = useState(false);
   const [modalsecondVisible, setsecondModalVisible] = useState(false);
   const [modalthirdVisible, setthirdModalVisible] = useState(false);
 
   // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {};
+
+  /**
+   * Prompts the user for confirmation for unbinding the account.
+   */
+  const handleUnbindAccount = () => {
+    Alert.alert(
+      'Are you sure?',
+      'WARNING: This will delete all local settings and data - are you sure?',
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'OK',
+          onPress: unbindAccount,
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  /**
+   * Unbinds the account from the device, removing all the data
+   * including credentials and preference and account settings.
+   */
+  const unbindAccount = () => {
+    try {
+      wipeThemeData();
+      wipePreferenceData();
+      wipeAccountData();
+      wipeCredentialData();
+  
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Authentication' }],
+      });
+    } catch (error) {
+      Alert.alert('ERROR', `Could not wipe user data: ${error}`);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -106,6 +153,11 @@ const SettingsScreen = () => {
             text="Support"
             onPress={dummyFunctions}
             icon="message-outline"
+          />
+          <SettingButton
+            text="Unbind Account"
+            onPress={handleUnbindAccount}
+            icon="link-variant-off"
           />
           <SettingButton
             text="Logout"

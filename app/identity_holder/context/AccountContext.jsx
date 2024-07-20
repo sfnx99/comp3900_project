@@ -1,6 +1,6 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { getValueFor, save } from '../scripts/util';
+import { deleteItem, getValueFor, save } from '../scripts/util';
 
 const AccountContext = createContext();
 
@@ -14,6 +14,14 @@ const AccountProvider = ({ children }) => {
   const bindEmail = (newEmail) => {
     setBindedEmail(newEmail);
     save('email', newEmail);
+  };
+
+  /**
+   * Wipes the account data from the device.
+   */
+  const wipeAccountData = async () => {
+    setBindedEmail('');
+    await deleteItem('email');
   };
 
   useEffect(() => {
@@ -30,7 +38,7 @@ const AccountProvider = ({ children }) => {
   }, []);
 
   const contextValues = useMemo(() => ({
-    bindedEmail, bindEmail,
+    bindedEmail, bindEmail, wipeAccountData,
   }), [bindedEmail]);
 
   return (
