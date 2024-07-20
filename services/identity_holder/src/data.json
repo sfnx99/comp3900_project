@@ -1,0 +1,40 @@
+{
+    "users": [
+        {
+            "email": "email",
+            "hash": "$2b$10$F79YjBvFPM3HxC0ppGorOe5qSYCkj6BBc9WZAvTx8F0OzoHqYeuVC",
+            "credentials": [
+                {
+                    "id": "test",
+                    "iss": "test",
+                    cred: [
+                        { first_name: "test" },
+                        { last_name: "test" },
+                        { dob: "test" }
+                    ]
+                }
+            ],
+            credentialsV2: [{
+                '@context': [],
+                id: 'e8b08949-8369-48d2-9d6f-2a1c2f1d52ec',
+                type: ["VerifiableCredential", "CredentialType1"],
+                issuer: 'did:exampleissuer:12345',
+                credentialSubject: {
+                    "firstName": "John",
+                    "lastName": "Smith"
+                },
+                proof: {
+                    type: '',
+                    cryptosuite: 't11a-bookworms-bbs',
+                    verificationMethod: '',
+                    proofPurpose: '',
+                    proofValue: ''
+                }
+            }]
+        }
+    ],
+    issuers: [
+        "did:ion:EiDpIq0MTRd1M213b_HGXcMcn-WsJCfiYruZy5QIhWzccw:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJrZXktMSIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJ3eGJlZ1M1NzByTWdoOFBlTkluSk5JT1BJMEFhcHRPdWVzR0JBM0ZVUkxrIiwieSI6InF0NV9Ia1dOVEJQX0RIaWNOaWJCb0ZhcFVGbWxPeWtKRVlmMnItTEZZQWMifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6IkVjZHNhU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOSJ9XSwic2VydmljZXMiOlt7ImlkIjoiYmJzLWtleS0xIiwic2VydmljZUVuZHBvaW50Ijp7ImNyZWRlbnRpYWxfY29uZmlndXJhdGlvbnNfc3VwcG9ydGVkIjp7IkRyaXZlckxpY2VuY2VDcmVkZW50aWFsIjp7ImZvcm1hdCI6ImxkcF92YyJ9LCJQaG90b0NhcmRDcmVkZW50aWFsIjp7ImZvcm1hdCI6ImxkcF92YyJ9fSwiY3JlZGVudGlhbF9lbmRwb2ludCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MiJ9LCJ0eXBlIjoiQkJTS2V5In1dfX1dLCJ1cGRhdGVDb21taXRtZW50IjoiRWlBUG1xZGhUdGkzc1VhSUhUY0NYZDFtTDVMVFFuUTFTc1ExVktIc3dWOUl2ZyJ9LCJzdWZmaXhEYXRhIjp7ImRlbHRhSGFzaCI6IkVpRFEtVmoweHdxS1BoaHV1QlJ1d3VlanNkVGR6Q1VpUHNVb1d2emNPcmk3WVEiLCJyZWNvdmVyeUNvbW1pdG1lbnQiOiJFaURBZFV6Wm1ncEtGajNhekt1Z05ySkViYVhxOGFzbjhPM2xtb1RRV2hacENBIn19" // hardcoded
+    ],
+    sessions: []
+}

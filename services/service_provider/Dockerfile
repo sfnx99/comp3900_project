@@ -12,4 +12,4 @@ FROM base as production
 
 ENV NODE_PATH=./dist
 
-RUN npx ts-node src/index.ts 
+RUN cat credential-data.txt | npx ts-node src/index.ts -f formats.json
