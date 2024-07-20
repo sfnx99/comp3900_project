@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import SettingButton from '../components/SettingButton';
 import NotificationButton from '../components/NotificationButton';
 import { ThemeContext } from '../context/ThemeContext';
-import { logoutUser } from '../scripts/api';
+import { logoutUser, removeToken } from '../scripts/api';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
 import { AccountContext } from '../context/AccountContext';
 import { CredentialsContext } from '../context/CredentialsContext';
@@ -64,6 +64,7 @@ const SettingsScreen = () => {
       wipePreferenceData();
       wipeAccountData();
       wipeCredentialData();
+      removeToken();
   
       navigation.reset({
         index: 0,
