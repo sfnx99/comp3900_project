@@ -33,6 +33,7 @@ const HomeStack = ({ notifications }) => {
     <Stack.Navigator
       screenOptions={styles.header}
       cardStyle
+      initialRouteName="HomeMain"
     >
       <Stack.Screen
         name="HomeMain"
