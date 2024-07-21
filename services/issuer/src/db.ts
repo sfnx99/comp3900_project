@@ -1,19 +1,52 @@
-import { Format, Credential } from "./types.js";
+import { Format, Credential, CredentialLog, User } from "./types.js";
 
 let formats: Format[] = [];
-const credentials: Credential[] = [
-    { client_id: "bob@test.com", format: "DriverLicenceCredential", fields: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"}},
-    { client_id: "james@test.com", format: "PhotoCardCredential", fields: {"firstName":"james", "lastName":"smith",  "expiryDate": "10/2026", "dob": "8/1/1969"}},
-    { client_id: "sally@test.com", format: "DriverLicenceCredential", fields: {"firstName":"sally", "lastName":"brown", "licenseNo":"5674453",  "expiryDate": "09/2029", "dob": "1/12/1999"}},
-    { client_id: "jane@test.com", format: "DriverLicenceCredential", fields: {"firstName":"jane", "lastName":"johnson", "licenseNo":"6905903",  "expiryDate": "02/2025", "dob": "3/11/1899"}},
+const credentials: CredentialLog[] = [];
+const users: User[] = [
+    {client_id: "bob@test.com", info: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"} },
+    { client_id: "james@test.com", info: {"firstName":"james", "lastName":"smith",  "expiryDate": "10/2026", "dob": "8/1/1969"}}
 ];
 
-export function getCredentials() {
-    return credentials;
+export function editUser(client_id: string, info: {[key: string] : string}) {
+    for (const i in users) {
+        if (users[i].client_id === client_id) {
+            users[i].info = info;
+            return;
+        }
+    }
+    throw new Error(`editUser: user ${client_id} does not exist`);
 }
 
-export function getCredential(client_id: string, format: string): Credential | undefined {
-    return credentials.find((c) => c.client_id === client_id && c.format === format);
+export function getUser(client_id: string) {
+    for (const user of users) {
+        if (user.client_id === client_id) {
+            return user;
+        }
+    }
+    throw new Error(`getUser: user ${client_id} does not exist`);
+}
+
+export function addUser(client_id: string, info: {[key: string] : string}) {
+    users.push({ client_id, info });
+}
+
+export function getCredential(client_id: string, format: string): Credential {
+    if (format != formats[0].id) {
+        throw new Error(`Cannot issue credential with format ${format}`);
+    }
+    const user = getUser(client_id);
+    const neededFields = Object();
+    for (const key of formats[0].fields) {
+        if (!Object.keys(user.info).includes(key)) {
+            throw new Error(`Cannot issue format ${format}: user has no known ${key}`);
+        }
+        neededFields[key] = user.info[key];
+    }
+    return {
+        client_id: user.client_id,
+        format: format,
+        fields: neededFields
+    }
 }
 
 export function getFormats() {
@@ -24,6 +57,13 @@ export function setFormats(new_formats: Format[]) {
     formats = new_formats;
 }
 
-export function addCredential(client_id: string, format: string, fields: {[key: string] : string}) {
-    credentials.push({client_id, format, fields})
+export function logCredential(credential: CredentialLog) {
+    credentials.push(credential);
+    if (credentials.length > 10) {
+        credentials.shift();
+    }
+}
+
+export function getCredentials() {
+    return credentials;
 }

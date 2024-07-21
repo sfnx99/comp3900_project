@@ -112,3 +112,11 @@ export interface disclosedMessages {
     disclosedMessages: Uint8Array[],
     disclosedMessageIndexes: number[]
 }
+
+export interface PresentationLog {
+    issuer: string,
+    type: string,
+    cryptosuite: string,
+    credential: {[key: string] : string},
+    status: "denied" | "accepted"
+}

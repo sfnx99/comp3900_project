@@ -188,7 +188,6 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
         "vp_token": presentation,
         "state": "oeih1129"
     }
-    // console.log(`Sending presentation: ${JSON.stringify(verifierData)}`);
     const res = await axios.post(verifierPresent, verifierData)
     return {
         status: res.status,
@@ -242,7 +241,7 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
     // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
     const result = Object();
-    for (const {index, key, value} of kvp_list) {
+    for (const {key, value} of kvp_list) {
         result[key] = value;
     }
     return result;
@@ -306,15 +305,6 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     const all_chunks = [initial_chunk, ...all_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunk_indexes = [0,...filtered_credentialSubject.map(cs => cs.index).sort((a,b) => a-b), last_chunk_index]
     const proofValue = new Uint8Array(credential.proof.proofValue.split(",").map(e => parseInt(e)));
-    console.log(`Creating proof...`);
-    // console.log(`Provided publicKey: ${JSON.stringify(issuer_publicKey)}`);
-    // console.log(`Provided (all) messages: ${JSON.stringify(all_chunks)}`);
-    // console.log(`Provided indicies: ${JSON.stringify(filtered_chunk_indexes)}`);
-    // for (const i in all_chunks) {
-    //     console.log(`chunk ${i}:`);
-    //     console.log('\t' + JSON.stringify(all_chunks[i]));
-    // }
-    // console.log(`Provided signature ${JSON.stringify(proofValue)}`)
     const proof: Uint8Array = await bbs.deriveProof({
         publicKey: issuer_publicKey,
         signature: proofValue,
@@ -324,8 +314,6 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
         disclosedMessageIndexes: filtered_chunk_indexes,
         ciphersuite: ciphersuite
     });
-    // console.log(`Created proof: ${JSON.stringify(proof)}`);
-    console.log(`Created proof successfully`);
     const verifiable_credential_proof: VerifiableCredentialProof = {
         proofValue: [JSON.stringify(filtered_chunk_indexes), JSON.stringify(proof)],
         type: credential.proof.type,
@@ -340,7 +328,7 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
  * This function takes in a did_uri, and then returns the public key associated.
  * @param did_uri The did, ie. "did:issuer:12345" or smth
  */
-async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> {
+async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> { // eslint-disable-line @typescript-eslint/no-unused-vars
     const resp = await axios.get("http://localhost:8082/");
     return new Uint8Array(Object.values(resp.data.bbs_public_key));
     // const didDoc = await did.resolve(did_uri)
