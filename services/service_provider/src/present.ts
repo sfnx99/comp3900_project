@@ -3,7 +3,7 @@
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import axios from 'axios';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
-import { readDefinitions } from './request';
+import { getDefinition, trusted } from './db';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
@@ -14,7 +14,7 @@ function getCredentialSubjectName(input: string): string {
 }
 
 async function getRequiredAttributes(): Promise<string[]> {
-    const presDesc = await readDefinitions();
+    const presDesc = getDefinition();
     return presDesc.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
@@ -97,7 +97,6 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
         .map(cs => indexed_key_value_pairs_to_object([cs]))
         .map(obj => JSON.stringify(obj));
 
-    // const finalChunk = JSON.stringify(vc.proof)
     const finalChunk = JSON.stringify({
         type: pres.verifiableCredential[0].proof.type,
         cryptosuite: pres.verifiableCredential[0].proof.cryptosuite,
@@ -106,11 +105,6 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
     const indexes = JSON.parse(vc.proof.proofValue[0]);
-    // console.log(`indicies: ${indexes}`)
-    // for (const i in filteredChunks) {
-    //     console.log(`chunk ${i}`);
-    //     console.log(JSON.stringify(filteredChunks[i]));
-    // }
     
 
     return {
@@ -123,26 +117,20 @@ async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages:
     const header = new Uint8Array();
     const presentationHeader = new Uint8Array();
     const { disclosedMessages, disclosedMessageIndexes } = messages;
-    console.log(`Validating proof...`);
-    // console.log(`Provided publicKey: ${JSON.stringify(publicKey)}`);
-    // console.log(`Provided proof: ${JSON.stringify(proof)}`);
-    // console.log(`Provided messages: ${JSON.stringify(disclosedMessages)}`);
-    // console.log(`Provided indicies: ${JSON.stringify(disclosedMessageIndexes)}`);
     const verified_selective = await bbs.verifyProof({
         publicKey, proof, header, presentationHeader, disclosedMessages, disclosedMessageIndexes,
         ciphersuite: 'BLS12-381-SHA-256'
     });
-    console.log(`Validation result: ${verified_selective}`);
     return verified_selective;
 }
 
 async function validateDefinition(presSub: PresentationSubmission): Promise<Boolean> {
-    const defs = await readDefinitions();
+    const defs = getDefinition();
     return presSub.definition_id === defs.id;
 }
 
 async function identifyVC(presSub: PresentationSubmission): Promise<string> {
-    const defs = await readDefinitions();
+    const defs = getDefinition();
     const presDesc = defs.input_descriptors;
     const presMap = presSub.descriptor_map;
     let commonFormats: string[] = [];
@@ -218,6 +206,16 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
             status: 400,
             body: {
                 message: "Proof unable to be validated. Credential denied."
+            }
+        }
+    }
+
+    // Check issuer is trusted by this verifier
+    if (!trusted(pres)) {
+        return {
+            status: 400,
+            body: {
+                message: "Issuer not trusted"
             }
         }
     }
