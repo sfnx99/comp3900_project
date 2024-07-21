@@ -28,6 +28,7 @@
     "typescript-eslint": "^7.13.1"
   },
   "dependencies": {
+    "@decentralized-identity/ion-tools": "^1.1.4",
     "bcrypt": "^5.1.1",
     "uuid": "^10.0.0"
   }

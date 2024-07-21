@@ -1,6 +1,6 @@
 import { HttpStatusCode } from 'axios';
 import { getData, setData, toUser } from './data';
-import { ResponseV2, SSI_ID, User } from './interface';
+import { ResponseV2, SessionData, SSI_ID } from './interface';
 
 export function getCredentials(token: string) {
     const user = toUser(token);
@@ -77,8 +77,8 @@ export function deleteCredential(token: string, id: string) {
     };
 }
 
-export function getCredentialsV2(user: User): ResponseV2 {
-    const credentials = user.credentialsV2.map(c => c.id)
+export function getCredentialsV2(session_data: SessionData): ResponseV2 {
+    const credentials = session_data.user.credentialsV2.map(c => c.id)
     return {
         status: 200,
         body: {
@@ -87,8 +87,8 @@ export function getCredentialsV2(user: User): ResponseV2 {
     };
 }
 
-export function getCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
-    const credential = user.credentialsV2.find(c => c.id === credential_id)
+export function getCredentialV2(session_data: SessionData, credential_id: SSI_ID): ResponseV2 {
+    const credential = session_data.user.credentialsV2.find(c => c.id === credential_id)
     if (credential === undefined) {
         return {
             status: HttpStatusCode.BadRequest,
@@ -110,8 +110,9 @@ export function getCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
     };
 }
 
-export function deleteCredentialV2(user: User, credential_id: SSI_ID): ResponseV2 {
+export function deleteCredentialV2(session_data: SessionData, credential_id: SSI_ID): ResponseV2 {
     const data = getData()
+    const user = session_data.user
     const userIndex = data.users.findIndex(u => u === user)
     if (!user.credentialsV2.map(c => c.id).includes(credential_id)) {
         return {
