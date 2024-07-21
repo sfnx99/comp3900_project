@@ -8,8 +8,9 @@ cd into the issuer directory
 $ npm i
 $ npx ts-node src/index.ts 
 */
-
+// @ts-expect-error  bad import
 import { DID, generateKeyPair } from '@decentralized-identity/ion-tools';
+// @ts-expect-error bad import
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import cors from "cors";
 import dotenv from "dotenv";
@@ -19,8 +20,9 @@ import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
 // import { input } from '@inquirer/prompts';
 import { Command } from 'commander';
-import { getCredential, getCredentials, getFormats, setFormats } from "./db.js";
+import { getCredential, setFormats, logCredential, getCredentials } from "./db.js";
 import { Format } from "./types.js";
+import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 
 const program = new Command();
 
@@ -74,20 +76,50 @@ app.post("/v2/credential", async (req: Request, res: Response) => {
         const access_token = req.headers.authorization!.slice(7);
         res.json(await issue(access_token));
     } catch (e) {
-        res.sendStatus(403);
+        res.status(500).json(e);
     }
 });
 
-app.get("/debug/formats", (req: Request, res: Response) => {
-    res.json(getFormats());
+
+// frontend endpoints
+
+app.post("/register", (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
+        registerUser(email, password);
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
-app.get("/debug/credentials", (req: Request, res: Response) => {
-    res.json(getCredentials());
+app.post("/info", (req: Request, res: Response) => {
+    try {
+        const { email, info } = req.body;
+        modifyUser(email, info);
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
+app.post("/format", (req: Request, res: Response) => {
+    try {
+        const { type, attributes } = req.body;
+        modifyFormat(type, attributes);
+        res.sendStatus(200);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 
-
+app.get("/credentials", (req: Request, res: Response) => {
+    try {
+        res.status(200).json(getCredentials());
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 
 app.listen(port, async () => {
     console.log("Issuer Started on localhost:8082");
@@ -122,19 +154,6 @@ app.listen(port, async () => {
     });
 
     did_uri = await did.getURI();
-
-    // This isn't working on docker
-    // console.log('Enter credentials of the form <client_id>;<credentialType>;<fields>');
-    // while (true) {
-    //     const answer = await input({ message: '' });
-    //     try {
-    //         let split_input = answer.split(';');
-    //         addCredential(split_input[0], split_input[1], JSON.parse(split_input[2]));
-    //     } catch (e) {
-    //         console.error("\nError: Could not parse data. Please try again.")
-    //     }
-    // }
-
 });
 
 async function issue(access_token: string) {
@@ -186,6 +205,7 @@ async function issue(access_token: string) {
     const messages = [firstChunk, ...middleChunks, lastChunk].map(c => new TextEncoder().encode(c));
     // console.log(`Signing with messages: ${JSON.stringify(messages)}`);
     const signature: Uint8Array = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
+    logCredential({client_id: request.client_id, type: credential.format, cryptosuite: 't11a-bookworms-bbs', credential: credential.fields});
     return {
         credential: {
             "@context": [
