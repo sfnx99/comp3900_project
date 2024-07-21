@@ -23,11 +23,11 @@ function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
     return keysArray;
 }
 
-async function checkConstraints(pres: Presentation, vcIndex: number): Promise<Boolean> {
+async function checkConstraints(pres: Presentation, vcIndex: number): Promise<boolean> {
     const requiredCredentialFields = await getRequiredAttributes();
     const givenCredentialFields = getGivenAttributes(pres, vcIndex);
 
-    let checkSubset = (parentArray: string[], subsetArray: string[]) => {
+    const checkSubset = (parentArray: string[], subsetArray: string[]) => {
         return subsetArray.every((el) => {
             return parentArray.includes(el)
         })
@@ -36,7 +36,7 @@ async function checkConstraints(pres: Presentation, vcIndex: number): Promise<Bo
     return checkSubset(givenCredentialFields, requiredCredentialFields);
 }
 
-async function obtainKey(pres: Presentation, vcIndex: number) {
+async function obtainKey(pres: Presentation, vcIndex: number) { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
         /*const uri = pres.verifiableCredential[vcIndex].issuer;
         let doc = await resolve(uri);
@@ -77,7 +77,7 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
     // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
     const result = Object();
-    for (const {index, key, value} of kvp_list) {
+    for (const {key, value} of kvp_list) {
         result[key] = value;
     }
     return result;
@@ -113,7 +113,7 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     }
 }
 
-async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages: disclosedMessages): Promise<Boolean> {
+async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages: disclosedMessages): Promise<boolean> {
     const header = new Uint8Array();
     const presentationHeader = new Uint8Array();
     const { disclosedMessages, disclosedMessageIndexes } = messages;
@@ -124,7 +124,7 @@ async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages:
     return verified_selective;
 }
 
-async function validateDefinition(presSub: PresentationSubmission): Promise<Boolean> {
+async function validateDefinition(presSub: PresentationSubmission): Promise<boolean> {
     const defs = getDefinition();
     return presSub.definition_id === defs.id;
 }
@@ -133,10 +133,10 @@ async function identifyVC(presSub: PresentationSubmission): Promise<string> {
     const defs = getDefinition();
     const presDesc = defs.input_descriptors;
     const presMap = presSub.descriptor_map;
-    let commonFormats: string[] = [];
+    const commonFormats: string[] = [];
 
-    presMap.forEach(function (descriptor, i) {
-        for (let value of presDesc) {
+    presMap.forEach(function (descriptor, i) { // eslint-disable-line @typescript-eslint/no-unused-vars
+        for (const value of presDesc) {
             if (value.id === descriptor.id) {
                 commonFormats.push(descriptor.path);
             }
@@ -150,7 +150,7 @@ async function identifyVC(presSub: PresentationSubmission): Promise<string> {
     return commonFormats[0];
 }
 
-export async function presentSubmission(presSub: PresentationSubmission, pres: Presentation, state: String): Promise<ResponseV2> {
+export async function presentSubmission(presSub: PresentationSubmission, pres: Presentation, state: string): Promise<ResponseV2> { // eslint-disable-line @typescript-eslint/no-unused-vars
     /*
     //  Validate ID of presentation definition matches the one provided as
     //  compared to the one given in the presentation submission.
@@ -168,7 +168,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Determine the number of VPs returned in the VP Token and identify in which VP which requested VC is included,
     //  using the Input Descriptor Mapping Object(s) in the Presentation Submission.
     */
-    let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)![0], 10) : null);
+    const extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)![0], 10) : null);
     const vcP = await identifyVC(presSub);
     const vcIndex = extractFirstNumber(vcP);
     if (vcIndex === null) {

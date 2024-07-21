@@ -241,7 +241,7 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
     // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
     const result = Object();
-    for (const {index, key, value} of kvp_list) {
+    for (const {key, value} of kvp_list) {
         result[key] = value;
     }
     return result;
@@ -328,7 +328,7 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
  * This function takes in a did_uri, and then returns the public key associated.
  * @param did_uri The did, ie. "did:issuer:12345" or smth
  */
-async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> {
+async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> { // eslint-disable-line @typescript-eslint/no-unused-vars
     const resp = await axios.get("http://localhost:8082/");
     return new Uint8Array(Object.values(resp.data.bbs_public_key));
     // const didDoc = await did.resolve(did_uri)

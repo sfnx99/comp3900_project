@@ -231,7 +231,7 @@ async function issue(access_token: string) {
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
     // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
     const result = Object();
-    for (const {index, key, value} of kvp_list) {
+    for (const {key, value} of kvp_list) {
         result[key] = value;
     }
     return result;

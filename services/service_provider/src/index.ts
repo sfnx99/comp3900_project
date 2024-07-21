@@ -15,7 +15,6 @@ import express, { Express, Request, Response } from "express";
 import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
 import { initialiseDefinition, getPresentations, modifyDefinition, logPresentation, trust, untrust } from "./db";
-import { Presentation } from './interface';
 
 dotenv.config();
 
