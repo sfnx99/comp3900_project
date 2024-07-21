@@ -1,7 +1,9 @@
+// import { resolve } from '@decentralized-identity/ion-tools';
+// @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
-import { resolve } from '@decentralized-identity/ion-tools';
-import { readDefinitions } from './request';
-import { CredentialSubject, disclosedMessages, Presentation, PresentationDefinition, PresentationSubmission, ResponseV2 } from './interface';
+import axios from 'axios';
+import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
+import { getDefinition, trusted } from './db';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
@@ -11,9 +13,9 @@ function getCredentialSubjectName(input: string): string {
     return input.substring(lastIndex + 1);
 }
 
-function getRequiredAttributes(): string[] {
-    const presDesc = readDefinitions();
-    return presDesc.input_descriptors[0].contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
+async function getRequiredAttributes(): Promise<string[]> {
+    const presDesc = getDefinition();
+    return presDesc.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
 }
 
 function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
@@ -21,11 +23,11 @@ function getGivenAttributes(pres: Presentation, vcIndex: number): string[] {
     return keysArray;
 }
 
-function checkConstraints(pres: Presentation, vcIndex: number): Boolean {
-    const requiredCredentialFields = getRequiredAttributes();
+async function checkConstraints(pres: Presentation, vcIndex: number): Promise<boolean> {
+    const requiredCredentialFields = await getRequiredAttributes();
     const givenCredentialFields = getGivenAttributes(pres, vcIndex);
 
-    let checkSubset = (parentArray: string[], subsetArray: string[]) => {
+    const checkSubset = (parentArray: string[], subsetArray: string[]) => {
         return subsetArray.every((el) => {
             return parentArray.includes(el)
         })
@@ -34,11 +36,13 @@ function checkConstraints(pres: Presentation, vcIndex: number): Boolean {
     return checkSubset(givenCredentialFields, requiredCredentialFields);
 }
 
-async function obtainKey(pres: Presentation, vcIndex: number) {
+async function obtainKey(pres: Presentation, vcIndex: number) { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
-        const uri = pres.verifiableCredential[vcIndex].issuer;
+        /*const uri = pres.verifiableCredential[vcIndex].issuer;
         let doc = await resolve(uri);
-        return doc.didDocument.service[0].serviceEndpoint;
+        return doc.didDocument.service[0].serviceEndpoint;*/
+        const resp = await axios.get("http://localhost:8082/");
+        return resp.data.bbs_public_key;
     } catch (error) {
         if (error) {
             return {
@@ -71,7 +75,12 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
 }
 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
-    return kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    const result = Object();
+    for (const {key, value} of kvp_list) {
+        result[key] = value;
+    }
+    return result;
 }
 
 function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages {
@@ -88,40 +97,46 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
         .map(cs => indexed_key_value_pairs_to_object([cs]))
         .map(obj => JSON.stringify(obj));
 
-    const finalChunk = JSON.stringify(vc.proof)
-
+    const finalChunk = JSON.stringify({
+        type: pres.verifiableCredential[0].proof.type,
+        cryptosuite: pres.verifiableCredential[0].proof.cryptosuite,
+        // verificationMethod: pres.verifiableCredential[0].proof.verificationMethod,
+        proofPurpose: pres.verifiableCredential[0].proof.proofPurpose
+    })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
+    const indexes = JSON.parse(vc.proof.proofValue[0]);
+    
 
     return {
         disclosedMessages: filteredChunks,
-        disclosedMessageIndexes: pres.verifiableCredential[vcIndex].proof.proofValue[0]
+        disclosedMessageIndexes: indexes
     }
 }
 
-async function validateProof(publicKey: string, proof: string, messages: disclosedMessages): Promise<Boolean> {
+async function validateProof(publicKey: Uint8Array, proof: Uint8Array, messages: disclosedMessages): Promise<boolean> {
     const header = new Uint8Array();
     const presentationHeader = new Uint8Array();
     const { disclosedMessages, disclosedMessageIndexes } = messages;
-
     const verified_selective = await bbs.verifyProof({
         publicKey, proof, header, presentationHeader, disclosedMessages, disclosedMessageIndexes,
         ciphersuite: 'BLS12-381-SHA-256'
     });
-
     return verified_selective;
 }
 
-function validateDefinition(presSub: PresentationSubmission): Boolean {
-    return presSub.definition_id === readDefinitions().id;
+async function validateDefinition(presSub: PresentationSubmission): Promise<boolean> {
+    const defs = getDefinition();
+    return presSub.definition_id === defs.id;
 }
 
-function identifyVC(presSub: PresentationSubmission): string {
-    const presDesc = readDefinitions().input_descriptors;
+async function identifyVC(presSub: PresentationSubmission): Promise<string> {
+    const defs = getDefinition();
+    const presDesc = defs.input_descriptors;
     const presMap = presSub.descriptor_map;
-    let commonFormats: string[] = [];
+    const commonFormats: string[] = [];
 
-    presMap.forEach(function (descriptor, i) {
-        for (let value of presDesc) {
+    presMap.forEach(function (descriptor, i) { // eslint-disable-line @typescript-eslint/no-unused-vars
+        for (const value of presDesc) {
             if (value.id === descriptor.id) {
                 commonFormats.push(descriptor.path);
             }
@@ -135,7 +150,7 @@ function identifyVC(presSub: PresentationSubmission): string {
     return commonFormats[0];
 }
 
-export async function presentSubmission(presSub: PresentationSubmission, pres: Presentation, state: String): Promise<ResponseV2> {
+export async function presentSubmission(presSub: PresentationSubmission, pres: Presentation, state: string): Promise<ResponseV2> { // eslint-disable-line @typescript-eslint/no-unused-vars
     /*
     //  Validate ID of presentation definition matches the one provided as
     //  compared to the one given in the presentation submission.
@@ -153,8 +168,9 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Determine the number of VPs returned in the VP Token and identify in which VP which requested VC is included,
     //  using the Input Descriptor Mapping Object(s) in the Presentation Submission.
     */
-    let extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)[0], 10) : null);
-    const vcIndex = extractFirstNumber(identifyVC(presSub));
+    const extractFirstNumber = (str: string) => (str.match(/\d+/) ? parseInt(str.match(/\d+/)![0], 10) : null);
+    const vcP = await identifyVC(presSub);
+    const vcIndex = extractFirstNumber(vcP);
     if (vcIndex === null) {
         return {
             status: 400,
@@ -181,13 +197,25 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  If applicable, perform the checks on the Credential(s) specific to the Credential Format
     //  (i.e., validation of the signature(s) on each VC).
     */
-    const publicKey = obtainKey(pres, vcIndex);
-    const proof = pres.verifiableCredential[vcIndex].proof.proofValue[1];
-    if (!validateProof(await publicKey, proof, constructChunks(pres, vcIndex))) {
+    const publicKeyObj = await obtainKey(pres, vcIndex);
+    const publicKey = new Uint8Array(Object.values(publicKeyObj));
+    const proofStr = pres.verifiableCredential[vcIndex].proof.proofValue[1];
+    const proof = new Uint8Array(Object.values(JSON.parse(proofStr)));
+    if (!await validateProof(publicKey, proof, constructChunks(pres, vcIndex))) {
         return {
             status: 400,
             body: {
                 message: "Proof unable to be validated. Credential denied."
+            }
+        }
+    }
+
+    // Check issuer is trusted by this verifier
+    if (!trusted(pres)) {
+        return {
+            status: 400,
+            body: {
+                message: "Issuer not trusted"
             }
         }
     }

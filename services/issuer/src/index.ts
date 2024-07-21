@@ -8,19 +8,21 @@ cd into the issuer directory
 $ npm i
 $ npx ts-node src/index.ts 
 */
-
+// @ts-expect-error  bad import
+import { DID, generateKeyPair } from '@decentralized-identity/ion-tools';
+// @ts-expect-error bad import
+import * as bbs from '@digitalbazaar/bbs-signatures';
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
-import path from "path";
 import fs from "fs";
-import cors from "cors";
+import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
-import { DID, generateKeyPair } from '@decentralized-identity/ion-tools';
-import * as bbs from '@digitalbazaar/bbs-signatures';
 // import { input } from '@inquirer/prompts';
 import { Command } from 'commander';
-import { getCredential, getCredentials, getFormats, setFormats } from "./db.js";
+import { getCredential, setFormats, logCredential, getCredentials } from "./db.js";
 import { Format } from "./types.js";
+import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 
 const program = new Command();
 
@@ -54,7 +56,7 @@ app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
-    res.json({ did_uri, bbs_public_key: publicKey });
+    res.json({ did_uri, bbs_public_key: publicKey});
 });
 
 app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
@@ -71,23 +73,53 @@ app.post("/v2/token", (req: Request, res: Response) => {
 
 app.post("/v2/credential", async (req: Request, res: Response) => {
     try {
-        const access_token = req.get('access_token') as string;
+        const access_token = req.headers.authorization!.slice(7);
         res.json(await issue(access_token));
     } catch (e) {
-        res.sendStatus(403);
+        res.status(500).json(e);
     }
 });
 
-app.get("/debug/formats", (req: Request, res: Response) => {
-    res.json(getFormats());
+
+// frontend endpoints
+
+app.post("/register", (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
+        registerUser(email, password);
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
-app.get("/debug/credentials", (req: Request, res: Response) => {
-    res.json(getCredentials());
+app.post("/info", (req: Request, res: Response) => {
+    try {
+        const { email, info } = req.body;
+        modifyUser(email, info);
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 });
 
+app.post("/format", (req: Request, res: Response) => {
+    try {
+        const { type, attributes } = req.body;
+        modifyFormat(type, attributes);
+        res.sendStatus(200);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 
-
+app.get("/credentials", (req: Request, res: Response) => {
+    try {
+        res.status(200).json(getCredentials());
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 
 app.listen(port, async () => {
     console.log("Issuer Started on localhost:8082");
@@ -122,20 +154,6 @@ app.listen(port, async () => {
     });
 
     did_uri = await did.getURI();
-
-    // This isn't working on docker
-    // console.log('Enter credentials of the form <client_id>;<credentialType>;<fields>');
-    // while (true) {
-    //     const answer = await input({ message: '' });
-    //     try {
-    //         let split_input = answer.split(';');
-    //         addCredential(split_input[0], split_input[1], JSON.parse(split_input[2]));
-    //     } catch (e) {
-    //         console.error("\nError: Could not parse data. Please try again.")
-    //     }
-    // }
-    console.log(did_uri);
-
 });
 
 async function issue(access_token: string) {
@@ -148,22 +166,73 @@ async function issue(access_token: string) {
     // const credential: Credential = {client_id: "bob@test.com", format: "DriverLicenceCredential", fields: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"}}
     
     const header = new Uint8Array();
-    const messages = Object.entries(credential.fields).map((e) => new TextEncoder().encode(JSON.stringify(e)));
-    const signature = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
-
-    return {
+    // first
+    const firstChunk = JSON.stringify({
         "@context": [
             "https://www.w3.org/ns/credentials/v2"
         ],
         "type": [credential.format],
         "issuer": did_uri,
-        "credentialSubject": credential.fields,
-        "proof": {
+    });
+    // last
+    const lastChunk = JSON.stringify({
             "type": "DataIntegrityProof",
             "cryptosuite": "t11a-bookworms-bbs",
-            "verificationMethod": did_uri,
+            // "verificationMethod": did_uri,
             "proofPurpose": "assertionMethod",
-            "proofValue": signature,
+    });
+    // convert middle to kvp
+    const key_value_pairs = Object.entries(credential.fields);
+    const result = []
+    for (let index = 0; index < key_value_pairs.length; index++) {
+        const kvp = key_value_pairs[index]
+        const key = kvp[0]
+        if (key === "id") {
+            // Dont allow Verifier to inspect did.
+            continue
+        }
+        result.push({
+            index: index + 1, // BBS is zero-indexed, and index 0 is the header of the payload. Thus, credentialSubject is 1-indexed.
+            key: key,
+            value: kvp[1]
+        })
+    }
+    // convert middle to chunks
+
+    const middleChunks = result
+        .map(cs => indexed_key_value_pairs_to_object([cs]))
+        .map(obj => JSON.stringify(obj));
+    const messages = [firstChunk, ...middleChunks, lastChunk].map(c => new TextEncoder().encode(c));
+    // console.log(`Signing with messages: ${JSON.stringify(messages)}`);
+    const signature: Uint8Array = await bbs.sign({secretKey, publicKey, header, messages, ciphersuite: 'BLS12-381-SHA-256'});
+    logCredential({client_id: request.client_id, type: credential.format, cryptosuite: 't11a-bookworms-bbs', credential: credential.fields});
+    return {
+        credential: {
+            "@context": [
+                "https://www.w3.org/ns/credentials/v2"
+            ],
+            "type": [credential.format],
+            "issuer": did_uri,
+            "credentialSubject": credential.fields,
+            "proof": {
+                "type": "DataIntegrityProof",
+                "cryptosuite": "t11a-bookworms-bbs",
+                "verificationMethod": did_uri,
+                "proofPurpose": "assertionMethod",
+                "proofValue": signature.toString(),
+            }
         }
     }
+}
+
+// bad style: copy pasted from IH
+
+
+function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
+    // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    const result = Object();
+    for (const {key, value} of kvp_list) {
+        result[key] = value;
+    }
+    return result;
 }

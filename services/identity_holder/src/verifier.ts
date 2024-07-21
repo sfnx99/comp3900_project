@@ -1,7 +1,5 @@
 // @ts-expect-error Module does not support typescript.
 import * as bbs from '@digitalbazaar/bbs-signatures';
-// @ts-expect-error Module does not support typescript.
-import * as did from '@decentralized-identity/ion-tools';
 import axios, { HttpStatusCode } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { FORMAT_MAP, getData, setData, toUser } from './data';
@@ -101,13 +99,14 @@ export async function makePresentation(token: string, verifier: string, format: 
 
 export async function getPresentationV2(session_data: SessionData, verifier: string): Promise<ResponseV2> {
     const verifierRequest = verifier + "/v2/request";
-    const res: VerifierV2Request = JSON.parse(await axios.get(verifierRequest));
-    const descriptor = res.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
+    const res = await axios.get(verifierRequest);
+    const res_data: VerifierV2Request = res.data;
+    const descriptor = res_data.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
     const userCred = session_data.user.credentialsV2.find(
         c => c.type.includes(descriptor.id)
-        && descriptor.contraints.fields.every(
+        && descriptor.constraints.fields.every(
             f => getRelativeCredentialValue(f.path, c.credentialSubject) !== undefined)
-        )
+    )
     if (userCred === undefined) {
         return {
             status: HttpStatusCode.Forbidden,
@@ -118,13 +117,13 @@ export async function getPresentationV2(session_data: SessionData, verifier: str
     }
     // Update session data.
     const data = getData()
-    session_data.active_presentation_request = res.presentation_definition
+    session_data.active_presentation_request = res_data.presentation_definition
     setData(data) // Does this work? FIXME
 
     // User has required credentials.
     const return_value = {
         type: descriptor.id,
-        requiredAttributes: get_required_attributes(res.presentation_definition)
+        requiredAttributes: get_required_attributes(res_data.presentation_definition)
     }
     return {
         status: 200,
@@ -133,7 +132,8 @@ export async function getPresentationV2(session_data: SessionData, verifier: str
 }
 
 function get_required_attributes(definition: PresentationDefinition): string[] {
-    return definition.input_descriptors[0].contraints.fields.map(f => getCredentialSubjectName(f.path[0]))
+    const val =definition.input_descriptors[0].constraints.fields.map(f => getCredentialSubjectName(f.path[0]))
+    return val
 }
 
 export async function postPresentationV2(session_data: SessionData, verifier: string, credential_id: SSI_ID): Promise<ResponseV2> {
@@ -198,7 +198,7 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
 function getRelativeCredentialValue(paths: string[], credential_subject: CredentialSubject) {
     try {
         const values = paths.map(path => {
-            const keys = path.slice(1).split('.') // TODO: Remove $[] from path instead of slicing.
+            const keys = path.slice(2).split('.') // TODO: Remove $[] from path instead of slicing.
             let current: any = credential_subject // eslint-disable-line @typescript-eslint/no-explicit-any
             for (let i = 0; i < keys.length; i++) {
                 const element = keys[i];
@@ -239,7 +239,12 @@ function credentialSubject_to_indexed_kvp(credentialSubject: CredentialSubject) 
     return result
 }
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
-    return kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
+    const result = Object();
+    for (const {key, value} of kvp_list) {
+        result[key] = value;
+    }
+    return result;
 }
 
 /**
@@ -253,10 +258,10 @@ function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,
 async function create_verifiable_credential(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialV2 | undefined> {
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
-    const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))    
+    const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))   
     const proof = await create_verifiable_credential_proof(credential, presentation_request)
     if (proof === undefined) {
-        return undefined
+        throw new Error("Couldn't generate proof");
     }
     return {
         '@context': credential['@context'],
@@ -278,7 +283,6 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))
-
     const initial_chunk = JSON.stringify({
         "@context": credential['@context'],
         "type": credential.type,
@@ -287,45 +291,31 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     const all_data_chunks = non_did_credentialSubject
         .map(cs => indexed_key_value_pairs_to_object([cs]))
         .map(obj => JSON.stringify(obj))
-    const filtered_data_chunks = filtered_credentialSubject
-        .map(cs => indexed_key_value_pairs_to_object([cs]))
-        .map(obj => JSON.stringify(obj))
     
     const last_chunk = JSON.stringify({
         type: credential.proof.type,
         cryptosuite: credential.proof.cryptosuite,
-        verificationMethod: credential.proof.verificationMethod,
+        // verificationMethod: credential.proof.verificationMethod,
         proofPurpose: credential.proof.proofPurpose
     })
     const last_chunk_index = non_did_credentialSubject.map(i => i.index).reduce((acc, val) => Math.max(acc, val)) + 1
     const header = new Uint8Array();
-    const issuer_publicKey = await dereference_DID_to_public_key(credential.proof.verificationMethod)
+    const issuer_publicKey: Uint8Array = await dereference_DID_to_public_key(credential.proof.verificationMethod)
     const ciphersuite = "BLS12-381-SHA-256"
     const all_chunks = [initial_chunk, ...all_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
-    const filtered_chunks = [initial_chunk, ...filtered_data_chunks, last_chunk].map(c => new TextEncoder().encode(c))
     const filtered_chunk_indexes = [0,...filtered_credentialSubject.map(cs => cs.index).sort((a,b) => a-b), last_chunk_index]
-    const verified = await bbs.verifySignature({
+    const proofValue = new Uint8Array(credential.proof.proofValue.split(",").map(e => parseInt(e)));
+    const proof: Uint8Array = await bbs.deriveProof({
         publicKey: issuer_publicKey,
-        signature: credential.proof.proofValue,
+        signature: proofValue,
         header: header,
         messages: all_chunks,
-        ciphersuite: ciphersuite
-      }
-    )
-    if (!verified) {
-        return undefined
-    }
-    const proof: string = await bbs.deriveProof({
-        publicKey: issuer_publicKey,
-        signature: credential.proof.proofValue,
-        header: header,
-        messages: filtered_chunks,
         presentationHeader: header,
         disclosedMessageIndexes: filtered_chunk_indexes,
         ciphersuite: ciphersuite
     });
     const verifiable_credential_proof: VerifiableCredentialProof = {
-        proofValue: [proof, credential.proof.proofValue],
+        proofValue: [JSON.stringify(filtered_chunk_indexes), JSON.stringify(proof)],
         type: credential.proof.type,
         cryptosuite: credential.proof.cryptosuite,
         verificationMethod: credential.proof.verificationMethod,
@@ -338,7 +328,9 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
  * This function takes in a did_uri, and then returns the public key associated.
  * @param did_uri The did, ie. "did:issuer:12345" or smth
  */
-async function dereference_DID_to_public_key(did_uri: string) {
-    const didDoc = await did.resolve(did_uri)
-    return didDoc.didDocument.service[0].serviceEndpoint
+async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> { // eslint-disable-line @typescript-eslint/no-unused-vars
+    const resp = await axios.get("http://localhost:8082/");
+    return new Uint8Array(Object.values(resp.data.bbs_public_key));
+    // const didDoc = await did.resolve(did_uri)
+    // return didDoc.didDocument.service[0].serviceEndpoint
 }

@@ -1,4 +1,3 @@
-import { HttpStatusCode } from "axios"
 
 export type Attribute = {
     [attr: string] : string,
@@ -44,7 +43,7 @@ export interface PresentationDefinition {
 
 interface PresentationDescriptor {
     id: CredentialType,
-    contraints: {
+    constraints: {
         fields: DescriptorField[]
     }
 }

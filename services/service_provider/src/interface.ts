@@ -44,7 +44,7 @@ export interface PresentationDefinition {
 
 interface PresentationDescriptor {
     id: CredentialType,
-    contraints: {
+    constraints: {
         fields: DescriptorField[]
     }
 }
@@ -110,5 +110,13 @@ export type SessionData = {
 
 export interface disclosedMessages {
     disclosedMessages: Uint8Array[],
-    disclosedMessageIndexes: string
+    disclosedMessageIndexes: number[]
+}
+
+export interface PresentationLog {
+    issuer: string,
+    type: string,
+    cryptosuite: string,
+    credential: {[key: string] : string},
+    status: "denied" | "accepted"
 }

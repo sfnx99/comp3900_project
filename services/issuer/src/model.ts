@@ -8,7 +8,6 @@ const clients: Client[] = [{clientId: 'test@test.com', id: 'test@test.com', gran
 
 export const model = {
     getAuthorizationCode: function(authorizationCode: string): Promise<AuthorizationCode | Falsey> {
-        console.log(authorizationCode);
         return Promise.resolve(authCodes.get(authorizationCode));
     },
 
@@ -28,7 +27,6 @@ export const model = {
         client: Client,
         user: User
     ): Promise<AuthorizationCode | Falsey> {
-        console.log(client);
         const auth_code = code as AuthorizationCode;
         auth_code.client = client;
         auth_code.user = user;
