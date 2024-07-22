@@ -5,18 +5,25 @@ import {
   ScrollView,
   Modal,
   StyleSheet,
+  Pressable,
+  Dimensions,
   TextInput,
-  Pressable
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { getIssuers, getIssue } from '../scripts/api'; 
-import styles from '../styles/request'; 
+import { getIssuers, getIssue, loginUser, IssueRegisterUser } from '../scripts/api';
+import styles from '../styles/request';
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
 
+const { width } = Dimensions.get('window');
+
 const RequestCredentialScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [loginModalVisible, setLoginModalVisible] = useState(false);
+  const [issuerConfirmationVisible, setIssuerConfirmationVisible] = useState(false);
   const [docnumb, setdocnumb] = useState('');
   const [issuers, setIssuers] = useState([]);
   const [selectedIssuer, setSelectedIssuer] = useState('');
@@ -25,6 +32,10 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [selectedDetail, setSelectedDetail] = useState('');
   const [detailsPickerVisible, setDetailsPickerVisible] = useState(false);
   const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
 
   useEffect(() => {
     const loadIssuers = async () => {
@@ -43,10 +54,12 @@ const RequestCredentialScreen = ({ navigation }) => {
   }, []);
 
   const handleIssuerSelection = async (itemValue) => {
-    setSelectedIssuer(itemValue);
+    const issuer = String(itemValue); // Ensure itemValue is a string
+    setSelectedIssuer(issuer);
     setPickerVisible(false);
+    setIssuerConfirmationVisible(true); // Show the confirmation modal
     try {
-      const details = await getIssue();
+      const details = await getIssue(issuer);
       if (details && details.types) {
         setAdditionalDetails(details.types);
         setDetailsPickerVisible(true);
@@ -54,8 +67,43 @@ const RequestCredentialScreen = ({ navigation }) => {
         throw new Error('No details found for this issuer');
       }
     } catch (error) {
-      setError('Failed to fetch details: ' + error.message);
+      console.error('Failed to fetch details:', error);
+      let errorMessage = 'Failed to fetch details';
+      if (error.response && error.response.data && error.response.data.error) {
+        errorMessage += `: ${error.response.data.error}`;
+      } else if (error.message) {
+        errorMessage += `: ${error.message}`;
+      } else {
+        errorMessage += ': An unknown error occurred';
+      }
+      setError(errorMessage);
     }
+  };
+
+  const handleLogin = async () => {
+    try {
+      if (!email || !password) {
+        setError('Please fill in all fields!');
+        return;
+      }
+
+      await loginUser(email, password);
+      setLoginModalVisible(false);
+      setModalVisible(false);
+
+      // Call IssueRegisterUser after successful login
+      await IssueRegisterUser(email, password);
+
+      // Show success message
+      setSuccessMessage('Successfully Consented to Being Issued a Credential');
+    } catch (error) {
+      setErrorMessage(`Could not login: ${error.message}`); // Set error message
+    }
+  };
+
+  const clearError = () => {
+    setError('');
+    setErrorMessage(''); // Clear error message
   };
 
   return (
@@ -73,7 +121,7 @@ const RequestCredentialScreen = ({ navigation }) => {
         transparent={true}
         animationType="fade"
       >
-        <ErrorMessage message={error} onPress={() => setError('')} />
+        <ErrorMessage message={error} onPress={clearError} />
       </Modal>
 
       <Modal
@@ -82,19 +130,21 @@ const RequestCredentialScreen = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setPickerVisible(false)}
       >
-        <Pressable style={localStyles.modalOverlay} onPress={() => setPickerVisible(false)}>
-          <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
-            <Text style={localStyles.pickerTitle}>Select an Issuer</Text>
-            <Picker
-              selectedValue={selectedIssuer}
-              onValueChange={handleIssuerSelection}
-              style={localStyles.pickerStyle}>
-              {issuers.map((issuer, index) => (
-                <Picker.Item label={issuer} value={issuer} key={index} />
-              ))}
-            </Picker>
+        <TouchableWithoutFeedback onPress={() => setPickerVisible(false)}>
+          <View style={localStyles.modalOverlay}>
+            <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
+              <Text style={localStyles.pickerTitle}>Select an Issuer</Text>
+              <Picker
+                selectedValue={selectedIssuer}
+                onValueChange={handleIssuerSelection}
+                style={localStyles.pickerStyle}>
+                {issuers.map((issuer, index) => (
+                  <Picker.Item label={issuer} value={issuer} key={index} />
+                ))}
+              </Picker>
+            </View>
           </View>
-        </Pressable>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Modal
@@ -103,22 +153,85 @@ const RequestCredentialScreen = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setDetailsPickerVisible(false)}
       >
-        <Pressable style={localStyles.modalOverlay} onPress={() => setDetailsPickerVisible(false)}>
-          <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
-            <Text style={localStyles.pickerTitle}>Select Type of Credential</Text>
-            <Picker
-              selectedValue={selectedDetail}
-              onValueChange={(itemValue) => setSelectedDetail(itemValue)}
-              style={localStyles.pickerStyle}>
-              {additionalDetails.map((detail, index) => (
-                <Picker.Item label={detail} value={detail} key={index} />
-              ))}
-            </Picker>
+        <TouchableWithoutFeedback onPress={() => setDetailsPickerVisible(false)}>
+          <View style={localStyles.modalOverlay}>
+            <View style={localStyles.pickerContainer} onStartShouldSetResponder={() => true}>
+              <Text style={localStyles.pickerTitle}>Select Type of Credential</Text>
+              <Picker
+                selectedValue={selectedDetail}
+                onValueChange={(itemValue) => setSelectedDetail(String(itemValue))}
+                style={localStyles.pickerStyle}>
+                {additionalDetails.map((detail, index) => (
+                  <Picker.Item label={detail} value={detail} key={index} />
+                ))}
+              </Picker>
+            </View>
           </View>
-        </Pressable>
+        </TouchableWithoutFeedback>
       </Modal>
 
+      <Modal
+        visible={loginModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setLoginModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={clearError}>
+          <View style={localStyles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={() => setLoginModalVisible(false)}>
+              <View style={localStyles.modalOverlay}>
+                <View style={localStyles.loginContainer}>
+                  <Text style={localStyles.modalTitle}>Enter Login Details to Consent</Text>
+                  <TextInput
+                    style={localStyles.input2}
+                    placeholder="Email"
+                    placeholderTextColor={'black'}
+                    value={email}
+                    onChangeText={setEmail}
+                  />
+                  <TextInput
+                    style={localStyles.input2}
+                    placeholder="Password"
+                    placeholderTextColor={'black'}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
+                  <TouchableOpacity style={localStyles.button2} onPress={handleLogin}>
+                    <Text style={localStyles.buttonText}>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {successMessage && (
+        <View style={localStyles.successMessageContainer}>
+          <Text style={localStyles.successMessage}>{successMessage}</Text>
+        </View>
+      )}
+
+      {errorMessage && (
+        <View style={localStyles.errorMessageContainer}>
+          <Text style={localStyles.errorMessage}>{errorMessage}</Text>
+        </View>
+      )}
+
+      <Pressable
+        style={({ pressed }) => [
+          localStyles.button,
+          pressed ? localStyles.buttonHover : {}
+        ]}
+        onPress={() => setLoginModalVisible(true)}
+      >
+        <Text style={localStyles.buttonText}>Consent to Being Issued a Credential</Text>
+      </Pressable>
+      <Text style={styles.Text2}>Please note you only need to consent per credential for it to be issued</Text>
+     
       <ScrollView contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.Text}>Select Fields for Requested Credential</Text>
         <View style={styles.content}>
           <Pressable
             style={({ pressed }) => [
@@ -144,8 +257,8 @@ const RequestCredentialScreen = ({ navigation }) => {
 
           <Pressable
             style={({ pressed }) => [
-              styles.button,
-              pressed ? styles.buttonPressed : {}
+              localStyles.button,
+              pressed ? localStyles.buttonHover : {}
             ]}
             onPress={() => {
               if (selectedIssuer && selectedDetail) {
@@ -156,7 +269,7 @@ const RequestCredentialScreen = ({ navigation }) => {
               }
             }}
           >
-            <Text style={styles.buttonText}>Submit Request</Text>
+            <Text style={localStyles.buttonText}>Submit Request</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -164,13 +277,13 @@ const RequestCredentialScreen = ({ navigation }) => {
   );
 };
 
-
 const localStyles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   pickerContainer: {
     backgroundColor: 'white',
@@ -188,7 +301,7 @@ const localStyles = StyleSheet.create({
   },
   pickerStyle: {
     width: 330,
-    height: 216, 
+    height: 216,
     backgroundColor: 'white',
   },
   inputLikePicker: {
@@ -199,8 +312,8 @@ const localStyles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
-    flexDirection: 'column', 
-    alignItems: 'flex-start', 
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   label: {
     fontSize: 16,
@@ -211,8 +324,92 @@ const localStyles = StyleSheet.create({
     fontSize: 16,
   },
   pressed: {
-    opacity: 0.5
-  }
+    // opacity: 0.2
+  },
+  button: {
+    backgroundColor: '#D6EE41',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 20,
+    borderRadius: 5,
+    width: width * 0.95,
+    alignItems: 'center',
+  },
+  button2: {
+    backgroundColor: '#D6EE41',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 20,
+    borderRadius: 5,
+    width: width * 0.50,
+    alignItems: 'center',
+  },
+  buttonHover: {
+    backgroundColor: '#ffffe8',
+  },
+  buttonText: {
+    color: '#000',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  loginContainer: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
+  input2: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
+  successMessageContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 10,
+    backgroundColor: '#62e367', 
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  successMessage: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  errorMessageContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 10,
+    backgroundColor: '#ff4d4d', 
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  errorMessage: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
 
 export default RequestCredentialScreen;

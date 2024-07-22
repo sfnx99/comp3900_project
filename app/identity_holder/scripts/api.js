@@ -227,21 +227,20 @@ export const getIssuers = async () => {
   }
 };
 
-
-/**
- * Fetches issuer data from the API.
- * @returns {Promise} A promise that resolves to the issuer data or an error object.
- */
-export const getIssue = async () => {
+export const getIssue = async (issuer) => {
   try {
     const token = await getToken();
     if (!token) {
-      throw new Error('Authentication required.'); // Ensures that the function exits if no token is available
+      throw new Error('Authentication required.');
     }
 
+    // Make the API call with the issuer parameter
     const response = await axios.get(`${url}/issue`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Uses the token for authorization
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        issuer_id: issuer, 
       },
     });
     if (response.status !== 200) {
@@ -252,5 +251,19 @@ export const getIssue = async () => {
   } catch (error) {
     handleError(error); 
     return { error: true, message: error.message };
+  }
+};
+
+export const IssueRegisterUser = async (email, password) => {
+  try {
+    if (!email || !password) {
+      throw new Error('Email or password is not available in the session.');
+    }
+
+    await axios.post(`http://192.168.1.122:8082/register`, { email, password });
+
+    // No need to handle the token, as the response is not expected to return anything
+  } catch (error) {
+    handleError(error);
   }
 };
