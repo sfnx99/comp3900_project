@@ -83,7 +83,7 @@ const RequestCredentialScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       if (!email || !password) {
-        setError('Please fill in all fields!');
+        setErrorMessage('Please fill in all fields!');
         return;
       }
 
@@ -97,13 +97,14 @@ const RequestCredentialScreen = ({ navigation }) => {
       // Show success message
       setSuccessMessage('Successfully Consented to Being Issued a Credential');
     } catch (error) {
+      setLoginModalVisible(false); // Close the login modal
       setErrorMessage(`Could not login: ${error.message}`); // Set error message
     }
   };
 
   const clearError = () => {
     setError('');
-    setErrorMessage(''); // Clear error message
+    setErrorMessage(''); 
   };
 
   return (
@@ -219,15 +220,18 @@ const RequestCredentialScreen = ({ navigation }) => {
         </View>
       )}
 
-      <Pressable
-        style={({ pressed }) => [
-          localStyles.button,
-          pressed ? localStyles.buttonHover : {}
-        ]}
-        onPress={() => setLoginModalVisible(true)}
-      >
-        <Text style={localStyles.buttonText}>Consent to Being Issued a Credential</Text>
-      </Pressable>
+<Pressable
+  style={({ pressed }) => [
+    localStyles.button,
+    pressed ? localStyles.buttonHover : {}
+  ]}
+  onPress={() => {
+    clearError();
+    setLoginModalVisible(true);
+  }}
+>
+  <Text style={localStyles.buttonText}>Consent to Being Issued a Credential</Text>
+</Pressable>
       <Text style={styles.Text2}>Please note you only need to consent per credential for it to be issued</Text>
      
       <ScrollView contentContainerStyle={styles.scrollContent}>
