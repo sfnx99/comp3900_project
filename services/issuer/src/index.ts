@@ -66,7 +66,7 @@ app.post("/v2/credential", async (req: Request, res: Response) => {
 
 // frontend endpoints
 
-app.post("/register", (req: Request, res: Response) => {
+app.post("/v2/register", (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
         registerUser(email, password);
@@ -76,7 +76,7 @@ app.post("/register", (req: Request, res: Response) => {
     }
 });
 
-app.post("/info", (req: Request, res: Response) => {
+app.post("/v2/info", (req: Request, res: Response) => {
     try {
         const { email, info } = req.body;
         modifyUser(email, info);
@@ -86,7 +86,7 @@ app.post("/info", (req: Request, res: Response) => {
     }
 });
 
-app.post("/format", (req: Request, res: Response) => {
+app.post("/v2/format", (req: Request, res: Response) => {
     try {
         const { type, attributes } = req.body;
         modifyFormat(type, attributes);
@@ -96,9 +96,19 @@ app.post("/format", (req: Request, res: Response) => {
     }
 });
 
-app.get("/credentials", (req: Request, res: Response) => {
+app.get("/v2/credentials", (req: Request, res: Response) => {
     try {
         res.status(200).json(getCredentials());
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+app.post("/v2/name", async (req: Request, res: Response) => {
+    try {
+        const { name } = req.body;
+        updateName(name);
+        res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);
     }
@@ -241,5 +251,43 @@ async function initialise_did() {
         await writeFile('./did.json', JSON.stringify(did_config));
     }
     did_uri = did_config.uri;
+    console.log(`Current DID document at ${did_config.uri}`);
+}
+
+async function updateName(name: string) {
+    const did_config = JSON.parse(await readFile('./did.json', { encoding: 'utf8' }));
+    
+    // Load in current DID document
+    const did = await resolve(did_uri);
+    const did_data = did.didDocument.service[0].serviceEndpoint;
+
+    // Update
+    const new_did_data = Object();
+    for (const key of Object.keys(did_data)) {
+        new_did_data[key] = did_data[key];
+    }
+    new_did_data.name = name;
+    const new_did = new DID({
+        content: {
+            publicKeys: [{
+                id: 'key-1',
+                type: 'EcdsaSecp256k1VerificationKey2019',
+                publicKeyJwk: JSON.parse(process.env.DID_PUBLICKEY!),
+                purposes: [ 'authentication' ]
+            }],
+            services: [
+                {
+                    id: 'vc-data',
+                    type: 'vc-data',
+                    serviceEndpoint: new_did_data
+                }
+            ]
+        }
+    });
+    const new_did_uri = await new_did.getURI();
+    did_config.uri = new_did_uri;
+    // Update config file
+    await writeFile('./did.json', JSON.stringify(did_config));
+    did_uri = new_did_uri;
     console.log(`Current DID document at ${did_config.uri}`);
 }
