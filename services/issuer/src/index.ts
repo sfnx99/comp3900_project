@@ -20,7 +20,7 @@ import { authenticate, authorize, token } from "./oauth.js";
 import { getCredential, logCredential, getCredentials, setFormats } from "./db.js";
 import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
-require('dotenv').config() // eslint-disable-line i mean come on 
+require('dotenv').config() // eslint-disable-line
 
 dotenv.config();
 
