@@ -147,7 +147,6 @@ const token_body = {
     const cred_body = {
         format: "ldp_vc"
     }
-
     const c_resp = await axios.post(oauth_servers[0] + "/v2/credential", cred_body, {headers: cred_headers});
     const cred: CredentialV2 = c_resp.data.credential;
     cred.id = uuidv4();
