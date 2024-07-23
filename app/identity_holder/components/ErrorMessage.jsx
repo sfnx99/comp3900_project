@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import PropTypes from 'prop-types';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
 const ErrorMessage = ({ message, onPress }) => {
   if (!message) {
@@ -15,7 +21,11 @@ const ErrorMessage = ({ message, onPress }) => {
   );
 };
 
-const { height } = Dimensions.get('window');
+ErrorMessage.propTypes = {
+  message: PropTypes.string,
+  onPress: PropTypes.func,
+};
+
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -33,8 +43,8 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontWeight: 'normal',
-    textAlign: 'center',  
-    fontSize: '20'
+    textAlign: 'center',
+    fontSize: 20,
   },
 });
 
