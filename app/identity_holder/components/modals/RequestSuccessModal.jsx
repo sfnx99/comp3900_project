@@ -2,7 +2,6 @@ import {
   Modal,
   StyleSheet,
   Text,
-  Alert,
   TouchableOpacity,
   Image,
   Dimensions,
@@ -19,10 +18,7 @@ const RequestSuccessModal = ({ modalVisible, handleModalClose }) => (
     animationType="slide"
     transparent
     visible={modalVisible}
-    onRequestClose={() => {
-      Alert.alert('Modal has been closed.');
-      handleModalClose();
-    }}
+    onRequestClose={handleModalClose}
   >
     <SafeAreaView style={[styles.container, styles.modalView]}>
       <Image
