@@ -2,7 +2,6 @@
 import { resolve } from '@decentralized-identity/ion-tools';
 // @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
-import axios from 'axios';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
 import { getDefinition, trusted } from './db';
 
@@ -40,7 +39,7 @@ async function checkConstraints(pres: Presentation, vcIndex: number): Promise<bo
 async function obtainKey(pres: Presentation, vcIndex: number) { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
         const uri = pres.verifiableCredential[vcIndex].issuer;
-        let doc = await resolve(uri);
+        const doc = await resolve(uri);
         return JSON.parse(doc.didDocument.service[0].serviceEndpoint.key);
         // const resp = await axios.get("http://localhost:8082/");
         // return resp.data.bbs_public_key;

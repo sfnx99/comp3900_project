@@ -9,7 +9,7 @@ $ npm i
 $ npx ts-node src/index.ts 
 */
 // @ts-expect-error  bad import
-import { DID, generateKeyPair, resolve } from '@decentralized-identity/ion-tools';
+import { DID, resolve } from '@decentralized-identity/ion-tools';
 // @ts-expect-error bad import
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import cors from "cors";
@@ -20,7 +20,7 @@ import { authenticate, authorize, token } from "./oauth.js";
 import { getCredential, logCredential, getCredentials, setFormats } from "./db.js";
 import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
-require('dotenv').config()
+require('dotenv').config() // eslint-disable-line i mean come on 
 
 dotenv.config();
 
