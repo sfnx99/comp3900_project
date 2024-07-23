@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import PropTypes from 'prop-types';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { useNavigation } from '@react-navigation/native';
 
 import TextButton from '../components/TextButton';
-import { formatCamelCase } from '../scripts/util';
+import { credentialPropType, formatCamelCase } from '../scripts/util';
 import { postPresentation } from '../scripts/api';
 import { useTheme } from '../context/ThemeContext';
-import { useNavigation } from '@react-navigation/native';
+import ErrorMessage from '../components/ErrorMessage';
 
 const PresentCredentialScreen = ({ route }) => {
   const theme = useTheme();
@@ -14,6 +23,7 @@ const PresentCredentialScreen = ({ route }) => {
   const { presentData, url, credential } = route.params;
   const [attributes, setAttributes] = useState([]);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  const [error, setError] = useState('');
 
   /**
    * Check if the device is compatible for biometrics for the authentication
@@ -40,7 +50,7 @@ const PresentCredentialScreen = ({ route }) => {
       }, {});
       setAttributes(filteredAttributes);
     };
-  
+
     loadAttributes();
   }, [credential]);
 
@@ -61,11 +71,15 @@ const PresentCredentialScreen = ({ route }) => {
         Alert.alert('Success', 'Verification success!');
         navigation.navigate('Home', { screen: 'PresentationScreen' });
       } else {
-        Alert.alert('Authentication Failed, Please try again.');
+        setError('Authentication Failed, Please try again.');
       }
-    } catch (error) {
-      Alert.alert(`Error: ${error.message}`);
+    } catch (err) {
+      setError(err.message);
     }
+  };
+
+  const clearError = () => {
+    setError('');
   };
 
   const styles = StyleSheet.create({
@@ -94,27 +108,52 @@ const PresentCredentialScreen = ({ route }) => {
   });
 
   return (
-      credential ? (
-        <SafeAreaView>
+    credential ? (
+      <SafeAreaView>
         <View style={styles.container}>
-          <Text style={styles.text}>Use your credential, {credential.type} to present the following information?</Text>
+          <Text style={styles.text}>
+            Use your credential, {credential.type} to present the following information?`
+          </Text>
           <View style={styles.fields}>
             {attributes ? Object.entries(attributes)
               .map(([key, item]) => (
-              <View key={key} style={styles.field}>
-                <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
-                <Text style={styles.text}>{item}</Text>
-              </View>
-            )) : null}
+                <View key={key} style={styles.field}>
+                  <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
+                  <Text style={styles.text}>{item}</Text>
+                </View>
+              )) : null}
           </View>
           <TextButton
             text="Submit"
             onPress={handlePress}
           />
         </View>
+        <Modal
+          visible={!!error}
+          transparent
+          animationType="fade"
+        >
+          <ErrorMessage
+            message={error}
+            onPress={clearError}
+          />
+        </Modal>
       </SafeAreaView>
-      ) : null
+    ) : null
   );
+};
+
+PresentCredentialScreen.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      presentData: PropTypes.shape({
+        requiredAttributes: PropTypes.arrayOf(PropTypes.string),
+        type: PropTypes.string,
+      }),
+      url: PropTypes.string,
+      credential: credentialPropType,
+    }),
+  }),
 };
 
 export default PresentCredentialScreen;

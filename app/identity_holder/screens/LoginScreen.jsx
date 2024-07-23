@@ -62,8 +62,8 @@ const LoginScreen = () => {
       } else {
         setError('Authentication Failed, Please try again.');
       }
-    } catch (error) {
-      setError(`Error: ${error.message}`);
+    } catch (err) {
+      setError(`Error: ${err.message}`);
     }
   };
 
@@ -77,8 +77,8 @@ const LoginScreen = () => {
       await loginUser(email, password);
       bindEmail(email);
       navigation.replace('MainApp');
-    } catch (error) {
-      setError(`Could not login: ${error.message}`);
+    } catch (err) {
+      setError(`Could not login: ${err.message}`);
     }
   };
 
@@ -95,13 +95,13 @@ const LoginScreen = () => {
         />
         <Text style={styles.text}>BW Credentials</Text>
 
-        {!bindedEmail &&
+        {!bindedEmail && (
           <TextInputField
             value={email}
             onChangeText={setEmail}
             placeholder="Email address"
           />
-        }
+        )}
         <TextInputField
           value={password}
           onChangeText={setPassword}
@@ -111,7 +111,7 @@ const LoginScreen = () => {
 
         <Modal
           visible={!!error}
-          transparent={true}
+          transparent
           animationType="fade"
         >
           <ErrorMessage message={error} onPress={clearError} />
@@ -131,11 +131,11 @@ const LoginScreen = () => {
               inverted
             />
           )}
-          {!bindedEmail &&
+          {!bindedEmail && (
             <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
               <Text style={styles.registerText}>Register</Text>
             </TouchableOpacity>
-          }
+          )}
         </View>
       </View>
     </TouchableWithoutFeedback>

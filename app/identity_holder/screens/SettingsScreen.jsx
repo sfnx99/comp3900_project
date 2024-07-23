@@ -19,6 +19,7 @@ import { logoutUser, removeToken } from '../scripts/api';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
 import { AccountContext } from '../context/AccountContext';
 import { CredentialsContext } from '../context/CredentialsContext';
+import ErrorMessage from '../components/ErrorMessage';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -30,9 +31,14 @@ const SettingsScreen = () => {
   const [modalfirstVisible, setfirstModalVisible] = useState(false);
   const [modalsecondVisible, setsecondModalVisible] = useState(false);
   const [modalthirdVisible, setthirdModalVisible] = useState(false);
+  const [error, setError] = useState('');
 
   // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {};
+
+  const clearError = () => {
+    setError('');
+  };
 
   /**
    * Prompts the user for confirmation for unbinding the account.
@@ -70,21 +76,25 @@ const SettingsScreen = () => {
         index: 0,
         routes: [{ name: 'Authentication' }],
       });
-    } catch (error) {
-      Alert.alert('ERROR', `Could not wipe user data: ${error}`);
+    } catch (err) {
+      setError(`Could not wipe user data: ${err}`);
     }
   };
 
+  /**
+   * Logs the user out from the wallet and
+   * returns them to the login screen.
+   */
   const logout = async () => {
     try {
       await logoutUser();
-
+    } catch (err) {
+      setError(`Could not log out user: ${err}`);
+    } finally {
       navigation.reset({
         index: 0,
         routes: [{ name: 'Authentication' }],
       });
-    } catch (error) {
-      Alert.alert(`Could not log out user: ${error}`);
     }
   };
 
@@ -102,8 +112,8 @@ const SettingsScreen = () => {
       } else if (result.action === Share.dismissedAction) {
         console.log('Dismissed');
       }
-    } catch (error) {
-      console.error('Error sharing the app:', error.message);
+    } catch (err) {
+      setError(`Error sharing the app: ${err.message}`);
     }
   };
 
@@ -318,6 +328,17 @@ const SettingsScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
+      </Modal>
+
+      <Modal
+        visible={!!error}
+        transparent
+        animationType="slide"
+      >
+        <ErrorMessage
+          message={error}
+          onPress={clearError}
+        />
       </Modal>
 
     </SafeAreaView>
