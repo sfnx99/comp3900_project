@@ -1,10 +1,8 @@
 import React, { useState, useLayoutEffect } from 'react';
 import {
-  Alert,
   SafeAreaView,
   StyleSheet,
   View,
-  Button,
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -35,7 +33,7 @@ const PresentationScreen = () => {
   const submit = () => {
     if (!url) {
       const errorMessage = 'No issuer data found';
-      setError('Failed to fetch issuers: ' + errorMessage);
+      setError(`Failed to fetch issuers: ${errorMessage}`);
       return;
     }
 
@@ -54,13 +52,15 @@ const PresentationScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.outerContainer}>
       <View style={styles.container}>
-      <Text style={styles.text}>Verify your credential at a service provider by inputting their URL below</Text>
+        <Text style={styles.text}>
+          Verify your credential at a service provider by inputting their URL below
+        </Text>
         <TextInputField
           value={url}
           onChangeText={setUrl}
-          placeholder={"Enter URL..."}
+          placeholder="Enter URL..."
         />
         <TextButton
           text="Submit"
@@ -77,6 +77,9 @@ const PresentationScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   container: {
     marginHorizontal: 23,
     marginTop: 20,

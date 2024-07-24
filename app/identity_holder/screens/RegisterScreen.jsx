@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
-  Alert,
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -37,9 +36,9 @@ const RegisterScreen = () => {
     setError('');
   };
 
-  const isEmailValid = (email) => {
+  const isEmailValid = (checkingEmail) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(checkingEmail);
   };
 
   const submitForm = async () => {
@@ -69,8 +68,8 @@ const RegisterScreen = () => {
       bindEmail(email);
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
-    } catch (error) {
-      setError(`Could not register: ${error.message}`);
+    } catch (err) {
+      setError(`Could not register: ${err.message}`);
     }
   };
 
@@ -119,7 +118,7 @@ const RegisterScreen = () => {
 
         <Modal
           visible={!!error}
-          transparent={true}
+          transparent
           animationType="fade"
         >
           <ErrorMessage message={error} onPress={clearError} />

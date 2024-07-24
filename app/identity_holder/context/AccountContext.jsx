@@ -48,7 +48,7 @@ const AccountProvider = ({ children }) => {
   );
 };
 
-AccountProvider.propType = {
+AccountProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
