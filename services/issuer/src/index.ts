@@ -35,7 +35,7 @@ const opt = {
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 8082;
+//const port = process.env.PORT || 8082;
 
 // const oauth = new ExpressOAuthServer({
 //     model: model,
