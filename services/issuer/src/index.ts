@@ -128,7 +128,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(opt, app);
 httpServer.listen(8082, () => console.log("Issuer Started on port 8082"));
 httpsServer.listen(8443, async () => {
-    console.log("Issuer Started on localhost:8082");
+    console.log("HTTPS issuer Started on localhost:8443");
     await initialise_did();
     publicKey = new Uint8Array(JSON.parse(process.env.BBS_PUBLICKEY!));
     secretKey = new Uint8Array(JSON.parse(process.env.BBS_PRIVATEKEY!));
