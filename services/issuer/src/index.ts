@@ -21,11 +21,21 @@ import { getCredential, logCredential, getCredentials, setFormats } from "./db.j
 import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
 require('dotenv').config() // eslint-disable-line
+import fs from "fs";
+import http from "http";
+import https from "https";
+const privateKey  = fs.readFileSync('/home/ablac/server/key.pem', 'utf8'); // Hardcoded
+const certificate = fs.readFileSync('/home/ablac/server/cert.pem', 'utf8'); // Hardcoded
+
+const opt = {
+    key: privateKey,
+    cert: certificate,
+};
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 8082;
+//const port = process.env.PORT || 8082;
 
 // const oauth = new ExpressOAuthServer({
 //     model: model,
@@ -114,8 +124,11 @@ app.post("/v2/name", async (req: Request, res: Response) => {
     }
 });
 
-app.listen(port, async () => {
-    console.log("Issuer Started on localhost:8082");
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(opt, app);
+httpServer.listen(8082, () => console.log("Issuer Started on port 8082"));
+httpsServer.listen(8443, async () => {
+    console.log("HTTPS issuer Started on localhost:8443");
     await initialise_did();
     publicKey = new Uint8Array(JSON.parse(process.env.BBS_PUBLICKEY!));
     secretKey = new Uint8Array(JSON.parse(process.env.BBS_PRIVATEKEY!));
