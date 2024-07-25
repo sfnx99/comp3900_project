@@ -21,6 +21,16 @@ import { getCredential, logCredential, getCredentials, setFormats } from "./db.j
 import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
 require('dotenv').config() // eslint-disable-line
+import fs from "fs";
+import http from "http";
+import https from "https";
+const privateKey  = fs.readFileSync('/home/ablac/server/key.pem', 'utf8'); // Hardcoded
+const certificate = fs.readFileSync('/home/ablac/server/cert.pem', 'utf8'); // Hardcoded
+
+const opt = {
+    key: privateKey,
+    cert: certificate,
+};
 
 dotenv.config();
 
@@ -114,7 +124,10 @@ app.post("/v2/name", async (req: Request, res: Response) => {
     }
 });
 
-app.listen(port, async () => {
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(opt, app);
+httpServer.listen(8082, () => console.log("Issuer Started on port 8082"));
+httpsServer.listen(8443, async () => {
     console.log("Issuer Started on localhost:8082");
     await initialise_did();
     publicKey = new Uint8Array(JSON.parse(process.env.BBS_PUBLICKEY!));
