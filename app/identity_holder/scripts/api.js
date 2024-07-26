@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
-const port = WALLET_PORT || 8081;
-const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const port = process.env.WALLET_PORT || 8081;
+const url = `${process.env.WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
   try {
@@ -41,7 +40,7 @@ export const removeToken = async () => {
  */
 export const tokenActive = async () => {
   const token = await getValueFor('token');
-  if (token) { return true }
+  if (token) { return true; }
   return false;
 };
 
@@ -163,25 +162,24 @@ export const getCredential = async (id) => {
  * Deletes the credential through the wallet API.
  * @param {string} credential_id - the id of the credential to be deleted.
  */
-export const deleteCredential = async (credential_id) => {
+export const deleteCredential = async (credentialId) => {
   try {
     const token = await getToken();
-    const response = await axios.delete(`${url}/credential`, { 
+    await axios.delete(`${url}/credential`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: { credential_id },
-     });
-
+      data: { credential_id: credentialId },
+    });
   } catch (error) {
     handleError(error);
   }
 };
 
-export const getPresentation = async (verifier_uri) => {
+export const getPresentation = async (verifierUri) => {
   try {
     const token = await getToken();
-    const response = await axios(`${url}/present?verifier_uri=${verifier_uri}`, {
+    const response = await axios(`${url}/present?verifier_uri=${verifierUri}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -194,18 +192,17 @@ export const getPresentation = async (verifier_uri) => {
   }
 };
 
-export const postPresentation = async (credential_id, verifier_uri) => {
+export const postPresentation = async (credentialId, verifierUri) => {
   try {
     const token = await getToken();
-    const response = await axios(`${url}/present`, {
+    await axios(`${url}/present`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: {credential_id, verifier_uri},
+      data: { credential_id: credentialId, verifier_uri: verifierUri },
     });
   } catch (error) {
     handleError(error);
-    return null;
   }
 };
 
@@ -240,16 +237,16 @@ export const getIssue = async (issuer) => {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        issuer_id: issuer, 
+        issuer_id: issuer,
       },
     });
     if (response.status !== 200) {
       throw new Error(`Failed to fetch data: Status ${response.status}`);
     }
 
-    return response.data; 
+    return response.data;
   } catch (error) {
-    handleError(error); 
+    handleError(error);
     return { error: true, message: error.message };
   }
 };
@@ -260,7 +257,7 @@ export const IssueRegisterUser = async (email, password) => {
       throw new Error('Email or password is not available in the session.');
     }
 
-    await axios.post(`http://192.168.1.122:8082/register`, { email, password });
+    await axios.post('http://192.168.1.122:8082/register', { email, password });
 
     // No need to handle the token, as the response is not expected to return anything
   } catch (error) {
