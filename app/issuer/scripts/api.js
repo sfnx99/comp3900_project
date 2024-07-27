@@ -2,8 +2,8 @@ import axios from 'axios';
 import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
-const port = 8443;
-const url = `${'http://localhost'}:${port}/v2`;
+const port = process.env.WALLET_PORT || 8082;
+const url = `${process.env.WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
   try {
