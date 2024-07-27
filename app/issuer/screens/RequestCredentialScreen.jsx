@@ -251,7 +251,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       <Text style={styles.Text2}>Please note you only need to consent per credential for it to be issued</Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.Text}>Select Fields for Requested Credential</Text>
+        <Text style={styles.Text}>Select Fields for Requesteadasdasd Credential</Text>
         <View style={styles.content}>
           <Pressable
             style={({ pressed }) => [
