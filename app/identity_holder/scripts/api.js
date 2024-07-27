@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as Linking from 'expo-linking';
 import { save, getValueFor, deleteItem } from './util';
 
 const port = process.env.WALLET_PORT || 8081;
@@ -257,10 +258,31 @@ export const IssueRegisterUser = async (email, password) => {
       throw new Error('Email or password is not available in the session.');
     }
 
-    await axios.post('http://192.168.1.122:8082/register', { email, password });
+    await axios.post('http://localhost:8082/v2/register', { email, password });
 
     // No need to handle the token, as the response is not expected to return anything
   } catch (error) {
     handleError(error);
+  }
+};
+
+
+
+export const AuthorizeIssue = async (response_type, email, URL, state, selectedDetail) => {
+  try {
+    // Construct the code URL with dynamic parameters
+    const codeURL = `https://ablac.dev:8443/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=${state}&scope=${selectedDetail}`;
+    
+    const response = await axios.get(codeURL);
+
+    // Assuming the response contains a successful status or data you need
+    if (response.status === 200) {
+      // Redirecting to the constructed code URL using Linking
+      Linking.openURL(codeURL);
+    } else {
+      console.log('Unexpected response:', response);
+    }
+  } catch (error) {
+    console.error('Error making GET request:', error);
   }
 };

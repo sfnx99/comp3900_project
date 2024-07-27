@@ -99,21 +99,12 @@ const MainApp = () => {
           {() => <HomeStack notifications={notifications} />}
         </Tab.Screen>
         <Tab.Screen
-          name="Request Credentials"
+          name="Register User"
           component={RequestCredentialScreen}
           options={{
             tabBarIcon: renderIconByName('card-plus'),
           }}
         />
-        <Tab.Screen
-          name="WalletStack"
-          component={WalletStack}
-          options={{
-            tabBarIcon: renderIconByName('wallet'),
-            headerShown: false,
-          }}
-        />
-
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}

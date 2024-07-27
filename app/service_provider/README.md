@@ -1,1 +1,0 @@
-# Identity Holder Wallet App

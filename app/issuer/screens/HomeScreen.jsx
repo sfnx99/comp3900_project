@@ -37,7 +37,7 @@ const HomeScreen = ({ activities }) => {
           <CredentialsCarousel credentials={favoriteCredentials} />
           <TextButton
             text="Authorize a Credential"
-            onPress={() => navigation.navigate('Wallet')}
+            onPress={() => navigation.navigate('Register User')}
             style={styles.button}
           />
         </View>

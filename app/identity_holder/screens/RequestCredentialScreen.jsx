@@ -10,13 +10,15 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { getIssuers, getIssue, loginUser, IssueRegisterUser } from '../scripts/api';
+import { AuthorizeIssue, getIssuers, getIssue, loginUser, IssueRegisterUser } from '../scripts/api';
 import styles from '../styles/request';
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
+import * as Linking from 'expo-linking';
 
 const { width } = Dimensions.get('window');
 
@@ -24,7 +26,7 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loginModalVisible, setLoginModalVisible] = useState(false);
   const [issuerConfirmationVisible, setIssuerConfirmationVisible] = useState(false);
-  const [docnumb, setdocnumb] = useState('');
+  const [docnumb, setDocnumb] = useState('');
   const [issuers, setIssuers] = useState([]);
   const [selectedIssuer, setSelectedIssuer] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -35,7 +37,8 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const [loggedInEmail, setLoggedInEmail] = useState(''); 
 
   useEffect(() => {
     const loadIssuers = async () => {
@@ -51,6 +54,30 @@ const RequestCredentialScreen = ({ navigation }) => {
       }
     };
     loadIssuers();
+
+    // Add event listener for handling deep links
+    const handleUrl = (event) => {
+      const { url } = event;
+      console.log('URL:', url);
+
+      // Parse the URL to extract parameters
+      const params = new URLSearchParams(url.split('?')[1]);
+      const code = params.get('code');
+      const state = params.get('state');
+
+      console.log('Authorization Code:', code);
+      console.log('State:', state);
+
+      // Handle the returned authorization code as needed
+      Alert.alert('Authorization Code', code);
+    };
+
+    Linking.addEventListener('url', handleUrl);
+
+    // Clean up the event listener
+    return () => {
+      Linking.removeEventListener('url', handleUrl);
+    };
   }, []);
 
   const handleIssuerSelection = async (itemValue) => {
@@ -86,17 +113,8 @@ const RequestCredentialScreen = ({ navigation }) => {
         setErrorMessage('Please fill in all fields!');
         return;
       }
-
-      await loginUser(email, password);
-      setLoginModalVisible(false);
-      setModalVisible(false);
-
-      // Call IssueRegisterUser after successful login
-      await IssueRegisterUser(email, password);
-
-      // Show success message
-      setSuccessMessage('Successfully Consented to Being Issued a Credential');
-    } catch (error) {
+      setLoggedInEmail(email);
+      } catch (error) {
       setLoginModalVisible(false); // Close the login modal
       setErrorMessage(`Could not login: ${error.message}`); // Set error message
     }
@@ -220,22 +238,22 @@ const RequestCredentialScreen = ({ navigation }) => {
         </View>
       )}
 
-<Pressable
-  style={({ pressed }) => [
-    localStyles.button,
-    pressed ? localStyles.buttonHover : {}
-  ]}
-  onPress={() => {
-    clearError();
-    setLoginModalVisible(true);
-  }}
->
-  <Text style={localStyles.buttonText}>Consent to Being Issued a Credential</Text>
-</Pressable>
+      <Pressable
+        style={({ pressed }) => [
+          localStyles.button,
+          pressed ? localStyles.buttonHover : {}
+        ]}
+        onPress={() => {
+          clearError();
+          setLoginModalVisible(true);
+        }}
+      >
+        <Text style={localStyles.buttonText}>Consent to Being Issued a Credential</Text>
+      </Pressable>
       <Text style={styles.Text2}>Please note you only need to consent per credential for it to be issued</Text>
      
       <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.Text}>Select Fields for Requested Credential</Text>
+        <Text style={styles.Text}>Select Fields for Requested Credential</Text>
         <View style={styles.content}>
           <Pressable
             style={({ pressed }) => [
@@ -266,8 +284,11 @@ const RequestCredentialScreen = ({ navigation }) => {
             ]}
             onPress={() => {
               if (selectedIssuer && selectedDetail) {
-                console.log("Submission", { issuer: selectedIssuer, detail: selectedDetail, docNumber: docnumb });
+                const response_type = "code";
+                const state = "xyz";
                 setModalVisible(true);
+                const URL = Linking.createURL();
+                AuthorizeIssue(response_type, email, URL, state, selectedDetail)
               } else {
                 setError('Please select an issuer and a detail.');
               }

@@ -27,19 +27,6 @@ const SettingsScreen = () => {
   // TODO: Remove this once all the settings have been implemented
   const dummyFunctions = () => {};
 
-  const logout = async () => {
-    try {
-      await logoutUser();
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Authentication' }],
-      });
-    } catch (error) {
-      Alert.alert(`Could not log out user: ${error}`);
-    }
-  };
-
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -62,39 +49,42 @@ const SettingsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.view}>
-          <SettingButton
-            text="Share App"
-            onPress={onShare}
-            icon="share-variant-outline"
-          />
-          <SettingButton
-            text="Privacy Policy"
-            onPress={() => setfirstModalVisible(true)} 
-            icon="file-document-outline"
-          />
-          <SettingButton
-            text="Terms and Conditions"
-            onPress={() => setsecondModalVisible(true)}
-            icon="file-find-outline"
-          />
-          <SettingButton
-            text="Cookie Policy"
-            onPress={() => setthirdModalVisible(true)}
-            icon="email-outline"
-          />
-          <SettingButton
-            text="Support"
-            onPress={dummyFunctions}
-            icon="message-outline"
-          />
-          <SettingButton
-            text="Logout"
-            onPress={logout}
-            icon="logout"
-          />
-        </View>
-      </ScrollView>
+  <View style={styles.view}>
+    <SettingButton
+      text="Share App"
+      onPress={onShare}
+      icon="share-variant-outline"
+    />
+    <SettingButton
+      text="Privacy Policy"
+      onPress={() => setfirstModalVisible(true)} 
+      icon="file-document-outline"
+    />
+    <SettingButton
+      text="Terms and Conditions"
+      onPress={() => setsecondModalVisible(true)}
+      icon="file-find-outline"
+    />
+    <SettingButton
+      text="Cookie Policy"
+      onPress={() => setthirdModalVisible(true)}
+      icon="email-outline"
+    />
+    <SettingButton
+      text="Support"
+      onPress={dummyFunctions}
+      icon="message-outline"
+    />
+    <SettingButton
+      text="Logout"
+      onPress={() => navigation.reset({
+        index: 0,
+        routes: [{ name: 'Authentication' }],
+      })}
+      icon="logout"
+    />
+  </View>
+</ScrollView>
 
       <Modal
         animationType="none"
