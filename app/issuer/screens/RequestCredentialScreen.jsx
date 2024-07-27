@@ -112,13 +112,16 @@ const RequestCredentialScreen = ({ navigation }) => {
 
   const handleRequestSubmit = () => {
     if (selectedIssuer && selectedDetail && email) {
-      const redirect = Linking.makeUrl()
-      const url = `google.com`;
-      Linking.openURL(url);
+      const redirect = Linking.makeUrl('/');
+      const url = `http://ablac.dev:8443/v2/authorize?response_type=code&client_id=${email}&redirect_uri=${encodeURIComponent(redirect)}&state=xyz&scope=${selectedDetail}`;
+  
+      Linking.openURL(url)
+        .catch((err) => console.error('An error occurred', err));
     } else {
       setError('Please select an issuer, a detail, and make sure your email is provided.');
     }
   };
+  
  
   return (
     <SafeAreaView style={styles.container}>
