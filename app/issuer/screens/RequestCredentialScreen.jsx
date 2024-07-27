@@ -108,15 +108,18 @@ const RequestCredentialScreen = ({ navigation }) => {
     setErrorMessage(''); 
   };
 
+
+
   const handleRequestSubmit = () => {
     if (selectedIssuer && selectedDetail && email) {
-      const url = `http://localhost:8082/v2/authorize?response_type=code&client_id=${email}&redirect_uri=http://localhost:8081&state=xyz&scope=${selectedDetail}`;
+      const redirect = Linking.makeUrl()
+      const url = `google.com`;
       Linking.openURL(url);
     } else {
       setError('Please select an issuer, a detail, and make sure your email is provided.');
     }
   };
-
+ 
   return (
     <SafeAreaView style={styles.container}>
       <RequestSuccessModal

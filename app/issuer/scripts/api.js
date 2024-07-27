@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { WALLET_HOST, WALLET_PORT } from '@env';
-import { save, getValueFor } from './util';
+import { save, getValueFor, deleteItem } from './util';
 
-const port = WALLET_PORT || 7999;
-const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const port = WALLET_PORT || 8443;
+const url = `${WALLET_HOST || 'https://ablac.dev'}:${port}/v2`;
 
 const getToken = async () => {
   try {
@@ -26,13 +26,23 @@ const setToken = async (token) => {
   }
 };
 
-const removeToken = async () => {
+export const removeToken = async () => {
   try {
     // Clear token
-    await save('token', '');
+    await deleteItem('token');
   } catch (error) {
     console.error('Error clearing auth token:', error);
   }
+};
+
+/**
+ * Checks if the token is still valid for the session.
+ * @returns boolean determining the validity of the session.
+ */
+export const tokenActive = async () => {
+  const token = await getValueFor('token');
+  if (token) { return true }
+  return false;
 };
 
 /**
@@ -104,7 +114,7 @@ export const logoutUser = async () => {
     const token = await getToken();
     await axios.post(`${url}/auth/logout`, {}, {
       headers: {
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     removeToken();
@@ -146,5 +156,113 @@ export const getCredential = async (id) => {
   } catch (error) {
     handleError(error);
     return null;
+  }
+};
+
+/**
+ * Deletes the credential through the wallet API.
+ * @param {string} credential_id - the id of the credential to be deleted.
+ */
+export const deleteCredential = async (credential_id) => {
+  try {
+    const token = await getToken();
+    const response = await axios.delete(`${url}/credential`, { 
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: { credential_id },
+     });
+
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getPresentation = async (verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present?verifier_uri=${verifier_uri}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const postPresentation = async (credential_id, verifier_uri) => {
+  try {
+    const token = await getToken();
+    const response = await axios(`${url}/present`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {credential_id, verifier_uri},
+    });
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const getIssuers = async () => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.');
+    }
+    const response = await axios.get(`${url}/issuers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
+
+export const getIssue = async (issuer) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.');
+    }
+
+    // Make the API call with the issuer parameter
+    const response = await axios.get(`${url}/issue`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        issuer_id: issuer, 
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch data: Status ${response.status}`);
+    }
+
+    return response.data; 
+  } catch (error) {
+    handleError(error); 
+    return { error: true, message: error.message };
+  }
+};
+
+export const IssueRegisterUser = async (email, password) => {
+  try {
+    if (!email || !password) {
+      throw new Error('Email or password is not available in the session.');
+    }
+
+    await axios.post(`http://192.168.1.122:8082/register`, { email, password });
+
+  } catch (error) {
+    handleError(error);
   }
 };
