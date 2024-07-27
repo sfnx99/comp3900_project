@@ -52,23 +52,23 @@ app.post("/v2/present", async (req: Request, res: Response) => {
 
 // frontend endpoints
 
-app.get('/presentations', (req: Request, res: Response) => {
+app.get('/v2/presentations', (req: Request, res: Response) => {
     res.status(200).json(getPresentations());
 });
 
-app.post('/trust', (req: Request, res: Response) => {
+app.post('/v2/trust', (req: Request, res: Response) => {
     const { id } = req.body;
     trust(id);
     res.sendStatus(200);
 });
 
-app.post('/untrust', (req: Request, res: Response) => {
+app.post('/v2/untrust', (req: Request, res: Response) => {
     const { id } = req.body;
     untrust(id);
     res.sendStatus(200);
 });
 
-app.post('/definition', (req: Request, res: Response) => {
+app.post('/v2/definition', (req: Request, res: Response) => {
     const { type, requiredAttributes } = req.body;
     const attr: string[] = requiredAttributes;
     modifyDefinition({

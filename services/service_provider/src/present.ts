@@ -1,7 +1,7 @@
-// import { resolve } from '@decentralized-identity/ion-tools';
+// @ts-expect-error no types in module
+import { resolve } from '@decentralized-identity/ion-tools';
 // @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
-import axios from 'axios';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
 import { getDefinition, trusted } from './db';
 
@@ -38,11 +38,11 @@ async function checkConstraints(pres: Presentation, vcIndex: number): Promise<bo
 
 async function obtainKey(pres: Presentation, vcIndex: number) { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
-        /*const uri = pres.verifiableCredential[vcIndex].issuer;
-        let doc = await resolve(uri);
-        return doc.didDocument.service[0].serviceEndpoint;*/
-        const resp = await axios.get("http://localhost:8082/");
-        return resp.data.bbs_public_key;
+        const uri = pres.verifiableCredential[vcIndex].issuer;
+        const doc = await resolve(uri);
+        return JSON.parse(doc.didDocument.service[0].serviceEndpoint.key);
+        // const resp = await axios.get("http://localhost:8082/");
+        // return resp.data.bbs_public_key;
     } catch (error) {
         if (error) {
             return {
@@ -100,7 +100,7 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     const finalChunk = JSON.stringify({
         type: pres.verifiableCredential[0].proof.type,
         cryptosuite: pres.verifiableCredential[0].proof.cryptosuite,
-        // verificationMethod: pres.verifiableCredential[0].proof.verificationMethod,
+        verificationMethod: pres.verifiableCredential[0].proof.verificationMethod,
         proofPurpose: pres.verifiableCredential[0].proof.proofPurpose
     })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
@@ -198,7 +198,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  (i.e., validation of the signature(s) on each VC).
     */
     const publicKeyObj = await obtainKey(pres, vcIndex);
-    const publicKey = new Uint8Array(Object.values(publicKeyObj));
+    const publicKey = new Uint8Array(publicKeyObj);
     const proofStr = pres.verifiableCredential[vcIndex].proof.proofValue[1];
     const proof = new Uint8Array(Object.values(JSON.parse(proofStr)));
     if (!await validateProof(publicKey, proof, constructChunks(pres, vcIndex))) {
