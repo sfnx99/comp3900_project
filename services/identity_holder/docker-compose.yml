@@ -1,16 +1,14 @@
 version: '3.7'
-
 services:
-  ts-node-docker:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base
+      target: release
     volumes:
-      - ./src:/home/node/app/src
+      - ./src:/usr/src/app/src
     container_name: identity_holder
     expose:
       - '8081'
     ports:
       - '8081:8081'
-    command: npx ts-node src/index.ts
