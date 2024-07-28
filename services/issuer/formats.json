@@ -1,6 +1,0 @@
-{
-    "formats": [
-        {"id": "DriverLicenceCredential", "fields": ["firstName", "lastName", "licenseNo", "expiryDate", "dob"]},
-        {"id": "PhotoCardCredential", "fields": ["firstName", "lastName", "expiryDate", "dob"]}
-    ]
-}

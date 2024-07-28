@@ -1,5 +1,7 @@
 // @ts-expect-error Module does not support typescript.
 import * as bbs from '@digitalbazaar/bbs-signatures';
+// @ts-expect-error Module does not support typescript.
+import { resolve } from '@decentralized-identity/ion-tools';
 import axios, { HttpStatusCode } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { FORMAT_MAP, getData, setData, toUser } from './data';
@@ -259,7 +261,7 @@ async function create_verifiable_credential(credential: CredentialV2, presentati
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))   
-    const proof = await create_verifiable_credential_proof(credential, presentation_request)
+    const proof = await s(credential, presentation_request)
     if (proof === undefined) {
         throw new Error("Couldn't generate proof");
     }
@@ -279,7 +281,7 @@ async function create_verifiable_credential(credential: CredentialV2, presentati
  * @param credential 
  * @param presentation_request 
  */
-async function create_verifiable_credential_proof(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialProof | undefined> {
+async function s(credential: CredentialV2, presentation_request: PresentationDefinition): Promise<VerifiableCredentialProof | undefined> {
     const credentialSubject_attributes = get_required_attributes(presentation_request)
     const non_did_credentialSubject = credentialSubject_to_indexed_kvp(credential.credentialSubject)
     const filtered_credentialSubject = non_did_credentialSubject.filter(kvp => credentialSubject_attributes.includes(kvp.key))
@@ -295,7 +297,7 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
     const last_chunk = JSON.stringify({
         type: credential.proof.type,
         cryptosuite: credential.proof.cryptosuite,
-        // verificationMethod: credential.proof.verificationMethod,
+        verificationMethod: credential.proof.verificationMethod,
         proofPurpose: credential.proof.proofPurpose
     })
     const last_chunk_index = non_did_credentialSubject.map(i => i.index).reduce((acc, val) => Math.max(acc, val)) + 1
@@ -329,8 +331,8 @@ async function create_verifiable_credential_proof(credential: CredentialV2, pres
  * @param did_uri The did, ie. "did:issuer:12345" or smth
  */
 async function dereference_DID_to_public_key(did_uri: string): Promise<Uint8Array> { // eslint-disable-line @typescript-eslint/no-unused-vars
-    const resp = await axios.get("http://localhost:8082/");
-    return new Uint8Array(Object.values(resp.data.bbs_public_key));
-    // const didDoc = await did.resolve(did_uri)
-    // return didDoc.didDocument.service[0].serviceEndpoint
+    // const resp = await axios.get("http://localhost:8082/");
+    // return new Uint8Array(Object.values(resp.data.bbs_public_key));
+    const didDoc = await resolve(did_uri)
+    return new Uint8Array(JSON.parse(didDoc.didDocument.service[0].serviceEndpoint.key));
 }
