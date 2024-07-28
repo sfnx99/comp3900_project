@@ -104,6 +104,14 @@ export function authLoginV2(email: string, password: string): ResponseV2 {
 export function authLogoutV2(session_data: SessionData): ResponseV2 {
     // Invalidate session
     const data = getData()
+    if (data.sessions.find(s => s === session_data) === undefined) {
+        return {
+            status: HttpStatusCode.BadRequest,
+            body: {
+                error: "Invalid Session. Cannot log out an invalid session."
+            }
+        }
+    }
     data.sessions = data.sessions.filter(s => s !== session_data)
     setData(data)
     return {

@@ -1,6 +1,6 @@
 // Tests all of the Wallet functions that don't depend on integration.
 
-import { authLoginV2, authRegisterV2 } from "../identity_holder/src/auth"
+import { authLoginV2, authLogoutV2, authRegisterV2 } from "../identity_holder/src/auth"
 import { getData, setData } from "../identity_holder/src/data"
 import { Data, User } from "../identity_holder/src/interface"
 
@@ -92,6 +92,33 @@ describe('Wallet V2: Authorization', () => {
     test('Test v2/auth/login fails on empty email and password', ()=> {
         authRegisterV2("jim@email.com.au", "valid password")
         expect(authLoginV2("", "").status).toBeGreaterThanOrEqual(400)
+    })
+
+    test('Test v2/auth/logout doesnt error', ()=> {
+        const data = getData();
+        const token = authRegisterV2("jim@email.com.au", "valid password").body.token
+        const session = data.sessions.find(s => s.session_id === token);
+        expect(session).toBeDefined()
+        expect(authLogoutV2(session!).status).toBe(200)
+    })
+
+    test('Test v2/auth/logout works', ()=> {
+        const data = getData();
+        const token = authRegisterV2("jim@email.com.au", "valid password").body.token
+        const session = data.sessions.find(s => s.session_id === token);
+        expect(session).toBeDefined()
+        expect(authLogoutV2(session!).status).toBe(200)
+        expect(data.sessions.find(s => s.session_id === token)).toBeUndefined()
+    })
+
+    test('Test v2/auth/logout fails to logout same token twice', ()=> {
+        const data = getData();
+        const token = authRegisterV2("jim@email.com.au", "valid password").body.token
+        const session = data.sessions.find(s => s.session_id === token);
+        expect(session).toBeDefined()
+        expect(authLogoutV2(session!).status).toBe(200)
+        expect(data.sessions.find(s => s.session_id === token)).toBeUndefined()
+        expect(authLogoutV2(session!).status).toBe(400)
     })
 })
 
