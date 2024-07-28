@@ -16,7 +16,7 @@ import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
 import { initialiseDefinition, getPresentations, modifyDefinition, logPresentation, trust, untrust } from "./db";
 
-dotenv.config();
+// dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 8083;
