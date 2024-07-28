@@ -17,6 +17,10 @@ FROM base AS release
 COPY --chown=bun:bun --from=install /temp/prod/node_modules node_modules
 COPY --chown=bun:bun --from=prerelease /usr/src/app/package.json .
 COPY --chown=bun:bun --from=prerelease /usr/src/app/src .
+# copy certificate files
+COPY --chown=bun:bun --from=prerelease /usr/src/app/*.pem .
+# copy .env
+COPY --chown=bun:bun --from=prelease /usr/src/app/.env .
 
 # run the app
 USER bun
