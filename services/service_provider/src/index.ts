@@ -10,7 +10,7 @@ $ npm i
 $ npx ts-node src/index.ts hi
 */
 
-import dotenv from "dotenv";
+//import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
