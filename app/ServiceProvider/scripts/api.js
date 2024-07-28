@@ -2,47 +2,50 @@ import axios from 'axios';
 import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
-// const port = 8082;
-const url = `http://ablac.dev:8082/v2`;
+const port = process.env.WALLET_PORT || 8083;
+const url = `${process.env.WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 
-export const IssueRegisterUser = async (email, password) => {
+
+export const getIssuers = async () => {
   try {
-    if (!email || !password) {
-      throw new Error('Email or password is not available.');
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.');
     }
-
-    const response = await axios.post(`${url}/register`, { email, password });
-
-    if (response.status !== 200) {
-      throw new Error(`Registration failed with status code ${response.status}.`);
-    }
-
-    return response.data; 
-
+    const response = await axios.get(`http://ablac.dev:8082/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
   } catch (error) {
-    console.error('Registration error:', error.message);
-    throw error; // Re-throw the error after logging it
+    return null;
   }
 };
 
-
-export const PostInformation = async (email, fname, lname, dob) => {
+export const trustIssuer = async (issuer) => {
   try {
-    if (!email || !fname || !lname || !dob) {
-      throw new Error('A field is missing');
-    }
-
-    const response = await axios.post(`${url}/info`, { email, fname, lname, dob });
-
-    if (response.status !== 200) {
-      throw new Error(`Registration failed with status code ${response.status}.`);
-    }
-
-    return response.data; 
-
+    const response = await axios.post(`${url}/trust`, {
+      issuer
+    });
+    return response.data;
   } catch (error) {
-    console.error('Registration error:', error.message);
-    throw error; // Re-throw the error after logging it
+    handleError(error);
+    return null;
+  }
+};
+
+export const PostDefinition = async (type, issuer, requiredAttributes) => {
+  try {
+    const response = await axios.post(`${url}/trust`, {
+      type,
+      issuer,
+      requiredAttributes
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
   }
 };
