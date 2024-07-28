@@ -14,9 +14,9 @@ import HomeStack from './screens/stacks/HomeStack';
 import WalletStack from './screens/stacks/WalletStack';
 import AuthenticationStack from './screens/stacks/AuthenticationStack';
 
-import SettingsScreen from './screens/SettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import RequestCredentialScreen from './screens/RequestCredentialScreen';
+import SettingsNavigator from './screens/stacks/SettingsStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -118,16 +118,16 @@ const MainApp = () => {
           name="Notifications"
           options={{
             tabBarIcon: renderIconByName('bell'),
-            
           }}
         >
           {() => <NotificationsScreen notifications={notifications} />}
         </Tab.Screen>
         <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
+          name="SettingsStack"
+          component={SettingsNavigator}
           options={{
             tabBarIcon: renderIconByName('cog'),
+            title: 'Settings',
           }}
         />
       </Tab.Navigator>
