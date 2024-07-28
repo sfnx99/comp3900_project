@@ -1,9 +1,11 @@
 import axios from 'axios';
 import * as Linking from 'expo-linking';
+import { WALLET_HOST, WALLET_PORT } from '@env';
+
 import { save, getValueFor, deleteItem } from './util';
 
-const port = process.env.WALLET_PORT || 8081;
-const url = `${process.env.WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const port = WALLET_PORT || 8081;
+const url = `http://${WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
   try {
