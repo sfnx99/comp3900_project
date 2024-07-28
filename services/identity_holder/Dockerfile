@@ -20,5 +20,4 @@ COPY --chown=bun:bun --from=prerelease /usr/app .
 
 # run the app
 USER bun
-EXPOSE 8082/tcp
 ENTRYPOINT [ "bun", "run", "./src/index.ts" ]
