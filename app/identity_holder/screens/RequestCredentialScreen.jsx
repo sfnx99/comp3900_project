@@ -19,6 +19,7 @@ import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
 import * as Linking from 'expo-linking';
 
+
 const { width } = Dimensions.get('window');
 
 const RequestCredentialScreen = ({ navigation }) => {
@@ -39,6 +40,7 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState(''); 
   const [loggedInEmail, setLoggedInEmail] = useState(''); 
   const [authCode, setAuthCode] = useState('');
+  
 
   useEffect(() => {
     const loadIssuers = async () => {
@@ -57,28 +59,30 @@ const RequestCredentialScreen = ({ navigation }) => {
   }, []);
 
   const handleIssuerSelection = async (itemValue) => {
-    const issuer = String(itemValue); 
-    setSelectedIssuer(issuer);
-    setPickerVisible(false);
-    setIssuerConfirmationVisible(true);
-    try {
-      const details = await getIssue(issuer);
-      if (details && details.types) {
-        setAdditionalDetails(details.types);
-        setDetailsPickerVisible(true);
-      } else {
-        throw new Error('No details found for this issuer');
+    setSelectedIssuer(itemValue);
+    if (itemValue === 'NSW Government') {
+      const issuerDID = 'did:ion:EiDDas5Av0lQcPlAMpQIOFxdWwNiOvQNiIYQR7zjbbcFHA:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJrZXktMSIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJhRmp4U2FmWjlSbHBraFJfQTNONGFhX3ZPdFdETVM0b0dJdlpoeG1YVzljIiwieSI6Ii16TTdUbWxWLVdyeTA1Y2hoVmo5ZDY5dnVaeWh6OTVLMHJfMjdBNl9lQjQifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6IkVjZHNhU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOSJ9XSwic2VydmljZXMiOlt7ImlkIjoidmMtZGF0YSIsInNlcnZpY2VFbmRwb2ludCI6eyJjcmVkZW50aWFsX2NvbmZpZ3VyYXRpb25zX3N1cHBvcnRlZCI6eyJEcml2ZXJMaWNlbmNlQ3JlZGVudGlhbCI6eyJmb3JtYXQiOiJsZHBfdmMifX0sImNyZWRlbnRpYWxfZW5kcG9pbnQiOiJodHRwOi8vbG9jYWxob3N0OjgwODIiLCJrZXkiOiJbMTYwLDI0MSwyMjYsOTEsMjQyLDE4MSwyMjEsNjQsMTcyLDEyMywxOTUsMjE4LDIwOSwxOTIsOCwxODcsMTQ4LDExMywyMTIsMjU1LDIwOSw2OSwxNzcsOTksMiwxNzMsMTI5LDE5NiwxNzAsNDYsNTIsMzgsNSwyMjcsMTcyLDEyOCwxMjksMjU0LDYzLDE4OCwxNjAsMTYxLDE1MSwxNTYsMTM4LDE1NSw0MSwxNDIsOSwxMzAsMTQ3LDI1MywxNDAsNjAsMTQwLDIyNCwxODMsMzIsMTg2LDE3OCwyNSwxODksMjUsMTU4LDIyLDI0Miw2LDc4LDEyOCwyMjMsMjI5LDEwNiwxNDcsOTcsMzksMTg1LDE2NSwyMjcsMjUsMTAwLDE2MiwxMSw2OCw2Myw2MSw1NywxNzAsNzQsMTUyLDksMzYsNDcsNTQsMTEyLDE3Myw0Ml0iLCJuYW1lIjoiTlNXR292ZXJubWVudCJ9LCJ0eXBlIjoidmMtZGF0YSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQlRGVldVbW9UZDk5eGZQUG41Znctb2FwenkwZHNjdmxBQ2MyOWpHLXRNc1EifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUN6ZDBtdDFBcHVvZTJDQVR4OFZYbjNZZUlPYWNLeGJBOWs4ZWp5cGROSXd3IiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlDX1h1MzJ6Q1VabFBwMW5VQkctM08yX3FUdzA2dDlmZDNKTXRvTjRBWlBoQSJ9fQ';
+      setPickerVisible(false);
+      setIssuerConfirmationVisible(true);
+      try {
+        const details = await getIssue(issuerDID);
+        if (details && details.types) {
+          setAdditionalDetails(details.types);
+          setDetailsPickerVisible(true);
+        } else {
+          throw new Error('No details found for this issuer');
+        }
+      } catch (error) {
+        let errorMessage = 'Failed to fetch details';
+        if (error.response && error.response.data && error.response.data.error) {
+          errorMessage += `: ${error.response.data.error}`;
+        } else if (error.message) {
+          errorMessage += `: ${error.message}`;
+        } else {
+          errorMessage += ': An unknown error occurred';
+        }
+        setError(errorMessage);
       }
-    } catch (error) {
-      let errorMessage = 'Failed to fetch details';
-      if (error.response && error.response.data && error.response.data.error) {
-        errorMessage += `: ${error.response.data.error}`;
-      } else if (error.message) {
-        errorMessage += `: ${error.message}`;
-      } else {
-        errorMessage += ': An unknown error occurred';
-      }
-      setError(errorMessage);
     }
   };
 
@@ -89,36 +93,47 @@ const RequestCredentialScreen = ({ navigation }) => {
         return;
       }
       setLoggedInEmail(email);
+      setSuccessMessage('Successfully Consented to Issuance');
     } catch (error) {
       setLoginModalVisible(false); 
       setErrorMessage(`Could not login: ${error.message}`); 
     }
   };
 
+  const waitForRedirect = () => {
+    return new Promise((resolve) => {
+      const handleUrl = (event) => {
+        resolve(event.url);
+      };
+      Linking.addEventListener('url', handleUrl);
+    });
+  };
+  
   const handleAuthorize = async () => {
     if (selectedIssuer && selectedDetail) {
-      const response_type = "code";
-      const redirectUri = Linking.createURL();
-
       try {
-        const response = await AuthorizeIssue(response_type, email, redirectUri, selectedDetail);
-        if (response) {
-          const authCode = response.url.split('?')[1].split('&')[0].split('=')[1];
-          const postResponse = await PostIssue(selectedIssuer, authCode, redirectUri, selectedDetail);
-          if (postResponse) {
-            setSuccessMessage('Credential issued successfully');
-            setModalVisible(true); 
-          } else {
-            setErrorMessage('Failed to issue credential');
-          }
+        const response_type = "code";
+        const redirectUri = Linking.createURL();
+  
+        await AuthorizeIssue(response_type, email, redirectUri, selectedDetail);
+  
+        // Wait for the redirect URL
+        const redirectUrl = await waitForRedirect();
+        const authCode = redirectUrl.split('?')[1].split('&')[0].split('=')[1];
+        const issuerDID = 'did:ion:EiDDas5Av0lQcPlAMpQIOFxdWwNiOvQNiIYQR7zjbbcFHA:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJrZXktMSIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJhRmp4U2FmWjlSbHBraFJfQTNONGFhX3ZPdFdETVM0b0dJdlpoeG1YVzljIiwieSI6Ii16TTdUbWxWLVdyeTA1Y2hoVmo5ZDY5dnVaeWh6OTVLMHJfMjdBNl9lQjQifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6IkVjZHNhU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOSJ9XSwic2VydmljZXMiOlt7ImlkIjoidmMtZGF0YSIsInNlcnZpY2VFbmRwb2ludCI6eyJjcmVkZW50aWFsX2NvbmZpZ3VyYXRpb25zX3N1cHBvcnRlZCI6eyJEcml2ZXJMaWNlbmNlQ3JlZGVudGlhbCI6eyJmb3JtYXQiOiJsZHBfdmMifX0sImNyZWRudGlhbF9lbmRwb2ludCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MiIsImtleSI6IlsxNjAsMjQxLDIyNiw5MSwyNDIsMTgxLDIyMSw2NCwxNzIsMTIzLDE5NSwyMTgsMjA5LDE5Miw4LDE4NywxNDgsMTEzLDIxMiwyNTUsMjA5LDY5LDE3Nyw5OSwyLDE3MywxMjksMTk2LDE3MCw0Niw1MiwzOCw1LDIyNywxNzIsMTI4LDEyOSwyNTQsNjMsMTg4LDE2MCwxNjEsMTUxLDE1NiwxMzgsMTU1LDQxLDE0Miw5LDEzMCwxNDcsMjUzLDE0MCw2MCwxNDAsMjI0LDE4MywzMiwxODYsMTc4LDI1LDE4OSwyNSwxNTgsMjIsMjQyLDYsNzgsMTI4LDIyMywyMjksMTA2LDE0Nyw5NywzOSwxODUsMTY1LDIyNywyNSwxMDAsMTYyLDExLDY4LDYzLDYxLDU3LDE3MCw3NCwxNTIsOSwzNiw0Nyw1NCwxMTIsMTczLDQyXSwibmFtZSI6Ik5TV0dvdmVybm1lbnQifSwidHlwZSI6InZjLWRhdGEifV19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQlRGVldVbW9UZDk5eGZQUG41Znctb2FwenkwZHNjdmxBQ2MyOWpHLXRNc1EifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUN6ZDBtdDFBcHVvZTJDQVR4OFZYbjNZZUlPYWNLeGJBOWs4ZWp5cGROSXd3IiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlDX1h1MzJ6Q1VabFBwMW5VQkctM08yX3FUdzA2dDlmZDNKTXRvTjRBWlBoQSJ9fQ';
+  
+        const postResponse = await PostIssue(issuerDID, authCode, redirectUri, selectedDetail);
+        if (postResponse) {
+          setSuccessMessage('Credential issued successfully');
+          setModalVisible(true); 
         } else {
-          setErrorMessage('Authorization failed');
+          setErrorMessage('Failed to issue credential');
         }
       } catch (error) {
-        setErrorMessage(`Error: ${error.message}`);
+        setErrorMessage(`Error: ${JSON.stringify(error)}`);
       }
     } else {
-      setError('Please select an issuer and a detail.');
+      setErrorMessage('Please select an issuer and a detail.');
     }
   };
 
@@ -159,9 +174,8 @@ const RequestCredentialScreen = ({ navigation }) => {
                 selectedValue={selectedIssuer}
                 onValueChange={handleIssuerSelection}
                 style={localStyles.pickerStyle}>
-                {issuers.map((issuer, index) => (
-                  <Picker.Item label={issuer} value={issuer} key={index} />
-                ))}
+                
+                <Picker.Item label="NSW Government" value="NSW Government" />
               </Picker>
             </View>
           </View>
