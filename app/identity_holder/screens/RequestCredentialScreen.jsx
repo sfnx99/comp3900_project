@@ -81,10 +81,10 @@ const RequestCredentialScreen = ({ navigation }) => {
   }, []);
 
   const handleIssuerSelection = async (itemValue) => {
-    const issuer = String(itemValue); // Ensure itemValue is a string
+    const issuer = String(itemValue); 
     setSelectedIssuer(issuer);
     setPickerVisible(false);
-    setIssuerConfirmationVisible(true); // Show the confirmation modal
+    setIssuerConfirmationVisible(true);
     try {
       const details = await getIssue(issuer);
       if (details && details.types) {
