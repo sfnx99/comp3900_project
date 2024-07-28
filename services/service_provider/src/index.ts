@@ -39,6 +39,7 @@ app.get("/v2/request", async (req: Request, res: Response) => {
 
 app.post("/v2/present", async (req: Request, res: Response) => {
     const { presentation_submission, vp_token, state } = req.body;
+    console.log(presentation_submission, vp_token, state);
     const result = await presentSubmission(presentation_submission, vp_token, state);
     logPresentation({
         issuer: vp_token.verifiableCredential[0].issuer,

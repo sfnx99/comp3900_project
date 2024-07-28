@@ -1,6 +1,5 @@
-// Tests all of the Verifier functions that don't depend on integration.
+// Tests all of the Verifier request functions that don't depend on integration.
 
-import { Data, Presentation } from "../identity_holder/src/interface"
 import { PresentationDefinition } from "../service_provider/src/interface"
 import { requestMetadata } from "../service_provider/src/request"
 

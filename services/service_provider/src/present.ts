@@ -105,7 +105,6 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
     const indexes = JSON.parse(vc.proof.proofValue[0]);
-    
 
     return {
         disclosedMessages: filteredChunks,
