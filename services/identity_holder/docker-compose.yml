@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       target: release
     volumes:
-      - ./src:/usr/src/app/src
+      - .:/usr/app
     container_name: identity_holder
     expose:
       - '8081'
