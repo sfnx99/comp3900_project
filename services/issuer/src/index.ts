@@ -24,8 +24,8 @@ require('dotenv').config() // eslint-disable-line
 import fs from "fs";
 import http from "http";
 import https from "https";
-const privateKey  = fs.readFileSync('/home/ablac/server/key.pem', 'utf8'); // Hardcoded
-const certificate = fs.readFileSync('/home/ablac/server/cert.pem', 'utf8'); // Hardcoded
+const privateKey  = fs.readFileSync('key.pem', 'utf8'); // Hardcoded
+const certificate = fs.readFileSync('cert.pem', 'utf8'); // Hardcoded
 
 const opt = {
     key: privateKey,
