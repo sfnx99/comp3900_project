@@ -1,5 +1,5 @@
 FROM oven/bun:1 AS base
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 # install dependencies 
 FROM base AS install
@@ -15,10 +15,10 @@ COPY . .
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --chown=bun:bun --from=install /temp/prod/node_modules node_modules
-COPY --chown=bun:bun --from=prerelease /usr/src/app/package.json .
-COPY --chown=bun:bun --from=prerelease /usr/src/app/src .
+COPY --chown=bun:bun --from=prerelease /usr/app/package.json .
+COPY --chown=bun:bun --from=prerelease /usr/app .
 
 # run the app
 USER bun
 EXPOSE 8082/tcp
-ENTRYPOINT [ "bun", "run", "./index.ts" ]
+ENTRYPOINT [ "bun", "run", "./src/index.ts" ]
