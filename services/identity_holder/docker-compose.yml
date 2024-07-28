@@ -5,8 +5,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: release
-    volumes:
-      - .:/usr/app
     container_name: identity_holder
     expose:
       - '8081'

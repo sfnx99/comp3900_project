@@ -10,13 +10,13 @@ $ npm i
 $ npx ts-node src/index.ts hi
 */
 
-import dotenv from "dotenv";
+//import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
 import { initialiseDefinition, getPresentations, modifyDefinition, logPresentation, trust, untrust } from "./db";
 
-dotenv.config();
+// dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 8083;
