@@ -1,11 +1,11 @@
-const { exec } = require('node:child_process'); // eslint-disable-line
-const { chdir } = require('node:process'); // eslinte-disable-line
-import axios from "axios";
+// const { exec } = require('node:child_process'); // eslint-disable-line
+// const { chdir } = require('node:process'); // eslinte-disable-line
+// import axios from "axios";
 
-let issuer_did = "";
-const issuer_url = "http://localhost:8081";
-const wallet_url = "http://localhost:8082";
-const verifier_url = "http://localhost:8083";
+// let issuer_did = "";
+// const issuer_url = "http://localhost:8081";
+// const wallet_url = "http://localhost:8082";
+// const verifier_url = "http://localhost:8083";
 
 describe('Integration tests', () => {
     beforeAll(async () => {
