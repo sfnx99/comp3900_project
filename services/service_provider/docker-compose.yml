@@ -6,8 +6,7 @@ services:
       dockerfile: Dockerfile
       target: release
     volumes:
-      - .:/usr/app
-      - /node_dir/node_modules
+      - ./src:/usr/app/src
     container_name: service_provider
     expose:
       - '8083'
