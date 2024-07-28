@@ -17,7 +17,7 @@ describe('Test integration', () => {
         chdir('identity_holder');
         exec('docker-compose up -d');
         chdir('..');
-        return new Promise(r => setTimeout(r, 5000));
+        return new Promise(r => setTimeout(r, 5000)); // 5 seconds allowed for all agents to start
     }, 6000);
     
     afterAll(() => {
@@ -29,7 +29,7 @@ describe('Test integration', () => {
         chdir('..');
         chdir('identity_holder');
         exec('docker-compose down');
-        return new Promise(r => setTimeout(r, 15000));
+        return new Promise(r => setTimeout(r, 15000)); // 15 seconds allowed for all agents to end
     }, 16000);
 
     test('Successful flow with user known to issuer', async () => {
