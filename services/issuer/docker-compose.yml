@@ -10,5 +10,7 @@ services:
     container_name: issuer
     expose:
       - '8082'
+      - '8443'
     ports:
       - '8082:8082'
+      - '8443:8443'
