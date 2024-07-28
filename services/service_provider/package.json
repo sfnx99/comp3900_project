@@ -4,8 +4,15 @@
     "@types/express": "^4.17.21",
     "@types/figlet": "^1.5.8",
     "@types/node": "^20.14.5",
+<<<<<<< HEAD
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "typescript": "^5.4.5",
+    "ts-node": "^10.9.1" 
+=======
     "@types/uuid": "^10.0.0",
     "typescript": "^5.4.5"
+>>>>>>> 1ae121f73acd366f6e4e24a944ecf3f80d22f672
   },
   "name": "service_provider",
   "version": "1.0.0",
@@ -84,7 +91,8 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "test": "echo \"Error: Run npm test in the services directory.\" && exit 1"
+    "test": "echo \"Error: Run npm test in the services directory.\" && exit 1",
+    "start": "ts-node src/index.ts" 
   },
   "keywords": [],
   "author": "",
