@@ -6,7 +6,7 @@ import {
 } from 'react';
 import PropTypes from 'prop-types';
 import { deleteCredential, getCredential, getCredentials } from '../scripts/api';
-import { getValueFor, save } from '../scripts/util';
+import { deleteItem, getValueFor, save } from '../scripts/util';
 
 const CredentialsContext = createContext();
 
@@ -63,6 +63,7 @@ const CredentialsProvider = ({ children }) => {
       saveCredentialsLocally(updatedCredentials);
     } catch (error) {
       console.error('Failed to delete credential:', error);
+      throw error(error);
     }
   };
 
@@ -92,9 +93,16 @@ const CredentialsProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Wipes credentials from the device.
+   */
+  const wipeCredentialData = async () => {
+    setCredentials([]);
+    await deleteItem('credentials');
+  };
+
   useEffect(() => {
     const loadCredentials = async () => {
-      // await save('credentials', ''); // TODO: Remove - placed here to clear the credentials
       const localCredentials = await loadLocalCredentials();
       const apiCredentials = await fetchCredentials(localCredentials);
 
@@ -107,7 +115,9 @@ const CredentialsProvider = ({ children }) => {
     loadCredentials();
   }, []);
 
-  const contextValue = useMemo(() => ({ credentials, toggleFavourite, removeCredential }), [credentials]);
+  const contextValue = useMemo(() => ({
+    credentials, toggleFavourite, removeCredential, wipeCredentialData,
+  }), [credentials]);
 
   return (
     <CredentialsContext.Provider value={contextValue}>

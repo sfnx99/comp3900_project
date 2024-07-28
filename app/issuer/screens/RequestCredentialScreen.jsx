@@ -1,149 +1,141 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
   View,
   ScrollView,
+  StyleSheet,
+  Dimensions,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { IssueRegisterUser } from '../scripts/api';
 import styles from '../styles/request';
-import RequestSuccessModal from '../components/modals/RequestSuccessModal';
+import TextInputField from '../components/TextInputField';
+import TextButton from '../components/TextButton';
+
+const { width } = Dimensions.get('window');
 
 const RequestCredentialScreen = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [Fname, setFname] = useState('');
+  const [Lname, setLname] = useState('');
+  const [DOB, setDOB] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [typeofID, setID] = useState('');
-  const [docnumb, setdocnumb] = useState('');
-  const [FullName, setFullName] = useState('');
-  const [Pnumber, setPnumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [isPressed, setIsPressed] = useState(false);
-  const [emptyFields, setEmptyFields] = useState([]);
+  useEffect(() => {
+  }, []);
 
-  const clearForm = () => {
-    setID('');
-    setdocnumb('');
-    setFullName('');
-    setPnumber('');
-    setAddress('');
-  };
+  const registerUser = async () => {
+    try {
+      if (!email || !password) {
+        setError('Please fill in all fields!');
+        return;
+      }
 
-  const handleSubmit = () => {
-    const tmpEmptyFields = [];
-    if (!typeofID) tmpEmptyFields.push('typeofID');
-    if (!docnumb) tmpEmptyFields.push('docnumb');
-    if (!FullName) tmpEmptyFields.push('FullName');
-    if (!Pnumber) tmpEmptyFields.push('Pnumber');
-    if (!address) tmpEmptyFields.push('address');
-
-    if (tmpEmptyFields.length > 0) {
-      setEmptyFields(tmpEmptyFields);
-      Alert.alert('Error', 'Please fill all the fields');
-      return;
+      await IssueRegisterUser(email, password);
+      Alert.alert('Registration Successful');
+    } catch (err) {
+      setError(`Could not register: ${err.message}`);
     }
-    setEmptyFields([]);
-    clearForm();
-    setModalVisible(!modalVisible);
   };
 
-  const handleModalClose = () => {
-    clearForm();
-    setModalVisible(false);
-    navigation.navigate('Home');
+
+  const UserInfo = async () => {
+    try {
+      if (!email || !Fname || !Lname || !DOB) {
+        setError('Please fill in all fields!');
+        return;
+      }
+
+      await PostInformation(email, Fname, Lname, DOB);
+      Alert.alert('Registration Successful');
+    } catch (err) {
+      setError(`Could not register: ${err.message}`);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <RequestSuccessModal
-        modalVisible={modalVisible}
-        handleModalClose={handleModalClose}
-      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Form Of Identification Required</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('typeofID') && styles.inputError,
-              ]}
-              value={typeofID}
-              onChangeText={setID}
-            />
+        {error ? (
+          <View style={localStyles.errorMessageContainer}>
+            <Text style={localStyles.errorMessage}>{error}</Text>
           </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Document Number</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('docnumb') && styles.inputError,
-              ]}
-              value={docnumb}
-              onChangeText={setdocnumb}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('FullName') && styles.inputError,
-              ]}
-              value={FullName}
-              onChangeText={setFullName}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Phone Number</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('Pnumber') && styles.inputError,
-              ]}
-              value={Pnumber}
-              onChangeText={setPnumber}
-              keyboardType="phone-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Address</Text>
-            <TextInput
-              style={[
-                styles.input,
-                emptyFields.includes('address') && styles.inputError,
-              ]}
-              value={address}
-              onChangeText={setAddress}
-            />
-          </View>
-        </View>
-        <TouchableOpacity
-          style={[styles.button, isPressed && styles.buttonHover]}
-          // onPress={() => navigation.navigate("SuccessfullySubmitted")}
-          onPress={handleSubmit}
-          onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
-        >
-          <Text style={styles.buttonText}>Submit Request</Text>
-        </TouchableOpacity>
+        ) : null}
+        <Text style={localStyles.text}>Register User to Receive Credential</Text>
+        <TextInputField 
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email address"
+        />
+        <TextInputField
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          isPassword
+        />
+        <TextButton
+          style={styles.button}
+          text="Register User"
+          onPress={registerUser}
+        />
+        <Text style={localStyles.text}>Register User Information</Text>
+        <TextInputField
+          value={Fname}
+          onChangeText={setFname}
+          placeholder="First Name"
+        />
+        <TextInputField
+          value={Lname}
+          onChangeText={setLname}
+          placeholder="Last Name"
+        />
+        <TextInputField
+          value={DOB}
+          onChangeText={setDOB}
+          placeholder="Date of Birth"
+        />
+        <TextButton
+          style={styles.button}
+          text="Supply Information"
+          onPress={UserInfo}
+        />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-RequestCredentialScreen.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired,
-  }).isRequired,
-};
+const localStyles = StyleSheet.create({
+  errorMessageContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 10,
+    backgroundColor: '#ff4d4d', 
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  errorMessage: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#D6EE41',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 20,
+    borderRadius: 5,
+    width: width * 0.95,
+    alignItems: 'center',
+  },
+  text: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16, 
+    marginBottom: 20,
+  },
+});
 
 export default RequestCredentialScreen;

@@ -5,7 +5,7 @@ import { wrapAuthorisation } from "../identity_holder/src/wrapper"
 
 describe('Wallet V2: Management of Credentials', () => {
     beforeEach(() => {
-        setData(Object.assign({}, TEST_DATA))
+        setData(JSON.parse(JSON.stringify(TEST_DATA)))
     })
 
     test('Test v2/credentials works', ()=> {
@@ -80,9 +80,9 @@ describe('Wallet V2: Management of Credentials', () => {
         const data = getData()
         const user1_session = data.sessions[0]
         const credential1 = "aaaaaaaaaaaaaaaaaaaaaa"
-        expect(getCredentialsV2(user1_session).body.credentials.length).toBe(1) // For some reason state isnt being reset between the tests. Going with it for now.
+        expect(getCredentialsV2(user1_session).body.credentials.length).toBe(2) // For some reason state isnt being reset between the tests. Going with it for now.
         expect(deleteCredentialV2(user1_session, credential1).status).toBe(400)
-        expect(getCredentialsV2(user1_session).body.credentials.length).toBe(1)
+        expect(getCredentialsV2(user1_session).body.credentials.length).toBe(2)
     })
 })
 

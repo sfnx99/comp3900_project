@@ -2,23 +2,22 @@ import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
-  Alert,
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import TextInputField from '../components/TextInputField';
-import { useTheme } from '../context/ThemeContext';
 import TextButton from '../components/TextButton';
 import { registerUser } from '../scripts/api';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
 import ErrorMessage from '../components/ErrorMessage';
+import { AccountContext } from '../context/AccountContext';
 
 const RegisterScreen = () => {
-  const theme = useTheme();
   const navigation = useNavigation();
   const { updateDisplayName } = useContext(UserPreferenceContext);
+  const { bindEmail } = useContext(AccountContext);
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -37,9 +36,9 @@ const RegisterScreen = () => {
     setError('');
   };
 
-  const isEmailValid = (email) => {
+  const isEmailValid = (checkingEmail) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(checkingEmail);
   };
 
   const submitForm = async () => {
@@ -66,10 +65,11 @@ const RegisterScreen = () => {
     try {
       await registerUser(email, password);
       await updateDisplayName(displayName);
+      bindEmail(email);
       clearForm();
       navigation.navigate('MainApp', { screen: 'Home' });
-    } catch (error) {
-      setError(`Could not register: ${error.message}`);
+    } catch (err) {
+      setError(`Could not register: ${err.message}`);
     }
   };
 
@@ -118,7 +118,7 @@ const RegisterScreen = () => {
 
         <Modal
           visible={!!error}
-          transparent={true}
+          transparent
           animationType="fade"
         >
           <ErrorMessage message={error} onPress={clearError} />

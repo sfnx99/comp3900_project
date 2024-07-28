@@ -1,5 +1,5 @@
 export const light = {
-  primary: '#D6EE41',
+  primary: '#6c9897',
   primaryVariant: '#C6D800',
   secondary: '#9A9A93',
   background: '#F6F8FA',

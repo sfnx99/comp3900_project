@@ -1,11 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import CredentialCard from '../components/CredentialCard';
 import { CredentialsContext } from '../context/CredentialsContext';
 import SearchBar from '../components/SearchBar';
-import SearchButton from '../components/SearchButton';
 
-const WalletScreen = ({ navigation }) => {
+const WalletScreen = () => {
   const { credentials } = useContext(CredentialsContext);
   const [filteredCredentials, setFilteredCredentials] = useState(credentials);
 
@@ -20,6 +19,10 @@ const WalletScreen = ({ navigation }) => {
     );
     setFilteredCredentials(filtered);
   };
+
+  useEffect(() => {
+    setFilteredCredentials(credentials);
+  }, [credentials]);
 
   return (
     <>

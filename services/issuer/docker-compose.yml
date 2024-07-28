@@ -1,18 +1,14 @@
 version: '3.7'
-
 services:
-  server:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base
-    volumes:
-      - ./src:/home/node/app/src
+      target: release
     container_name: issuer
-    stdin_open: true
-    tty: true
     expose:
       - '8082'
+      - '8443'
     ports:
       - '8082:8082'
-    command: bun run src/index.ts -f formats.json
+      - '8443:8443'
