@@ -13,7 +13,6 @@ const getToken = async () => {
     }
     return token;
   } catch (error) {
-    console.error('Error retrieving auth token:', error);
     return null;
   }
 };
@@ -22,61 +21,36 @@ const setToken = async (token) => {
   try {
     await save('token', token);
   } catch (error) {
-    console.error('Could not save token:', error);
   }
 };
 
 export const removeToken = async () => {
   try {
-    // Clear token
     await deleteItem('token');
   } catch (error) {
-    console.error('Error clearing auth token:', error);
   }
 };
 
-/**
- * Checks if the token is still valid for the session.
- * @returns boolean determining the validity of the session.
- */
 export const tokenActive = async () => {
   const token = await getValueFor('token');
-  if (token) { return true; }
-  return false;
+  return !!token;
 };
 
-/**
- * Handles error logging in the catch block for API calls to the
- * Wallet API.
- * @param {error} error - the error object from the catch block.
- */
 const handleError = (error) => {
   if (error.response) {
     throw new Error(error.response.data.error);
   } else {
-    console.error('API request failed:', error.message);
     throw new Error('An unknown error occurred. Please try again.');
   }
 };
 
-/**
- * Test connectivity with the Wallet API backend.
- */
 export const sanityCheck = async () => {
   try {
-    const response = await axios.get(`${url}`);
-    console.log(response.data);
+    await axios.get(`${url}`);
   } catch (error) {
-    console.error(error);
   }
 };
 
-/**
- * Registers a user in the wallet API.
- * @param {string} email - the email of user registering
- * @param {string} password - the password of the user registering
- * @returns bearer token on successful registration
- */
 export const registerUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/register`, { email, password });
@@ -86,16 +60,10 @@ export const registerUser = async (email, password) => {
   }
 };
 
-/**
- * Logs the user in the Wallet API.
- * @param {string} email - the email of the user logging in
- * @param {string} password - the password of the user logging in
- */
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/login`, { email, password });
     const { token } = response.data;
-
     if (token) {
       setToken(token);
     } else {
@@ -106,9 +74,6 @@ export const loginUser = async (email, password) => {
   }
 };
 
-/**
- * Send a request to the Wallet API to logout the user.
- */
 export const logoutUser = async () => {
   try {
     const token = await getToken();
@@ -123,10 +88,6 @@ export const logoutUser = async () => {
   }
 };
 
-/**
- * Retrieve list of user credential IDs
- * @returns array of credential ids
- */
 export const getCredentials = async () => {
   try {
     const token = await getToken();
@@ -159,10 +120,6 @@ export const getCredential = async (id) => {
   }
 };
 
-/**
- * Deletes the credential through the wallet API.
- * @param {string} credential_id - the id of the credential to be deleted.
- */
 export const deleteCredential = async (credentialId) => {
   try {
     const token = await getToken();
@@ -232,7 +189,6 @@ export const getIssue = async (issuer) => {
       throw new Error('Authentication required.');
     }
 
-    // Make the API call with the issuer parameter
     const response = await axios.get(`${url}/issue`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -259,30 +215,47 @@ export const IssueRegisterUser = async (email, password) => {
     }
 
     await axios.post('http://localhost:8082/v2/register', { email, password });
-
-    // No need to handle the token, as the response is not expected to return anything
   } catch (error) {
     handleError(error);
   }
 };
 
-
-
-export const AuthorizeIssue = async (response_type, email, URL, state, selectedDetail) => {
+export const AuthorizeIssue = async (response_type, email, URL, selectedDetail) => {
   try {
-    // Construct the code URL with dynamic parameters
-    const codeURL = `https://ablac.dev:8443/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=${state}&scope=${selectedDetail}`;
-    
+    const codeURL = `https://ablac.dev:8443/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=xys&scope=${selectedDetail}`;
     const response = await axios.get(codeURL);
-
-    // Assuming the response contains a successful status or data you need
     if (response.status === 200) {
-      // Redirecting to the constructed code URL using Linking
       Linking.openURL(codeURL);
-    } else {
-      console.log('Unexpected response:', response);
     }
   } catch (error) {
-    console.error('Error making GET request:', error);
+    handleError(error);
+  }
+};
+
+export const PostIssue = async (issuer, code, redirect, types) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authentication required.');
+    }
+
+    const response = await axios.post(`${url}/issue`, {
+      issuer_id: issuer,
+      auth_code: code,
+      redirect_uri: redirect,
+      type: types,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch data: Status ${response.status}`);
+    }
+
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return { error: true, message: error.message };
   }
 };

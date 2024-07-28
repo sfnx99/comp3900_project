@@ -10,11 +10,10 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
-import { AuthorizeIssue, getIssuers, getIssue, loginUser, IssueRegisterUser } from '../scripts/api';
+import { AuthorizeIssue, getIssuers, getIssue, PostIssue } from '../scripts/api';
 import styles from '../styles/request';
 import RequestSuccessModal from '../components/modals/RequestSuccessModal';
 import ErrorMessage from '../components/ErrorMessage';
@@ -39,6 +38,7 @@ const RequestCredentialScreen = ({ navigation }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState(''); 
   const [loggedInEmail, setLoggedInEmail] = useState(''); 
+  const [authCode, setAuthCode] = useState('');
 
   useEffect(() => {
     const loadIssuers = async () => {
@@ -54,30 +54,6 @@ const RequestCredentialScreen = ({ navigation }) => {
       }
     };
     loadIssuers();
-
-    // Add event listener for handling deep links
-    const handleUrl = (event) => {
-      const { url } = event;
-      console.log('URL:', url);
-
-      // Parse the URL to extract parameters
-      const params = new URLSearchParams(url.split('?')[1]);
-      const code = params.get('code');
-      const state = params.get('state');
-
-      console.log('Authorization Code:', code);
-      console.log('State:', state);
-
-      // Handle the returned authorization code as needed
-      Alert.alert('Authorization Code', code);
-    };
-
-    Linking.addEventListener('url', handleUrl);
-
-    // Clean up the event listener
-    return () => {
-      Linking.removeEventListener('url', handleUrl);
-    };
   }, []);
 
   const handleIssuerSelection = async (itemValue) => {
@@ -94,7 +70,6 @@ const RequestCredentialScreen = ({ navigation }) => {
         throw new Error('No details found for this issuer');
       }
     } catch (error) {
-      console.error('Failed to fetch details:', error);
       let errorMessage = 'Failed to fetch details';
       if (error.response && error.response.data && error.response.data.error) {
         errorMessage += `: ${error.response.data.error}`;
@@ -114,9 +89,36 @@ const RequestCredentialScreen = ({ navigation }) => {
         return;
       }
       setLoggedInEmail(email);
+    } catch (error) {
+      setLoginModalVisible(false); 
+      setErrorMessage(`Could not login: ${error.message}`); 
+    }
+  };
+
+  const handleAuthorize = async () => {
+    if (selectedIssuer && selectedDetail) {
+      const response_type = "code";
+      const redirectUri = Linking.createURL();
+
+      try {
+        const response = await AuthorizeIssue(response_type, email, redirectUri, selectedDetail);
+        if (response) {
+          const authCode = response.url.split('?')[1].split('&')[0].split('=')[1];
+          const postResponse = await PostIssue(selectedIssuer, authCode, redirectUri, selectedDetail);
+          if (postResponse) {
+            setSuccessMessage('Credential issued successfully');
+            setModalVisible(true); 
+          } else {
+            setErrorMessage('Failed to issue credential');
+          }
+        } else {
+          setErrorMessage('Authorization failed');
+        }
       } catch (error) {
-      setLoginModalVisible(false); // Close the login modal
-      setErrorMessage(`Could not login: ${error.message}`); // Set error message
+        setErrorMessage(`Error: ${error.message}`);
+      }
+    } else {
+      setError('Please select an issuer and a detail.');
     }
   };
 
@@ -282,17 +284,7 @@ const RequestCredentialScreen = ({ navigation }) => {
               localStyles.button,
               pressed ? localStyles.buttonHover : {}
             ]}
-            onPress={() => {
-              if (selectedIssuer && selectedDetail) {
-                const response_type = "code";
-                const state = "xyz";
-                setModalVisible(true);
-                const URL = Linking.createURL();
-                AuthorizeIssue(response_type, email, URL, state, selectedDetail)
-              } else {
-                setError('Please select an issuer and a detail.');
-              }
-            }}
+            onPress={handleAuthorize}
           >
             <Text style={localStyles.buttonText}>Submit Request</Text>
           </Pressable>
