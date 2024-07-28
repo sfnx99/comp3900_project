@@ -56,7 +56,7 @@ app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.jo
 
 app.post("/v2/authorize", (req: Request, res: Response) => {
     const { client_id, client_secret, redirect_uri, state, scope } = req.body;
-    res.redirect(authorize(client_id, client_secret, redirect_uri, state, scope));
+    res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
 })
 
 app.post("/v2/token", (req: Request, res: Response) => {
