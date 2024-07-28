@@ -39,7 +39,7 @@
                 }
             });
             const data = resp.json();
-            window.location = `${redirect_uri}?code=${code}&state=${state}`;
+            window.location = `${get_params.get('redirect_uri')}?code=${code}&state=${state}`;
         }
     </script>
 </html>
