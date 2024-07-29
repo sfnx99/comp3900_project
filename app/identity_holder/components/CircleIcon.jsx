@@ -7,34 +7,36 @@ const CircleIcon = ({
   size,
   color,
   backgroundColor,
+  padding = 10,
 }) => {
-  const circleSize = size + 10;
+  const circleSize = size + padding;
+
+  const styles = StyleSheet.create({
+    circle: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: circleSize,
+      height: circleSize,
+      borderRadius: 100,
+      backgroundColor,
+    },
+  });
+
   return (
     <View
-      style={[styles.circle, {
-        width: circleSize,
-        height: circleSize,
-        borderRadius: circleSize / 2,
-        backgroundColor,
-      }]}
+      style={styles.circle}
     >
       <MaterialCommunityIcons name={name} size={size} color={color} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  circle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
 CircleIcon.propTypes = {
   name: PropTypes.string,
   size: PropTypes.number,
   color: PropTypes.string,
   backgroundColor: PropTypes.string,
+  padding: PropTypes.number,
 };
 
 export default CircleIcon;
