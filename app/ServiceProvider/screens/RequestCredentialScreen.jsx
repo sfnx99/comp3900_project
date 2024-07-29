@@ -18,6 +18,7 @@ const { width } = Dimensions.get('window');
 
 const RequestCredentialScreen = ({ navigation }) => {
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [IssuerChecked, setIssuerChecked] = useState('');
@@ -34,7 +35,7 @@ const RequestCredentialScreen = ({ navigation }) => {
 
   const UserInfo = async () => {
     if (!email || !password || !selectedIssuer) {
-      setError('Please fill in all fields');
+      setSuccessMessage('New Issuer has Been Trusted');
       return;
     }
 
@@ -51,12 +52,15 @@ const RequestCredentialScreen = ({ navigation }) => {
     try {
       const response = await PostDefinition(payload.type, selectedIssuer, requiredAttributes);
       if (response) {
-        Alert.alert('Success', 'Your information has been submitted successfully');
+        setSuccessMessage('Your information has been submitted successfully');
+        setError('');
       } else {
         setError('Failed to submit information');
+        setSuccessMessage('Your information has been submitted with some issues');
       }
     } catch (error) {
       setError('An error occurred: ' + error.message);
+      setSuccessMessage('Your information has been submitted with some issues');
     }
   };
 
@@ -77,11 +81,22 @@ const RequestCredentialScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {successMessage ? (
+          <View style={localStyles.successMessageContainer}>
+            <Text style={localStyles.successMessage}>{successMessage}</Text>
+          </View>
+        ) : null}
+        
+        {error ? (
+          <View style={localStyles.errorMessageContainer}>
+            <Text style={localStyles.errorMessage}>{error}</Text>
+          </View>
+        ) : null}
 
-      <Text style={localStyles.text}>Select Issuer to Trust</Text>
+        <Text style={localStyles.text1}>Select Issuer to Trust</Text>
         <View style={localStyles.switchContainer2}>
           <View style={localStyles.switchRow}>
-          <Switch
+            <Switch
               value={IssuerChecked}
               onValueChange={setIssuerChecked}
               trackColor={{ false: '#000', true: '#71d444' }}
@@ -155,6 +170,20 @@ const RequestCredentialScreen = ({ navigation }) => {
 };
 
 const localStyles = StyleSheet.create({
+  successMessageContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 10,
+    backgroundColor: '#71d444', 
+    borderRadius: 5,
+    marginVertical: 10,
+    marginBottom: 25,
+  },
+  successMessage: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   errorMessageContainer: {
     justifyContent: 'center', 
     alignItems: 'center', 
@@ -177,10 +206,20 @@ const localStyles = StyleSheet.create({
     width: width * 0.95,
     alignItems: 'center',
   },
+  text1: {
+    color: 'white',
+    marginTop: -5,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20, 
+    marginBottom: 20,
+  },
   text: {
     color: 'white',
+    marginTop: 20,
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 16, 
+    fontSize: 20, 
     marginBottom: 20,
   },
   switchContainer: {
@@ -191,10 +230,12 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 5,
+    backgroundColor: '#D6EE41',
+    borderRadius: 20,
   },
   label: {
     margin: 8,
-    color: 'white',
+    color: 'black',
   },
 });
 
