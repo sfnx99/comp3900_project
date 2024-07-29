@@ -66,8 +66,7 @@ const PresentCredentialScreen = ({ route }) => {
       });
 
       if (result.success) {
-        // TODO: uncomment once the service provider is implemented
-        // await postPresentation(credential.id, url);
+        await postPresentation(credential.id, url);
         Alert.alert('Success', 'Verification success!');
         navigation.navigate('Home', { screen: 'PresentationScreen' });
       } else {
@@ -112,7 +111,7 @@ const PresentCredentialScreen = ({ route }) => {
       <SafeAreaView>
         <View style={styles.container}>
           <Text style={styles.text}>
-            Use your credential, {credential.type} to present the following information?`
+            {`Use your credential, ${credential.type} to present the following information?`}
           </Text>
           <View style={styles.fields}>
             {attributes ? Object.entries(attributes)
