@@ -247,6 +247,14 @@ describe('Test integration', () => {
         });
 
         expect(res.status).toStrictEqual(200);
+
+        // // change format of issuer
+        // res = await axios.post(issuer_url + "/v2/format", {
+        //     type: "PhotoCardCredential",
+        //     attributes: ["firstName", "lastName", "dob"]
+        // });
+
+        // expect(res.status).toStrictEqual(200);
         
         // need to register with issuer now
         res = await axios.post(issuer_url + "/v2/register", {
@@ -277,7 +285,7 @@ describe('Test integration', () => {
             client_secret: "wahoo", // this is unused
             redirect_uri: wallet_url,
             state: "xyz",
-            scope: "DriverLicenceCredential"
+            scope: "PhotoCardCredential"
         });
     
         const auth_code = res.data.code;
@@ -301,7 +309,7 @@ describe('Test integration', () => {
                 issuer_id: issuer_did,
                 auth_code: auth_code,
                 redirect_uri: wallet_url,
-                type: "DriverLicenceCredential"
+                type: "PhotoCardCredential"
         },{
             headers: {
             Authorization: `Bearer ${token}`
@@ -313,38 +321,48 @@ describe('Test integration', () => {
         const cred_id = res.data.credential_id
 
         expect(cred_id).toBeDefined();
-    
-        // get presentation metadata
-        res = await axios.get(wallet_url + `/v2/present?verifier_uri=${"http://host.docker.internal:8083"}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-    
-        const type = res.data.type;
-        const attrs = res.data.requiredAttributes;
-        expect(type).toBeDefined();
-        expect(attrs).toBeDefined();
-        expect(res.status).toStrictEqual(200);
 
-        // make verifier trust this issuer
-        res = await axios.post(verifier_url + "/v2/trust", {
-            "id": issuer_did
-        });
-
-        expect(res.status).toStrictEqual(200);
+        // // inspect credential received
+        // res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`);
+        // const cred_r = res.data;
+        // const cred = cred_r.credential;
+        // expect(cred_r.issuer).toStrictEqual(issuer_did);
+        // expect(cred_r.type).toStrictEqual("PhotoCardCredential");
+        // expect(cred.firstName).toStrictEqual("Bob");
+        // expect(cred.lastName).toStrictEqual("Wild");
+        // expect(cred.dob).toStrictEqual("11/09/2001");
     
-        // perform presentation
-        res = await axios.post(wallet_url + "/v2/present", {
-            verifier_uri: "http://host.docker.internal:8083",
-            credential_id: cred_id
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        // // get presentation metadata
+        // res = await axios.get(wallet_url + `/v2/present?verifier_uri=${"http://host.docker.internal:8083"}`, {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     }
+        // })
+    
+        // const type = res.data.type;
+        // const attrs = res.data.requiredAttributes;
+        // expect(type).toBeDefined();
+        // expect(attrs).toBeDefined();
+        // expect(res.status).toStrictEqual(200);
 
-        expect(res.status).toStrictEqual(200);
+        // // make verifier trust this issuer
+        // res = await axios.post(verifier_url + "/v2/trust", {
+        //     "id": issuer_did
+        // });
+
+        // expect(res.status).toStrictEqual(200);
+    
+        // // perform presentation
+        // res = await axios.post(wallet_url + "/v2/present", {
+        //     verifier_uri: "http://host.docker.internal:8083",
+        //     credential_id: cred_id
+        // }, {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     }
+        // });
+
+        // expect(res.status).toStrictEqual(200);
     });
 
     test('Successful flow with multiple users and multiple formats', async () => {

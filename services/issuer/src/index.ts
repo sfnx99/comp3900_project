@@ -49,6 +49,7 @@ app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
+    console.error(`Served DID at /: ${did_uri}`);
     res.json({ did_uri });
 });
 
@@ -97,11 +98,11 @@ app.post("/v2/info", (req: Request, res: Response) => {
     }
 });
 
-app.post("/v2/format", (req: Request, res: Response) => {
+app.post("/v2/format", async (req: Request, res: Response) => {
     try {
         const { type, attributes } = req.body;
         modifyFormat(type, attributes);
-        updateFormat(type);
+        await updateFormat(type);
         res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);
@@ -119,7 +120,8 @@ app.get("/v2/credentials", (req: Request, res: Response) => {
 app.post("/v2/name", async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
-        updateName(name);
+        console.log(`Recieved request to change name to ${name}`);
+        await updateName(name);
         res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);
