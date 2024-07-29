@@ -22,7 +22,7 @@ const HomeScreen = ({ activities }) => {
   const navigation = useNavigation();
   const theme = useTheme();
   const { credentials } = useContext(CredentialsContext);
-  const { displayName } = useContext(UserPreferenceContext);
+  const { displayName, coordinates } = useContext(UserPreferenceContext);
   const styles = createHomeScreenStyles(theme);
 
   const favoriteCredentials = credentials.filter((cred) => cred.favourite);
@@ -37,14 +37,14 @@ const HomeScreen = ({ activities }) => {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
         >
           <Marker
-            coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
+            coordinate={{ latitude: coordinates.latitude, longitude: coordinates.longitude }}
             title="My Location"
             description="Here I am"
           />

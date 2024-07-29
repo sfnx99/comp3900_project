@@ -7,55 +7,62 @@ import {
 } from 'react';
 import PropTypes from 'prop-types';
 import { getValueFor, save } from '../scripts/util';
+import { getCoordinates } from '../components/Geocoding';
 
 const UserPreferenceContext = createContext();
 
 const UserPreferenceProvider = ({ children }) => {
   const [notificationsOn, setNotificationsOn] = useState(false);
   const [displayName, setDisplayName] = useState('User');
+  const [location, setLocation] = useState('Sydney');
+  const [coordinates, setCoordinates] = useState({ latitude: -33.8688, longitude: 151.2093 }); // Default to Sydney
 
   useEffect(() => {
-    const fetchDisplayName = async () => {
+    const fetchPreferences = async () => {
       const name = await getValueFor('displayName');
-      if (name) {
-        setDisplayName(name);
-      } else {
-        setDisplayName('User');
-      }
-    };
+      setDisplayName(name || 'User');
 
-    const fetchNotifications = async () => {
+      const loc = await getValueFor('location');
+      const locationName = loc || 'Sydney';
+      setLocation(locationName);
+
+      const coords = await getCoordinates(locationName);
+      setCoordinates(coords || { latitude: -33.8688, longitude: 151.2093 });
+
       const notifications = await getValueFor('notificationsOn');
-      if (notifications) {
-        setNotificationsOn(notifications === 'true');
-      } else {
-        setNotificationsOn(false);
-      }
+      setNotificationsOn(notifications === 'true');
     };
 
-    fetchDisplayName();
-    fetchNotifications();
+    fetchPreferences();
   }, []);
 
   const toggleNotifications = useCallback(() => {
-    setNotificationsOn((prevState) => {
-      const newState = !prevState;
-      save('notificationsOn', newState ? 'true' : 'false');
-      return newState;
-    });
-  }, []);
+    const newState = !notificationsOn;
+    save('notificationsOn', newState ? 'true' : 'false');
+    setNotificationsOn(newState);
+  }, [notificationsOn]);
 
   const updateDisplayName = async (name) => {
     setDisplayName(name);
     await save('displayName', name);
   };
 
+  const updateLocation = async (loc) => {
+    setLocation(loc);
+    const coords = await getCoordinates(loc);
+    setCoordinates(coords || { latitude: -33.8688, longitude: 151.2093 });
+    await save('location', loc);
+  };
+
   const contextValues = useMemo(() => ({
     notificationsOn,
     toggleNotifications,
     displayName,
+    location,
+    coordinates,
     updateDisplayName,
-  }), [notificationsOn, displayName]);
+    updateLocation,
+  }), [notificationsOn, displayName, location, coordinates]);
 
   return (
     <UserPreferenceContext.Provider value={contextValues}>

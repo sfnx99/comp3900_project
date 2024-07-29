@@ -54,7 +54,7 @@ export const sanityCheck = async () => {
 
 export const registerUser = async (email, password) => {
   try {
-    const response = await axios.post(`http://localhost:8081/v2/auth/register`, { email, password });
+    const response = await axios.post(`http://192.168.1.122:8081/v2/auth/register`, { email, password });
     setToken(response.data.token);
   } catch (error) {
     handleError(error);
@@ -63,7 +63,7 @@ export const registerUser = async (email, password) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await axios.post(`http://localhost:8081/v2/auth/login`, { email, password });
+    const response = await axios.post(`http://192.168.1.122:8081/v2/auth/login`, { email, password });
     const { token } = response.data;
     if (token) {
       setToken(token);
