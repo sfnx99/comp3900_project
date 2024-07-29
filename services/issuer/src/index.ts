@@ -202,8 +202,6 @@ async function issue(access_token: string) {
     }
 }
 
-// bad style: copy pasted from IH
-
 
 function indexed_key_value_pairs_to_object(kvp_list: {index: number,key: string,value: string}[]) {
     // const result = kvp_list.reduce((acc, val) => acc[val.key] = val.value, Object())
