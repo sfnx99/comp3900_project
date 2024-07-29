@@ -17,8 +17,8 @@ describe('Test integration', () => {
         chdir('identity_holder');
         exec('docker-compose up -d --force-recreate --build');
         chdir('..');
-        return new Promise(r => setTimeout(r, 5000)); // 5 seconds allowed for all agents to start
-    }, 6000);
+        return new Promise(r => setTimeout(r, 15000)); // 15 seconds allowed for all agents to start
+    }, 16000);
     
     afterAll(() => {
         chdir('issuer');
