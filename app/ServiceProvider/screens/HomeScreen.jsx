@@ -42,7 +42,7 @@ const HomeScreen = ({ activities }) => {
           />
         </View>
         <View style={styles.activitySection}>
-          <Text style={styles.recentActivity}>Recent Credentials Distributed</Text>
+          <Text style={styles.recentActivity}>Recently Presented Credentials</Text>
           <ActivityPreview activities={activities} />
           <TextButton
             text="View All Credentials Distributed"
