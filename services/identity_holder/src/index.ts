@@ -175,6 +175,7 @@ app.get("/v2/issue", async (req: Request, res: Response) => {
 app.post("/v2/issue", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
     const { issuer_id, auth_code, type, redirect_uri } = req.body;
+    console.log(`Received request to issue credential: ${{ issuer_id, auth_code, type, redirect_uri }}`);
     const result = await wrapAuthorisation(token, makeRequestV2, issuer_id, auth_code, type, redirect_uri);
     res.status(result.status).json(result.body);
 })
@@ -210,7 +211,9 @@ app.get("/v2/credential", async (req: Request, res: Response) => {
     if (typeof credential_id !== "string") {
         credential_id = "";
     }
+    console.log(`Recieved request to view credential ${credential_id}`);
     const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
+    console.log(`Found credential: ${JSON.stringify(result.body)}`);
     res.status(result.status).json(result.body);
 });
 
