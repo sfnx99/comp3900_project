@@ -125,17 +125,21 @@ return {
 }
 
 export async function makeRequestV2(session_data: SessionData, issuer_id: string, auth_code: string, type: string, redirect_uri: string) {
-// Resolve DID for oauth servers
-const doc = await resolve(issuer_id);
-const oauth_servers = [doc.didDocument.service[0].serviceEndpoint.credential_endpoint];
-// Get an access token
-const token_body = {
-    grant_type: "authorization_code",
-    code: auth_code,
-    redirect_uri: redirect_uri,
-    client_id: session_data.user.email
-}
+    // Resolve DID for oauth servers
+    console.log('Resolving DID...');
+    const doc = await resolve(issuer_id);
+    console.log(`Successfully resolved DID: ${JSON.stringify(doc.didDocument.service[0].serviceEndpoint)}`);
+    const oauth_servers = [doc.didDocument.service[0].serviceEndpoint.credential_endpoint];
+    // Get an access token
+    const token_body = {
+        grant_type: "authorization_code",
+        code: auth_code,
+        redirect_uri: redirect_uri,
+        client_id: session_data.user.email
+    }
+    console.log(`Requesting access token...`);
     const resp = await axios.post(oauth_servers[0] + "/v2/token", token_body);
+    console.log(`Received access token: ${resp.data.access_token}`);
     const access_token = resp.data.access_token;
     if (access_token === undefined) {
         throw Error("Couldn't parse access token");
@@ -147,7 +151,9 @@ const token_body = {
     const cred_body = {
         format: "ldp_vc"
     }
+    console.log('Requesting credential...');
     const c_resp = await axios.post(oauth_servers[0] + "/v2/credential", cred_body, {headers: cred_headers});
+    console.log(`Received credential: ${JSON.stringify(c_resp.data.credential)}`);
     const cred: CredentialV2 = c_resp.data.credential;
     cred.id = uuidv4();
     if (cred === undefined) {

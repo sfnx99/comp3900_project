@@ -57,6 +57,7 @@ app.get('/v2/presentations', (req: Request, res: Response) => {
 });
 
 app.post('/v2/trust', (req: Request, res: Response) => {
+    console.error(`Received request to trust issuer: ${req.body.id}`);
     const { id } = req.body;
     trust(id);
     res.sendStatus(200);
