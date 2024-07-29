@@ -4,7 +4,7 @@ WORKDIR /usr/app
 # install dependencies 
 FROM base AS install
 RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
+COPY package.json /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile
 
 # copy node_modules and source files

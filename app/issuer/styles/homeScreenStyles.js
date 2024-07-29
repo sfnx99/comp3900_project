@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-export const createHomeScreenStyles = (theme) => (
+export const createHomeScreenStyles = () => (
   StyleSheet.create({
     container: {
       flex: 1,
@@ -17,32 +17,28 @@ export const createHomeScreenStyles = (theme) => (
     },
     header: {
       marginTop: 10,
-      marginBottom: 10,
       flex: 0.1,
       justifyContent: 'center',
     },
     welcomeText: {
       fontSize: 21,
       fontWeight: 'bold',
-      color: 'white',
     },
     nameText: {
       fontSize: 28,
       fontWeight: 'bold',
       marginBottom: 24,
-      color: 'white',
     },
-    credentialsSection: {
-      width: width * 0.9,
-      justifyContent: 'space-between',
+    imageSection: {
+      width: '100%',
+      alignContent: 'center',
       marginBottom: 24,
     },
     activitySection: {
       justifyContent: 'space-between',
-      marginBottom: 5, // -height * 0.05,
+      marginBottom: 5,
     },
     recentActivity: {
-      color: 'white',
       marginTop: 10,
       fontSize: 20,
       fontWeight: 'bold',
@@ -51,7 +47,16 @@ export const createHomeScreenStyles = (theme) => (
     button: {
       marginTop: 8,
       marginBottom: 0,
-      width: width*0.9,
+      width: width * 0.9,
+    },
+    logoContainer: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    image: {
+      width: 300,
+      height: 300,
     },
   })
 );
