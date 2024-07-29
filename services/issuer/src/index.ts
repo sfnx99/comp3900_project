@@ -56,8 +56,14 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
 
 app.post("/v2/authorize", (req: Request, res: Response) => {
-    const { client_id, client_secret, redirect_uri, state, scope } = req.body;
-    res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
+    try {
+        const { client_id, client_secret, redirect_uri, state, scope } = req.body;
+        res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
+    } catch(err) {
+        res.status(500).json({
+            error: JSON.stringify(err)
+        });
+    }
 })
 
 app.post("/v2/token", (req: Request, res: Response) => {
