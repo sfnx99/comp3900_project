@@ -1,55 +1,87 @@
-import { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import { ThemeContext } from '../context/ThemeContext';
-import { credentialPropType } from '../scripts/util';
+import { credentialPropType, formatCamelCase } from '../scripts/util';
+import PropTypes from 'prop-types';
+
+import Card from '../images/Credential.png';
 
 const CredentialCard = ({ credential }) => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
 
+  // Static variable to keep track of sequence numbers
+  CredentialCard.sequenceCounter = (CredentialCard.sequenceCounter || 0) + 1;
+  const sequenceNumber = CredentialCard.sequenceCounter;
+
   const handlePress = () => {
-    // TODO: Open the specific credential, passing the credential prop
+    navigation.navigate('WalletStack', {
+      screen: 'CredentialInformation',
+      params: { credential },
+    });
   };
 
   const styles = StyleSheet.create({
-    credential: {
-      marginBottom: 30,
+    container: {
+      width: '100%',
       alignItems: 'center',
     },
     card: {
       height: 190,
       width: '100%',
-      backgroundColor: '#F2F8CA',
+    },
+    cardImage: {
+      height: '100%',
+      width: '100%',
+      resizeMode: 'contain',
     },
     details: {
-      flexDirection: 'row',
+      marginTop: 5,
+      marginBottom: 10,
+      alignItems: 'center',
     },
     text: {
-      marginVertical: 10,
       color: theme.text,
     },
   });
 
   return (
-    <View style={styles.credential}>
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={handlePress}
         style={styles.card}
-      />
+      >
+        <Image source={Card} style={styles.cardImage} />
+      </TouchableOpacity>
 
       <View style={styles.details}>
-        <Text style={styles.text}>{credential.cred.credName}</Text>
+        <Text style={styles.text}>{formatCamelCase(credential.type[0])}</Text>
       </View>
     </View>
   );
 };
 
 CredentialCard.propTypes = {
-  credential: credentialPropType.isRequired,
+  credential: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    issuer: PropTypes.string.isRequired,
+    type: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    favourite: PropTypes.bool,
+    cryptosuite: PropTypes.string.isRequired,
+    credential: PropTypes.shape({
+      id: PropTypes.string,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default CredentialCard;
