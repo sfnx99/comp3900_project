@@ -65,7 +65,7 @@ describe('Test integration', () => {
             // retrieve issuer DID
             res = await axios.get(issuer_url);
         
-            let issuer_did = res.data.did_uri;
+            const issuer_did = res.data.did_uri;
 
             expect(issuer_did).toBeDefined();
             expect(res.status).toStrictEqual(200);
@@ -84,7 +84,7 @@ describe('Test integration', () => {
             expect(res.status).toStrictEqual(200);
         
             // should receive credential ID
-            let cred_id = res.data.credential_id
+            const cred_id = res.data.credential_id
 
             expect(cred_id).toBeDefined();
         
@@ -201,7 +201,7 @@ describe('Test integration', () => {
             expect(res.status).toStrictEqual(200);
         
             // should receive credential ID
-            let cred_id = res.data.credential_id
+            const cred_id = res.data.credential_id
 
             expect(cred_id).toBeDefined();
         
@@ -315,7 +315,7 @@ describe('Test integration', () => {
             // retrieve issuer DID
             res = await axios.get(issuer_url);
         
-            let issuer_did = res.data.did_uri;
+            const issuer_did = res.data.did_uri;
 
             expect(issuer_did).toBeDefined();
             expect(res.status).toStrictEqual(200);
@@ -341,15 +341,15 @@ describe('Test integration', () => {
             
             // inspect credential received
 
-            let headers = {
+            const headers = {
                 Authorization: `Bearer ${token}`
             };
 
             res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`, { headers });
 
             expect(res.status).toStrictEqual(200);
-            let cred_r = res.data;
-            let cred = cred_r.credential;
+            const cred_r = res.data;
+            const cred = cred_r.credential;
             expect(cred_r.issuer).toStrictEqual(issuer_did);
             expect(cred_r.type).toContain("PhotoCardCredential");
             expect(cred.firstName).toStrictEqual("Bob");
@@ -894,10 +894,12 @@ describe('Test integration', () => {
         try {
             // from previous tests, the issuer issues RSACard
             // register buddy
-            let res = await axios.post(`${wallet_url}/v2/auth/register`, {
+            const res = await axios.post(`${wallet_url}/v2/auth/register`, {
                 email: 'buddy@test.com',
                 password: 'hunter2'
             });
+
+            expect(res.status).toStrictEqual(200);
 
             // attempt to get auth code: should fail, since issuer does not know us
             await expect(axios.post(issuer_url + "/v2/authorize", {
@@ -1238,7 +1240,7 @@ describe('Test integration', () => {
             expect(res.status).toStrictEqual(200);
         
             // should receive credential ID
-            let cred_id = res.data.credential_id
+            const cred_id = res.data.credential_id
 
             expect(cred_id).toBeDefined();
         
