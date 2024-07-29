@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -7,21 +6,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useContext } from 'react';
 
 import TextButton from '../components/TextButton';
-import ActivityPreview from '../components/ActivityPreview';
-import { notificationPropType } from '../scripts/util';
 import { useTheme } from '../context/ThemeContext';
 import { createHomeScreenStyles } from '../styles/homeScreenStyles';
-import { UserPreferenceContext } from '../context/UserPreferencesContext';
 
 import Logo from '../images/nswgov-logo.png';
+import CredentialPreview from '../components/CredentialPreview';
 
-const HomeScreen = ({ activities }) => {
+const HomeScreen = () => {
   const navigation = useNavigation();
   const theme = useTheme();
-  const { displayName } = useContext(UserPreferenceContext);
   const styles = createHomeScreenStyles(theme);
 
   return (
@@ -29,7 +24,7 @@ const HomeScreen = ({ activities }) => {
       <ScrollView contentContainerStylestyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome back,</Text>
-          <Text style={styles.nameText}>{displayName}</Text>
+          <Text style={styles.nameText}>NSW Government</Text>
         </View>
         <View style={styles.imageSection}>
           <View style={styles.logoContainer}>
@@ -46,10 +41,10 @@ const HomeScreen = ({ activities }) => {
         </View>
         <View style={styles.activitySection}>
           <Text style={styles.recentActivity}>Recent Issued Credentials</Text>
-          <ActivityPreview activities={activities} />
+          <CredentialPreview />
           <TextButton
             text="View All Issued Credentials"
-            onPress={() => navigation.navigate('ActivityHistory')}
+            onPress={() => navigation.navigate('CredentialHistory')}
             inverted
             style={styles.button}
           />
@@ -57,10 +52,6 @@ const HomeScreen = ({ activities }) => {
       </ScrollView>
     </SafeAreaView>
   );
-};
-
-HomeScreen.propTypes = {
-  activities: PropTypes.arrayOf(notificationPropType),
 };
 
 export default HomeScreen;
