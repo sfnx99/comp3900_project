@@ -24,12 +24,12 @@ describe('Verifier V2: Requests', () => {
     })
 
     test('Test v2/present returns negative for not disclosing all required credentials', async ()=> {
-        // var TEST_SUBMISSION_CRED_FAIL = TEST_SUBMISSION;
-        // TEST_SUBMISSION_CRED_FAIL.vp_token.verifiableCredential[0].credentialSubject = {};
-        // const { presentation_submission, vp_token, state } = TEST_SUBMISSION_CRED_FAIL;
-        // const result = await presentSubmission(presentation_submission, vp_token, state);
-        // expect(result.status).toBe(400);
-        // expect(result.body.message).toBe("Not all required credentials disclosed.");
+        var TEST_SUBMISSION_CRED_FAIL = TEST_SUBMISSION;
+        // delete TEST_SUBMISSION_CRED_FAIL.vp_token.verifiableCredential[0].credentialSubject.firstName;
+        const { presentation_submission, vp_token, state } = TEST_SUBMISSION_CRED_FAIL;
+        const result = await presentSubmission(presentation_submission, vp_token, state);
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("Not all required credentials disclosed.");
     })
 
     test('Test v2/present returns negative for proof that cannot be validated', async ()=> {
