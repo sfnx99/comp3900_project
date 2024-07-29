@@ -1,3 +1,4 @@
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   View,
@@ -6,7 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useContext } from 'react';
+import MapView, { Marker } from 'react-native-maps';
 
 import TextButton from '../components/TextButton';
 import CredentialsCarousel from '../components/CredentialsCarousel';
@@ -28,21 +29,36 @@ const HomeScreen = ({ activities }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStylestyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome back,</Text>
           <Text style={styles.nameText}>{displayName}</Text>
         </View>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          <Marker
+            coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
+            title="My Location"
+            description="Here I am"
+          />
+        </MapView>
         <View style={styles.credentialsSection}>
           <CredentialsCarousel credentials={favoriteCredentials} />
           <TextButton
-            text="Authorize a Credential"
-            onPress={() => navigation.navigate('Register User')}
+            text="Trust A New Credential Issuer"
+            onPress={() => navigation.navigate('Trust Issuer')}
             style={styles.button}
           />
         </View>
         <View style={styles.activitySection}>
-          <Text style={styles.recentActivity}>Recent Credentials Distributed</Text>
+          <Text style={styles.recentActivity}>Recently Presented Credentials</Text>
           <ActivityPreview activities={activities} />
           <TextButton
             text="View All Credentials Distributed"
