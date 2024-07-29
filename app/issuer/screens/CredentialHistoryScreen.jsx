@@ -9,9 +9,12 @@ const CredentialHistoryScreen = () => {
 
   return (
     <ScrollView>
-      {credentials.map((cred) => (
-        <CredentialCard key={cred.credential.id} credential={cred} />
-      ))}
+      {credentials.map((cred, index) => {
+        const key = `${cred.client_id}-${index}`;
+        return (
+          <CredentialCard key={key} credential={cred} />
+        );
+      })}
     </ScrollView>
   );
 };
