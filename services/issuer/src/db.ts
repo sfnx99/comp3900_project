@@ -32,12 +32,14 @@ export function addUser(client_id: string, info: {[key: string] : string}) {
 
 export function getCredential(client_id: string, format: string): Credential {
     if (format != formats[0].id) {
+        console.log(`Failed to obtain credential: requested format ${format} does not match expected format ${formats[0].id}`);
         throw new Error(`Cannot issue credential with format ${format}`);
     }
     const user = getUser(client_id);
     const neededFields = Object();
     for (const key of formats[0].fields) {
         if (!Object.keys(user.info).includes(key)) {
+            console.log(`Failed to obtain credential: user ${client_id} does not have a known ${key}`);
             throw new Error(`Cannot issue format ${format}: user has no known ${key}`);
         }
         neededFields[key] = user.info[key];

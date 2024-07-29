@@ -8,16 +8,16 @@ const verifier_url = "http://localhost:8083";
 
 describe('Test integration', () => {
     beforeAll(() => {
-        // chdir('issuer');
-        // exec('docker-compose up -d --force-recreate --build');
-        // chdir('..');
-        // chdir('service_provider');
-        // exec('docker-compose up -d --force-recreate --build');
-        // chdir('..');
-        // chdir('identity_holder');
-        // exec('docker-compose up -d --force-recreate --build');
-        // chdir('..');
-        // return new Promise(r => setTimeout(r, 15000)); // 15 seconds allowed for all agents to start
+        chdir('issuer');
+        exec('docker-compose up -d --force-recreate --build');
+        chdir('..');
+        chdir('service_provider');
+        exec('docker-compose up -d --force-recreate --build');
+        chdir('..');
+        chdir('identity_holder');
+        exec('docker-compose up -d --force-recreate --build');
+        chdir('..');
+        return new Promise(r => setTimeout(r, 15000)); // 15 seconds allowed for all agents to start
     }, 16000);
     
     afterAll(() => {
@@ -248,13 +248,13 @@ describe('Test integration', () => {
 
         expect(res.status).toStrictEqual(200);
 
-        // // change format of issuer
-        // res = await axios.post(issuer_url + "/v2/format", {
-        //     type: "PhotoCardCredential",
-        //     attributes: ["firstName", "lastName", "dob"]
-        // });
+        // change format of issuer
+        res = await axios.post(issuer_url + "/v2/format", {
+            type: "PhotoCardCredential",
+            attributes: ["firstName", "lastName", "dob"]
+        });
 
-        // expect(res.status).toStrictEqual(200);
+        expect(res.status).toStrictEqual(200);
         
         // need to register with issuer now
         res = await axios.post(issuer_url + "/v2/register", {
@@ -322,47 +322,63 @@ describe('Test integration', () => {
 
         expect(cred_id).toBeDefined();
 
-        // // inspect credential received
-        // res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`);
-        // const cred_r = res.data;
-        // const cred = cred_r.credential;
-        // expect(cred_r.issuer).toStrictEqual(issuer_did);
-        // expect(cred_r.type).toStrictEqual("PhotoCardCredential");
-        // expect(cred.firstName).toStrictEqual("Bob");
-        // expect(cred.lastName).toStrictEqual("Wild");
-        // expect(cred.dob).toStrictEqual("11/09/2001");
-    
-        // // get presentation metadata
-        // res = await axios.get(wallet_url + `/v2/present?verifier_uri=${"http://host.docker.internal:8083"}`, {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`
-        //     }
-        // })
-    
-        // const type = res.data.type;
-        // const attrs = res.data.requiredAttributes;
-        // expect(type).toBeDefined();
-        // expect(attrs).toBeDefined();
-        // expect(res.status).toStrictEqual(200);
+        
+        // inspect credential received
 
-        // // make verifier trust this issuer
-        // res = await axios.post(verifier_url + "/v2/trust", {
-        //     "id": issuer_did
-        // });
+        const headers = {
+            Authorization: `Bearer ${token}`
+        };
 
-        // expect(res.status).toStrictEqual(200);
+        res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`, { headers });
+
+        expect(res.status).toStrictEqual(200);
+        const cred_r = res.data;
+        const cred = cred_r.credential;
+        expect(cred_r.issuer).toStrictEqual(issuer_did);
+        expect(cred_r.type).toContain("PhotoCardCredential");
+        expect(cred.firstName).toStrictEqual("Bob");
+        expect(cred.lastName).toStrictEqual("Wild");
+        expect(cred.dob).toStrictEqual("11/09/2001");
     
-        // // perform presentation
-        // res = await axios.post(wallet_url + "/v2/present", {
-        //     verifier_uri: "http://host.docker.internal:8083",
-        //     credential_id: cred_id
-        // }, {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`
-        //     }
-        // });
+        // update definition for verifier
+        res = await axios.post(`${verifier_url}/v2/definition`, {
+            type: "PhotoCardCredential",
+            requiredAttributes: ["firstName", "dob"] // omit lastname for privacyß
+        });
 
-        // expect(res.status).toStrictEqual(200);
+        expect(res.status).toStrictEqual(200);
+
+        // get presentation metadata
+        res = await axios.get(wallet_url + `/v2/present?verifier_uri=${"http://host.docker.internal:8083"}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    
+        const type = res.data.type;
+        const attrs = res.data.requiredAttributes;
+        expect(type).toStrictEqual("PhotoCardCredential");
+        expect(attrs).toStrictEqual(["firstName", "dob"]);
+        expect(res.status).toStrictEqual(200);
+
+        // make verifier trust this issuer
+        res = await axios.post(verifier_url + "/v2/trust", {
+            "id": issuer_did
+        });
+
+        expect(res.status).toStrictEqual(200);
+    
+        // perform presentation
+        res = await axios.post(wallet_url + "/v2/present", {
+            verifier_uri: "http://host.docker.internal:8083",
+            credential_id: cred_id
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        expect(res.status).toStrictEqual(200);
     });
 
     test('Successful flow with multiple users and multiple formats', async () => {

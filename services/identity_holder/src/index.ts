@@ -211,7 +211,9 @@ app.get("/v2/credential", async (req: Request, res: Response) => {
     if (typeof credential_id !== "string") {
         credential_id = "";
     }
+    console.log(`Recieved request to view credential ${credential_id}`);
     const result = await wrapAuthorisation(token, getCredentialV2, credential_id);
+    console.log(`Found credential: ${JSON.stringify(result.body)}`);
     res.status(result.status).json(result.body);
 });
 
