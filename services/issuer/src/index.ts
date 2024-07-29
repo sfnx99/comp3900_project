@@ -49,14 +49,21 @@ app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
+    console.error(`Served DID at /: ${did_uri}`);
     res.json({ did_uri });
 });
 
 app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
 
 app.post("/v2/authorize", (req: Request, res: Response) => {
-    const { client_id, client_secret, redirect_uri, state, scope } = req.body;
-    res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
+    try {
+        const { client_id, client_secret, redirect_uri, state, scope } = req.body;
+        res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
+    } catch(err) {
+        res.status(500).json({
+            error: JSON.stringify(err)
+        });
+    }
 })
 
 app.post("/v2/token", (req: Request, res: Response) => {
@@ -67,6 +74,7 @@ app.post("/v2/token", (req: Request, res: Response) => {
 app.post("/v2/credential", async (req: Request, res: Response) => {
     try {
         const access_token = req.headers.authorization!.slice(7);
+        console.log(`Received request to issue credential with token ${access_token}`);
         res.json(await issue(access_token));
     } catch (e) {
         res.status(500).json(e);
@@ -96,10 +104,11 @@ app.post("/v2/info", (req: Request, res: Response) => {
     }
 });
 
-app.post("/v2/format", (req: Request, res: Response) => {
+app.post("/v2/format", async (req: Request, res: Response) => {
     try {
         const { type, attributes } = req.body;
         modifyFormat(type, attributes);
+        await updateFormat(type);
         res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);
@@ -117,7 +126,8 @@ app.get("/v2/credentials", (req: Request, res: Response) => {
 app.post("/v2/name", async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
-        updateName(name);
+        console.log(`Recieved request to change name to ${name}`);
+        await updateName(name);
         res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);
@@ -135,8 +145,12 @@ httpsServer.listen(8443, async () => {
 });
 
 async function issue(access_token: string) {
+    console.log(`Authenticating token ${access_token}...`);
     const request = authenticate(access_token);
+    console.log(`Successfully authenticated`);
+    console.log(`Obtaining credential...`);
     const credential = getCredential(request.client_id, request.scope);
+    console.log(`Obtained credential: ${JSON.stringify(credential)}`);
     if (credential === undefined) {
         throw new Error("Credential Does not exist");
     }
@@ -266,6 +280,46 @@ async function initialise_did() {
     did_uri = did_config.uri;
     console.log(`Current DID document at ${did_config.uri}`);
 }
+
+async function updateFormat(format: string) {
+    const did_config = JSON.parse(await readFile('./did.json', { encoding: 'utf8' }));
+    
+    // Load in current DID document
+    const did = await resolve(did_uri);
+    const did_data = did.didDocument.service[0].serviceEndpoint;
+
+    // Update
+    const new_did_data = Object();
+    for (const key of Object.keys(did_data)) {
+        new_did_data[key] = did_data[key];
+    }
+    new_did_data.credential_configurations_supported = Object();
+    new_did_data.credential_configurations_supported[format] = {format: "ldp-vc"};
+    const new_did = new DID({
+        content: {
+            publicKeys: [{
+                id: 'key-1',
+                type: 'EcdsaSecp256k1VerificationKey2019',
+                publicKeyJwk: JSON.parse(process.env.DID_PUBLICKEY!),
+                purposes: [ 'authentication' ]
+            }],
+            services: [
+                {
+                    id: 'vc-data',
+                    type: 'vc-data',
+                    serviceEndpoint: new_did_data
+                }
+            ]
+        }
+    });
+    const new_did_uri = await new_did.getURI();
+    did_config.uri = new_did_uri;
+    // Update config file
+    await writeFile('./did.json', JSON.stringify(did_config));
+    did_uri = new_did_uri;
+    console.log(`Current DID document at ${did_config.uri}`);
+}
+
 
 async function updateName(name: string) {
     const did_config = JSON.parse(await readFile('./did.json', { encoding: 'utf8' }));
