@@ -14,18 +14,8 @@ const CredentialsProvider = ({ children }) => {
 
   useEffect(() => {
     const loadCredentials = async () => {
-      setCredentials([
-        {
-          client_id: 'user@email.com',
-          type: 'CredentialType1',
-          cryptosuite: 't11a-bookworms-bbs',
-          credential: {
-            id: 'did:example:34567',
-            firstName: 'John',
-            lastName: 'Smith',
-          },
-        },
-      ]);
+      const loadedCredentials = await getCredentials();
+      setCredentials(loadedCredentials);
     };
 
     loadCredentials();
