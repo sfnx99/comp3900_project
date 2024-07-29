@@ -19,9 +19,12 @@ const CredentialPreview = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {displayed.map((cred) => (
-        <Credential key={`${cred.client_id}-${cred.credential.id}`} credential={cred} />
-      ))}
+      {displayed.map((cred, index) => {
+        const key = `${index}-${cred.credential.id}`;
+        return (
+          <Credential key={key} credential={cred} />
+        );
+      })}
     </ScrollView>
   );
 };
