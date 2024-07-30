@@ -9,7 +9,7 @@
   },
   "name": "service_provider",
   "version": "1.0.0",
-  "description": "`# Self-Sovereign Identity (Service Provider)\r The Service Provider (SP) is responsible for ensuring that an Identity Holder (IH) is supplying valid credentials.",
+  "description": "Self-Sovereign Identity (Service Provider)\n The Service Provider (SP) is responsible for ensuring that an Identity Holder (IH) is supplying valid credentials.",
   "main": "index.js",
   "dependencies": {
     "@decentralized-identity/ion-tools": "^1.1.4",
@@ -84,7 +84,8 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "test": "echo \"Error: Run npm test in the services directory.\" && exit 1"
+    "test": "echo \"Error: Run npm test in the services directory.\" && exit 1",
+    "start": "ts-node src/index.ts" 
   },
   "keywords": [],
   "author": "",

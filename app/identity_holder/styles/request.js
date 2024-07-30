@@ -12,7 +12,12 @@ const styles = StyleSheet.create({
     },
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
     // marginTop: '10px'
+  },
+  scrollContent: {
+    marginTop: 50,
+    paddingBottom: 40,
   },
   content: {
     flex: 1,
@@ -74,6 +79,20 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     textAlign: 'center',
+  },
+  Text: {
+    color: '#000',
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: 'bold',
+  },
+  Text2: {
+    color: '#000',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 0,
+    fontWeight: 'light',
   },
 });
 

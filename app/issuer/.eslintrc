@@ -1,0 +1,46 @@
+{
+    "root": true,
+    "env": {
+      "react-native/react-native": true
+    },
+    "extends": "airbnb", // airbnb's js style guide: https://github.com/airbnb/javascript
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "react-native"
+    ],
+    "overrides": [
+      {
+        "files": ["**/*.js", "**/*.jsx"]
+      }
+    ],
+    "rules": {
+      "linebreak-style": "off",
+      "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }],
+      "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+      "react-native/no-unused-styles": 2,
+      "react-native/no-inline-styles": 2,
+      "react/jsx-props-no-spreading": "off",
+      "import/prefer-default-export": "off",
+      "react/function-component-definition": [
+        "error",
+        {
+          "namedComponents": "arrow-function",
+          "unnamedComponents": "arrow-function"
+        }
+      ],
+      "react/react-in-jsx-scope": "off",
+      "react/require-default-props": "off"
+    },
+    "settings": {
+        "react-native": {
+            "version": "detect"
+        }
+    }
+  }
+  
