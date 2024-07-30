@@ -1,11 +1,13 @@
 import axios from 'axios';
+import { WALLET_HOST, WALLET_PORT } from '@env';
+
 import * as Linking from 'expo-linking';
 import { WALLET_HOST, WALLET_PORT } from '@env';
 
 import { save, getValueFor, deleteItem } from './util';
 
 const port = WALLET_PORT || 8081;
-const url = `http://${WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
 
 const getToken = async () => {
   try {
@@ -136,6 +138,12 @@ export const deleteCredential = async (credentialId) => {
   }
 };
 
+/**
+ * Gets the required attributes and credential type from a
+ * given url.
+ * @param {string} verifierUri - url
+ * @returns object of the presentation data.
+ */
 export const getPresentation = async (verifierUri) => {
   try {
     const token = await getToken();
@@ -152,6 +160,11 @@ export const getPresentation = async (verifierUri) => {
   }
 };
 
+/**
+ * Presents a credential to a url.
+ * @param {string} credentialId - id of the credential being presented
+ * @param {string} verifierUri - the url the credential is presenting to
+ */
 export const postPresentation = async (credentialId, verifierUri) => {
   try {
     const token = await getToken();
@@ -159,7 +172,10 @@ export const postPresentation = async (credentialId, verifierUri) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: { credential_id: credentialId, verifier_uri: verifierUri },
+      data: {
+        credential_id: credentialId,
+        verifier_uri: verifierUri,
+      },
     });
   } catch (error) {
     handleError(error);

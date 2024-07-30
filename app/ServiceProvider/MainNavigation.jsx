@@ -29,38 +29,10 @@ const MainApp = () => {
       const initialNotifications = [
         {
           id: 1,
-          name: 'Medicare Card',
+          name: 'bob smith',
           type: 'location',
           timestamp: new Date(),
-          detail: 'UNSW Medical Centre',
-        },
-        {
-          id: 2,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Joe Bar, Newtown',
-        },
-        {
-          id: 3,
-          name: 'NSW Drivers License',
-          type: 'location',
-          timestamp: new Date(),
-          detail: 'Woolworths, Newtown',
-        },
-        {
-          id: 4,
-          name: 'Credential Approved',
-          type: 'approval',
-          timestamp: new Date(),
-          detail: 'Your NSW Drivers License has been verified.',
-        },
-        {
-          id: 5,
-          name: 'Credential Pending',
-          type: 'pending',
-          timestamp: new Date(),
-          detail: 'Request for UNSW ID card pending approval.',
+          detail: 'Joes Bar',
         },
       ];
 
@@ -99,7 +71,7 @@ const MainApp = () => {
           {() => <HomeStack notifications={notifications} />}
         </Tab.Screen>
         <Tab.Screen
-          name="Register User"
+          name="Trust Issuer"
           component={RequestCredentialScreen}
           options={{
             tabBarIcon: renderIconByName('card-plus'),
