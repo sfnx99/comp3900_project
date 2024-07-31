@@ -131,8 +131,8 @@ const SettingsScreen = () => {
             icon="key-variant"
           />
           <SettingButton
-            text="Select ID Displayed Information"
-            onPress={dummyFunctions}
+            text="Security"
+            onPress={() => { navigation.navigate('SettingsStack', { screen: 'Security' }); }}
             icon="lock-outline"
           />
           <SettingButton

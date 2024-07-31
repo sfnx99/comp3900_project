@@ -39,7 +39,7 @@ export const createHomeScreenStyles = (theme) => (
     },
     activitySection: {
       justifyContent: 'space-between',
-      marginBottom: 5, // -height * 0.05,
+      marginBottom: 5,
     },
     recentActivity: {
       color: theme.text,
@@ -52,6 +52,12 @@ export const createHomeScreenStyles = (theme) => (
       marginTop: 8,
       marginBottom: 0,
       width: width * 0.9,
+    },
+    qrButton: {
+      position: 'absolute',
+      bottom: 20,
+      right: 20,
+      zIndex: 1,
     },
   })
 );

@@ -1,4 +1,9 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import { deleteItem, getValueFor, save } from '../scripts/util';
 
@@ -6,6 +11,8 @@ const AccountContext = createContext();
 
 const AccountProvider = ({ children }) => {
   const [bindedEmail, setBindedEmail] = useState('');
+  const [authMethod, setAuthMethod] = useState('passcode');
+  const [pin, setPin] = useState('pin');
 
   /**
    * Binds the email to the device.
@@ -17,11 +24,33 @@ const AccountProvider = ({ children }) => {
   };
 
   /**
+   * Updates and binds the pin to the device.
+   * @param {string} newPin - the new pin used for authentication.
+   */
+  const updatePin = (newPin) => {
+    setPin(newPin);
+    save('pin', newPin);
+  };
+
+  /**
+   * Updates and binds the authentication method to the device.
+   * @param {string} newAuthMethod - the new authentication method, either biometrics or passcode.
+   */
+  const updateAuthMethod = (newAuthMethod) => {
+    setAuthMethod(newAuthMethod);
+    save('authMethod', newAuthMethod);
+  };
+
+  /**
    * Wipes the account data from the device.
    */
   const wipeAccountData = async () => {
     setBindedEmail('');
+    setAuthMethod('');
+    setPin('');
     await deleteItem('email');
+    await deleteItem('authMethod');
+    await deleteItem('pin');
   };
 
   useEffect(() => {
@@ -34,12 +63,32 @@ const AccountProvider = ({ children }) => {
       }
     };
 
+    const loadAuthMethod = async () => {
+      const localAuthMethod = await getValueFor('authMethod');
+      if (localAuthMethod) {
+        setAuthMethod(localAuthMethod);
+      } else {
+        setAuthMethod('passcode');
+      }
+    };
+
+    const loadPin = async () => {
+      const localPin = await getValueFor('pin');
+      if (localPin) {
+        setPin(localPin);
+      } else {
+        setPin('');
+      }
+    };
+
     loadEmail();
+    loadAuthMethod();
+    loadPin();
   }, []);
 
   const contextValues = useMemo(() => ({
-    bindedEmail, bindEmail, wipeAccountData,
-  }), [bindedEmail]);
+    bindedEmail, bindEmail, wipeAccountData, authMethod, updateAuthMethod, pin, updatePin,
+  }), [bindedEmail, authMethod, pin]);
 
   return (
     <AccountContext.Provider value={contextValues}>

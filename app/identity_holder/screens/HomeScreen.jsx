@@ -57,12 +57,7 @@ const HomeScreen = ({ activities }) => {
       </ScrollView>
       <TouchableOpacity
         onPress={() => navigation.navigate('PresentationScreen')}
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-          zIndex: 1,
-        }}
+        style={styles.qrButton}
       >
         <CircleIcon
           name="qrcode-scan"
