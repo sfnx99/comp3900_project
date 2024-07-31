@@ -10,11 +10,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
-
 import { ThemeContext } from '../context/ThemeContext';
-import show from '../images/hide.png'; 
-import hide from '../images/show.png'; 
+import show from '../images/hide.png';
+import hide from '../images/show.png';
+
+const { height } = Dimensions.get('window');
 
 const TextInputField = ({
   label,
@@ -23,6 +23,7 @@ const TextInputField = ({
   placeholder,
   textAlign = 'left',
   isPassword = false,
+  keyboardType = 'default',
 }) => {
   const { theme } = useContext(ThemeContext);
 
@@ -52,7 +53,7 @@ const TextInputField = ({
       borderRadius: 10,
       backgroundColor: '#F5FFB9',
       paddingHorizontal: 10,
-      height: height*0.052 ,
+      height: height * 0.052,
     },
     input: {
       flex: 1,
@@ -79,6 +80,7 @@ const TextInputField = ({
           secureTextEntry={isPassword && !isPasswordVisible}
           placeholder={placeholder}
           placeholderTextColor="#000000"
+          keyboardType={keyboardType}
         />
         {isPassword && (
           <TouchableOpacity
@@ -103,6 +105,7 @@ TextInputField.propTypes = {
   textAlign: PropTypes.oneOf(['center', 'left', 'right', 'justify']),
   isPassword: PropTypes.bool,
   placeholder: PropTypes.string,
+  keyboardType: PropTypes.string,
 };
 
 export default TextInputField;
