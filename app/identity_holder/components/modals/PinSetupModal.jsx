@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { AccountContext } from '../../context/AccountContext';
 import TextButton from '../TextButton';
 
-const PinSetupModal = ({ modalVisible, onRequestClose }) => {
+const PinSetupModal = ({ modalVisible, onRequestClose, onSuccess }) => {
   const { pin, updatePin } = useContext(AccountContext);
   const [verifyPin, setVerifyPin] = useState('');
   const [currentPin, setCurrentPin] = useState('');
@@ -20,8 +20,7 @@ const PinSetupModal = ({ modalVisible, onRequestClose }) => {
   const [error, setError] = useState('');
 
   /**
-   * Handles the initial pin authentication if one has not been
-   * set yet.
+   * Handles pin authentication if there is an existing pin.
    */
   const handleVerifyPin = () => {
     if (verifyPin !== pin) {
@@ -34,13 +33,15 @@ const PinSetupModal = ({ modalVisible, onRequestClose }) => {
   };
 
   /**
-   * Handles updating the new pin.
+   * Handles updating the new pin on pressing the
+   * set Pin button.
    */
   const handleSetPin = () => {
     if (currentPin.length !== 4) {
       setError('PIN must be 4 digits');
       return;
     }
+
     if (currentPin !== confirmPin) {
       setError('PINs do not match');
       return;
@@ -60,9 +61,17 @@ const PinSetupModal = ({ modalVisible, onRequestClose }) => {
     setError('');
     setAuthenticated(false);
 
+    if (onSuccess) {
+      onSuccess();
+    }
+
     onRequestClose();
   };
 
+  /**
+   * Renders the pin setup modal based on what step the user is on.
+   * @returns a component based on what state the uuser is in.
+   */
   const renderCurrentStep = () => {
     if (pin && !authenticated) {
       return (
@@ -90,7 +99,7 @@ const PinSetupModal = ({ modalVisible, onRequestClose }) => {
     return (
       <>
         <Text style={styles.title}>
-          {pin ? 'Change PIN' : 'Set Up PIN' }
+          {pin ? 'Change PIN' : 'Set Up PIN for Authentication' }
         </Text>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <TextInput
@@ -184,6 +193,7 @@ const styles = StyleSheet.create({
 PinSetupModal.propTypes = {
   modalVisible: PropTypes.bool.isRequired,
   onRequestClose: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func,
 };
 
 export default PinSetupModal;

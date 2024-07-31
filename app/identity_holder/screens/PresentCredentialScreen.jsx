@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   Modal,
@@ -16,25 +16,17 @@ import { credentialPropType, formatCamelCase } from '../scripts/util';
 import { postPresentation } from '../scripts/api';
 import { useTheme } from '../context/ThemeContext';
 import ErrorMessage from '../components/ErrorMessage';
+import { AccountContext } from '../context/AccountContext';
+import PinVerificationModal from '../components/modals/PinVerificationModal';
 
 const PresentCredentialScreen = ({ route }) => {
   const theme = useTheme();
   const navigation = useNavigation();
   const { presentData, url, credential } = route.params;
   const [attributes, setAttributes] = useState([]);
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [error, setError] = useState('');
-
-  /**
-   * Check if the device is compatible for biometrics for the authentication
-   * prio to the presentation.
-   */
-  useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricSupported(compatible);
-    })();
-  }, []);
+  const [pinModalVisible, setPinModalVisible] = useState(false);
+  const { authMethod } = useContext(AccountContext);
 
   /**
    * Loads the attributes that will be used when the credential is read.
@@ -48,6 +40,7 @@ const PresentCredentialScreen = ({ route }) => {
         }
         return acc;
       }, {});
+
       setAttributes(filteredAttributes);
     };
 
@@ -58,23 +51,37 @@ const PresentCredentialScreen = ({ route }) => {
    * Handles the events following the submit button involving
    * authentication before sending the presentation.
    */
-  const handlePress = async () => {
+  const handlePressSubmit = async () => {
     try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Authenticate with Face ID',
-        fallbackLabel: 'Enter Password',
-      });
-
-      if (result.success) {
-        // TODO: uncomment once the service provider is implemented
-        // await postPresentation(credential.id, url);
-        Alert.alert('Success', 'Verification success!');
-        navigation.navigate('Home', { screen: 'PresentationScreen' });
+      if (authMethod === 'passcode') {
+        setPinModalVisible(true);
       } else {
-        setError('Authentication Failed, Please try again.');
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage: 'Authenticate with Face ID',
+          fallbackLabel: 'Enter Password',
+        });
+
+        if (result.success) {
+          presentCredential();
+        }
       }
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  /**
+   * Presents the credential and navigates the user back to the presentation screen
+   * on a successful presentation.
+   */
+  const presentCredential = async () => {
+    try {
+      await postPresentation(credential.id, url);
+      Alert.alert('Success', 'Verification success!');
+
+      navigation.navigate('Home');
+    } catch (err) {
+      setError('Authentication Failed, Please try again.');
     }
   };
 
@@ -109,36 +116,50 @@ const PresentCredentialScreen = ({ route }) => {
 
   return (
     credential ? (
-      <SafeAreaView>
-        <View style={styles.container}>
-          <Text style={styles.text}>
-            Use your credential, {credential.type} to present the following information?`
-          </Text>
-          <View style={styles.fields}>
-            {attributes ? Object.entries(attributes)
-              .map(([key, item]) => (
-                <View key={key} style={styles.field}>
-                  <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
-                  <Text style={styles.text}>{item}</Text>
-                </View>
-              )) : null}
+      <>
+        <SafeAreaView>
+          <View style={styles.container}>
+            <Text style={styles.text}>
+              {`Use your credential, ${credential.type} to present the following information?`}
+            </Text>
+            <View style={styles.fields}>
+              {attributes ? Object.entries(attributes)
+                .map(([key, item]) => (
+                  <View key={key} style={styles.field}>
+                    <Text style={[styles.fieldName, styles.text]}>{`${formatCamelCase(key)}:`}</Text>
+                    <Text style={styles.text}>{item}</Text>
+                  </View>
+                )) : null}
+            </View>
+            <TextButton
+              text="Submit"
+              onPress={handlePressSubmit}
+            />
           </View>
-          <TextButton
-            text="Submit"
-            onPress={handlePress}
-          />
-        </View>
+          <Modal
+            visible={!!error}
+            transparent
+            animationType="fade"
+          >
+            <ErrorMessage
+              message={error}
+              onPress={clearError}
+            />
+          </Modal>
+        </SafeAreaView>
+
         <Modal
-          visible={!!error}
+          visible={pinModalVisible}
           transparent
-          animationType="fade"
+          animationType="slide"
         >
-          <ErrorMessage
-            message={error}
-            onPress={clearError}
+          <PinVerificationModal
+            modalVisible={pinModalVisible}
+            onRequestClose={() => { setPinModalVisible(false); }}
+            onSuccess={presentCredential}
           />
         </Modal>
-      </SafeAreaView>
+      </>
     ) : null
   );
 };

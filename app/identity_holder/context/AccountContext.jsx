@@ -47,8 +47,10 @@ const AccountProvider = ({ children }) => {
   const wipeAccountData = async () => {
     setBindedEmail('');
     setAuthMethod('');
+    setPin('');
     await deleteItem('email');
     await deleteItem('authMethod');
+    await deleteItem('pin');
   };
 
   useEffect(() => {
