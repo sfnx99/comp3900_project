@@ -9,7 +9,6 @@ export function authorize(client_id: string, client_secret: string, redirect_uri
     // if we didn't throw an error, all is well
     const auth_code = (Math.random() + 1).toString(36).substring(2);
     auth_codes.set(auth_code, {client_id, scope});
-    //return `${redirect_uri}?code=${auth_code}&state=${state}`;
     return {
         code: auth_code,
         state: state
