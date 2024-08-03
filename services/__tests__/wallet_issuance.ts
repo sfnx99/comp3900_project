@@ -9,10 +9,10 @@ describe('Wallet V2: Issuance', () => {
         setData(Object.assign({}, TEST_DATA))
     })
 
-    test('Test v2/issuers', ()=> {
+    test('Test v2/issuers', async ()=> {
         const data = getData()
         const user1_session = data.sessions[0]
-        expect(getIssuersV2(user1_session).body.issuers).toEqual(["http://localhost:8082", "http://google.com"])
+        expect((await getIssuersV2(user1_session)).body.issuers).toEqual(["http://localhost:8082", "http://google.com"])
     })
 })
 

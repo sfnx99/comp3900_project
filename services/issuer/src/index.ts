@@ -58,6 +58,7 @@ app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.jo
 app.post("/v2/authorize", (req: Request, res: Response) => {
     try {
         const { client_id, client_secret, redirect_uri, state, scope } = req.body;
+        console.log(`Authorize client: ${client_id} to receive credential type ${scope}`);
         res.json(authorize(client_id, client_secret, redirect_uri, state, scope));
     } catch(err) {
         res.status(500).json({

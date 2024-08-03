@@ -99,14 +99,29 @@ export async function makeRequest(token: string, issuer: string, format: string,
 }
 
 // V2
-export function getIssuersV2(session_data: SessionData) { // eslint-disable-line @typescript-eslint/no-unused-vars
-    const data = getData();
-    return {
-        status: 200,
-        body: {
-            issuers: data.issuers
-        }
-    };
+export async function getIssuersV2(session_data: SessionData) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    // try retrieve using docker.internal
+    try {
+        console.log(`Attempting to retrieve live DID...`);
+        const res = await axios.get('http://host.docker.internal:8082');
+        console.log(`Successfully retrieved live DID: ${res.data.did_uri}`);
+        return {
+            status: 200,
+            body: {
+                issuers: [res.data.did_uri]
+            }
+        };
+    // otherwise, get the default
+    } catch (err) {
+        console.log(`Failed to retrieve live DID, using static value instead`);
+        const data = getData();
+        return {
+            status: 200,
+            body: {
+                issuers: data.issuers
+            }
+        };
+    }
 }
 
 export async function getRequestV2(session_data: SessionData, issuer_id: string) {
@@ -127,6 +142,7 @@ return {
 export async function makeRequestV2(session_data: SessionData, issuer_id: string, auth_code: string, type: string, redirect_uri: string) {
     // Resolve DID for oauth servers
     console.log('Resolving DID...');
+    console.log(`DID: ${issuer_id}`);
     const doc = await resolve(issuer_id);
     console.log(`Successfully resolved DID: ${JSON.stringify(doc.didDocument.service[0].serviceEndpoint)}`);
     const oauth_servers = [doc.didDocument.service[0].serviceEndpoint.credential_endpoint];
@@ -138,6 +154,7 @@ export async function makeRequestV2(session_data: SessionData, issuer_id: string
         client_id: session_data.user.email
     }
     console.log(`Requesting access token...`);
+    console.log(`Requesting at ${oauth_servers[0]}/v2/token`);
     const resp = await axios.post(oauth_servers[0] + "/v2/token", token_body);
     console.log(`Received access token: ${resp.data.access_token}`);
     const access_token = resp.data.access_token;

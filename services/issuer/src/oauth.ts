@@ -5,8 +5,11 @@ const tokens: Map<string, {client_id: string, scope: string}> = new Map();
 
 export function authorize(client_id: string, client_secret: string, redirect_uri: string, state: string, scope: string): {code: string, state: string} {
     // check if we know this user
+    console.log(`Checking known client id ${client_id}...`);
     getUser(client_id);
+    console.log(`Success: client id is known`);
     // if we didn't throw an error, all is well
+    console.log(`Generating auth code...`);
     const auth_code = (Math.random() + 1).toString(36).substring(2);
     auth_codes.set(auth_code, {client_id, scope});
     return {
