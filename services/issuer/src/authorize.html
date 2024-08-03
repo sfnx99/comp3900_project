@@ -87,45 +87,26 @@
             <button type="button" onclick="submitForm()">Submit</button>
         </div>
     </form>
-
+</body>
     <script>
-        async function submitForm() {
+       async function submit() {
             const query = window.location.search.substring(1);
             const get_params = new URLSearchParams(query);
             console.log(get_params);
-
-            try {
-                const res = await fetch('/v2/authorize', {
-                    method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow',
-                    body: JSON.stringify({
-                        client_id: get_params.get('client_id'),
-                        redirect_uri: get_params.get('redirect_uri'),
-                        state: get_params.get('state'),
-                        scope: get_params.get('scope'),
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (res.ok) {
-                    const responseData = await res.json();
-                    const encodedResponseData = encodeURIComponent(JSON.stringify(responseData));
-                    const finalRedirectUri = `${get_params.get('redirect_uri')}?response=${encodedResponseData}`;
-                    window.location.href = finalRedirectUri;
-                } else {
-                    console.log('Authorization failed:', res.statusText);
-                    const finalRedirectUri = `${get_params.get('redirect_uri')}?error=${encodeURIComponent(res.statusText)}`;
-                    window.location.href = finalRedirectUri;
+            const resp = await fetch('/v2/authorize', {
+                method: 'POST',
+                body: JSON.stringify({
+                    client_id: get_params.get('client_id'),
+                    redirect_uri: get_params.get('redirect_uri'),
+                    state: get_params.get('state'),
+                    scope: get_params.get('scope'),
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
                 }
-            } catch (e) {
-                console.log('Error:', e);
-                const finalRedirectUri = `${get_params.get('redirect_uri')}?error=${encodeURIComponent(e.message)}`;
-                window.location.href = finalRedirectUri;
-            }
+            });
+            const data = await resp.json();
+            window.location = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
         }
     </script>
-</body>
 </html>
