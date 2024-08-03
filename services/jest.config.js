@@ -6,7 +6,7 @@ module.exports = {
     "service_provider/node_modules/(?!@digitalbazzar)/",
   ],
   modulePathIgnorePatterns: [
-    // "__tests__/integration.ts",
+    "__tests__/integration.ts",
     "__tests__/verifier_presentation.ts",
     "__tests__/wallet_authorization.ts",
     "__tests__/issuer.ts"
