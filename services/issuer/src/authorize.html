@@ -227,22 +227,22 @@
             console.log(get_params);
 
             try {
-                const res = await fetch('/v2/authorize', {
-                    method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow',
-                    body: JSON.stringify({
-                        client_id: get_params.get('client_id'),
-                        redirect_uri: get_params.get('redirect_uri'),
-                        state: get_params.get('state'),
-                        scope: get_params.get('scope'),
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                const data = await resp.json();
-                console.log('Response data:', data);
+                // const res = await fetch('/v2/authorize', {
+                //     method: 'POST',
+                //     mode: 'cors',
+                //     redirect: 'follow',
+                //     body: JSON.stringify({
+                //         client_id: get_params.get('client_id'),
+                //         redirect_uri: get_params.get('redirect_uri'),
+                //         state: get_params.get('state'),
+                //         scope: get_params.get('scope'),
+                //     }),
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     }
+                // });
+                // const data = await resp.json();
+                // console.log('Response data:', data);
                 
                 // if (res.ok) {
                     //window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
