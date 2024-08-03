@@ -3,7 +3,8 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
 const port = process.env.WALLET_PORT || 8083;
-const url = `${process.env.WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const url = `${process.env.WALLET_HOST || 'http://192.168.4.22'}:${port}/v2`;
+const host = `${process.env.WALLET_HOST || 'http://192.168.4.22'}`;
 
 
 const getToken = async () => {
@@ -54,7 +55,7 @@ export const sanityCheck = async () => {
 
 export const registerUser = async (email, password) => {
   try {
-    const response = await axios.post(`http://192.168.1.122:8081/v2/auth/register`, { email, password });
+    const response = await axios.post(`${host}:8081/v2/auth/register`, { email, password });
     setToken(response.data.token);
   } catch (error) {
     handleError(error);
@@ -63,7 +64,7 @@ export const registerUser = async (email, password) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await axios.post(`http://192.168.1.122:8081/v2/auth/login`, { email, password });
+    const response = await axios.post(`${host}:8081/v2/auth/login`, { email, password });
     const { token } = response.data;
     if (token) {
       setToken(token);
@@ -81,12 +82,12 @@ export const getIssuers = async () => {
     if (!token) {
       throw new Error('Authentication required.');
     }
-    const response = await axios.get(`http://ablac.dev:8082/`, {
+    const response = await axios.get(`${host}:8082/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+    return response.data.did_uri;
   } catch (error) {
     return null;
   }
@@ -95,7 +96,7 @@ export const getIssuers = async () => {
 export const trustIssuer = async (issuer) => {
   try {
     const response = await axios.post(`${url}/trust`, {
-      issuer
+      id: issuer
     });
     return response.data;
   } catch (error) {
@@ -106,7 +107,7 @@ export const trustIssuer = async (issuer) => {
 
 export const PostDefinition = async (type, issuer, requiredAttributes) => {
   try {
-    const response = await axios.post(`${url}/trust`, {
+    const response = await axios.post(`${url}/definition`, {
       type,
       issuer,
       requiredAttributes

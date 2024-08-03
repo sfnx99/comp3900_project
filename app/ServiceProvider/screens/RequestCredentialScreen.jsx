@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputField from '../components/TextInputField';
 import TextButton from '../components/TextButton';
-import { getIssuers, PostDefinition } from '../scripts/api'; 
+import { getIssuers, PostDefinition, trustIssuer } from '../scripts/api'; 
 import styles from '../styles/request';
 
 const { width } = Dimensions.get('window');
@@ -34,10 +34,10 @@ const RequestCredentialScreen = ({ navigation }) => {
   }, []);
 
   const UserInfo = async () => {
-    if (!email || !password || !selectedIssuer) {
-      setSuccessMessage('New Issuer has Been Trusted');
-      return;
-    }
+    // if (!email || !password || !selectedIssuer) {
+    //   setSuccessMessage('New Issuer has Been Trusted');
+    //   return;
+    // }
 
     const requiredAttributes = [];
     if (FnameChecked) requiredAttributes.push('firstName');
@@ -50,7 +50,11 @@ const RequestCredentialScreen = ({ navigation }) => {
     };
 
     try {
-      const response = await PostDefinition(payload.type, selectedIssuer, requiredAttributes);
+      // get issuer id
+      let issuer_id = await getIssuers();
+      // make verifier trust it
+      await trustIssuer(issuer_id);
+      response = await PostDefinition(payload.type, selectedIssuer, requiredAttributes);
       if (response) {
         setSuccessMessage('Your information has been submitted successfully');
         setError('');

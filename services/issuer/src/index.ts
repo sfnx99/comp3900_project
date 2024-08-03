@@ -49,6 +49,7 @@ app.use(express.json());
 app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
+    console.log(`Serving DID at /`);
     res.json({ did_uri });
 });
 
