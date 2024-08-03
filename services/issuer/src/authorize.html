@@ -246,7 +246,7 @@
                 
                 // if (res.ok) {
                     //window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
-                    window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
+                    window.location.href = get_params.get('redirect_uri');
                 // } else {
                     console.log('Authorization failed:', res.statusText);
                 // }
