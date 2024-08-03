@@ -1,8 +1,6 @@
 // Tests all of the Verifier request functions that don't depend on integration.
 
-import { PresentationDefinition } from "../service_provider/src/interface"
-import { requestMetadata } from "../service_provider/src/request"
-import { modifyDefinition } from "../service_provider/src/db"
+import { requestMetadata } from "../service_provider/src/request";
 
 describe('Verifier V2: Requests', () => {
     beforeEach(() => {
