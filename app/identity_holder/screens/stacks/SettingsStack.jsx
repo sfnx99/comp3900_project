@@ -1,30 +1,30 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
 import SettingsScreen from '../SettingsScreen';
 import SelectiveDisclosure from '../SelectiveDisclosure';
+import SecurityScreen from '../SecurityScreen';
 
 const Stack = createStackNavigator();
 
-const SettingsNavigator = () => {
-  return (
-    <Stack.Navigator>
+const SettingsNavigator = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
     <Stack.Screen
-      name="Settingss"
+      name="Settings"
       component={SettingsScreen}
-      options={() => ({
-        headerShown: false,
-      })}
     />
     <Stack.Screen
       name="Selective Disclosure"
       component={SelectiveDisclosure}
-      options={{
-        headerShown: false,
-      }}
+    />
+    <Stack.Screen
+      name="Security"
+      component={SecurityScreen}
     />
   </Stack.Navigator>
 );
-}
 
 export default SettingsNavigator;

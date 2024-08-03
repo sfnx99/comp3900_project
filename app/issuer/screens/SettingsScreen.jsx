@@ -71,11 +71,6 @@ const SettingsScreen = () => {
       icon="email-outline"
     />
     <SettingButton
-      text="Support"
-      onPress={dummyFunctions}
-      icon="message-outline"
-    />
-    <SettingButton
       text="Logout"
       onPress={() => navigation.reset({
         index: 0,

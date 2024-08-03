@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import ActivityHistory from '../ActivityHistory';
 import { notificationPropType, renderIconByName } from '../../scripts/util';
 import HomeScreen from '../HomeScreen';
-import { ThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
+import { headerOptions } from '../../styles/headerOptions';
+import CredentialHistoryScreen from '../CredentialHistoryScreen';
+import CredentialInformation from '../CredentialInformation';
 
 const Stack = createStackNavigator();
 
 const HomeStack = ({ notifications }) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const styles = StyleSheet.create({
     header: {
@@ -25,6 +27,7 @@ const HomeStack = ({ notifications }) => {
       fontSize: 20,
     },
   });
+
   return (
     <Stack.Navigator
       screenOptions={styles.header}
@@ -32,6 +35,7 @@ const HomeStack = ({ notifications }) => {
     >
       <Stack.Screen
         name="HomeMain"
+        component={HomeScreen}
         options={{
           tabBarIcon: renderIconByName('home'),
           headerShown: false,
@@ -39,27 +43,23 @@ const HomeStack = ({ notifications }) => {
           headerTitleStyle: styles.text,
           headerTitleAlign: 'center',
         }}
-      >
-        {() => <HomeScreen activities={notifications} />}
-      </Stack.Screen>
+      />
       <Stack.Screen
-        name="ActivityHistory"
+        name="CredentialHistory"
+        component={CredentialHistoryScreen}
         options={({ navigation }) => ({
-          headerShown: true,
-          tabBarStyle: '#F1F2EC',
-          headerStyle: styles.header,
-          headerShadowVisible: false,
-          headerTitleAlign: 'center',
-          headerTitleStyle: styles.text,
-          headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
-            paddingTop: 25,
-            size: 30,
-            color: theme.text,
-          }),
+          ...headerOptions(theme, navigation),
+          title: 'Issued Credential History',
         })}
-      >
-        {() => <ActivityHistory notifications={notifications} />}
-      </Stack.Screen>
+      />
+      <Stack.Screen
+        name="CredentialInformation"
+        component={CredentialInformation}
+        options={({ navigation }) => ({
+          ...headerOptions(theme, navigation),
+          title: 'Credential Information',
+        })}
+      />
     </Stack.Navigator>
   );
 };

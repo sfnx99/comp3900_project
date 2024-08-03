@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { deleteCredential, getCredential, getCredentials } from '../scripts/api';
 import { deleteItem, getValueFor, save } from '../scripts/util';
@@ -13,10 +8,6 @@ const CredentialsContext = createContext();
 const CredentialsProvider = ({ children }) => {
   const [credentials, setCredentials] = useState([]);
 
-  /**
-   * Fetches all the credentials and formats them with the
-   * id and favourite fields.
-   */
   const fetchCredentials = async (localCredentials) => {
     const tempCredentials = [];
     const credentialIds = await getCredentials();
@@ -43,34 +34,6 @@ const CredentialsProvider = ({ children }) => {
     return tempCredentials;
   };
 
-  /**
-   * Toggles the favourite field.
-   * @param {string} id - the id of the credential (obtained by credential.id).
-   */
-  const toggleFavourite = (id) => {
-    const newCredentials = credentials.map((cred) => (
-      cred.id === id ? { ...cred, favourite: !cred.favourite } : cred
-    ));
-    setCredentials(newCredentials);
-    saveCredentialsLocally(newCredentials);
-  };
-
-  const removeCredential = async (credential_id) => {
-    try {
-      await deleteCredential(credential_id);
-      const updatedCredentials = credentials.filter(cred => cred.id !== credential_id);
-      setCredentials(updatedCredentials);
-      saveCredentialsLocally(updatedCredentials);
-    } catch (error) {
-      console.error('Failed to delete credential:', error);
-      throw error(error);
-    }
-  };
-
-  /**
-   * Fetches all the credentials from the local device.
-   * @returns array of credentials
-   */
   const loadLocalCredentials = async () => {
     try {
       const loadedCredentials = await getValueFor('credentials');
@@ -81,10 +44,6 @@ const CredentialsProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Saves credentials locally to the device.
-   * @param {Array} credentials - the updated array of credentials.
-   */
   const saveCredentialsLocally = async (newCredentials) => {
     try {
       await save('credentials', JSON.stringify(newCredentials));
@@ -93,30 +52,43 @@ const CredentialsProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Wipes credentials from the device.
-   */
-  const wipeCredentialData = async () => {
-    setCredentials([]);
-    await deleteItem('credentials');
-  };
-
-  useEffect(() => {
-    const loadCredentials = async () => {
+  const loadCredentials = async () => {
+    try {
       const localCredentials = await loadLocalCredentials();
       const apiCredentials = await fetchCredentials(localCredentials);
 
       const allCredentials = [...localCredentials, ...apiCredentials];
-
       setCredentials(allCredentials);
       saveCredentialsLocally(allCredentials);
-    };
+    } catch (error) {
+      console.error('Error loading credentials:', error);
+    }
+  };
 
+  useEffect(() => {
     loadCredentials();
   }, []);
 
   const contextValue = useMemo(() => ({
-    credentials, toggleFavourite, removeCredential, wipeCredentialData,
+    credentials,
+    loadCredentials,  
+    toggleFavourite: (id) => {
+    
+    },
+    removeCredential: async (credential_id) => {
+      try {
+        await deleteCredential(credential_id);
+        const updatedCredentials = credentials.filter((cred) => cred.id !== credential_id);
+        setCredentials(updatedCredentials);
+        saveCredentialsLocally(updatedCredentials);
+      } catch (error) {
+        console.error('Failed to delete credential:', error);
+      }
+    },
+    wipeCredentialData: async () => {
+      setCredentials([]);
+      await deleteItem('credentials');
+    }
   }), [credentials]);
 
   return (
@@ -131,3 +103,4 @@ CredentialsProvider.propTypes = {
 };
 
 export { CredentialsContext, CredentialsProvider };
+

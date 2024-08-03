@@ -64,3 +64,5 @@ buck-out/
 web-build/
 
 .env
+
+package-lock.json

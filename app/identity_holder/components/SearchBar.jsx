@@ -13,7 +13,7 @@ const SearchBar = ({ onChange }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Search Credential..."
+        placeholder="Search Credential ID..."
         placeholderTextColor="black"
         value={query}
         onChangeText={handleChange}

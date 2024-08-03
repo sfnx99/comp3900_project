@@ -33,11 +33,14 @@ app.listen(port, () => {
 });
 
 app.get("/v2/request", async (req: Request, res: Response) => {
+    console.log(`Received metadata request`);
     const result = await requestMetadata();
-    res.status(result.status).json(result.body);
+    console.log(`Success: providing metadata: ${result.body}`);
+    res.status(result.status).json(JSON.stringify(result.body));
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {
+    console.log(`Received presentation`);
     const { presentation_submission, vp_token, state } = req.body;
     console.log(presentation_submission, vp_token, state);
     const result = await presentSubmission(presentation_submission, vp_token, state);
@@ -48,6 +51,7 @@ app.post("/v2/present", async (req: Request, res: Response) => {
         credential: vp_token.verifiableCredential[0].credentialSubject,
         status: result.status === 200 ? "accepted" : "denied"
     });
+    console.log(`Success: presentation result: ${result.status}`);
     res.status(result.status).json(result.body);
 });
 
@@ -71,6 +75,7 @@ app.post('/v2/untrust', (req: Request, res: Response) => {
 });
 
 app.post('/v2/definition', (req: Request, res: Response) => {
+    console.log(`Update definition: require ${req.body.type} with attributes ${req.body.requiredAttributes}`);
     const { type, requiredAttributes } = req.body;
     const attr: string[] = requiredAttributes;
     modifyDefinition({
@@ -84,5 +89,6 @@ app.post('/v2/definition', (req: Request, res: Response) => {
             }
         ]
     });
+    console.log(`Successfully updated`);
     res.sendStatus(200);
 });

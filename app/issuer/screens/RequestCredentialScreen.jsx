@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IssueRegisterUser } from '../scripts/api';
+import { IssueRegisterUser, PostInformation } from '../scripts/api';
 import styles from '../styles/request';
 import TextInputField from '../components/TextInputField';
 import TextButton from '../components/TextButton';
@@ -49,7 +49,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       }
 
       await PostInformation(email, Fname, Lname, DOB);
-      Alert.alert('Registration Successful');
+      Alert.alert('Registration Info Successful');
     } catch (err) {
       setError(`Could not register: ${err.message}`);
     }

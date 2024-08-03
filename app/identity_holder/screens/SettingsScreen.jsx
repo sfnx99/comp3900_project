@@ -131,8 +131,8 @@ const SettingsScreen = () => {
             icon="key-variant"
           />
           <SettingButton
-            text="Select ID Displayed Information"
-            onPress={dummyFunctions}
+            text="Security"
+            onPress={() => { navigation.navigate('SettingsStack', { screen: 'Security' }); }}
             icon="lock-outline"
           />
           <SettingButton
@@ -159,11 +159,6 @@ const SettingsScreen = () => {
             text="Cookie Policy"
             onPress={() => setthirdModalVisible(true)}
             icon="email-outline"
-          />
-          <SettingButton
-            text="Support"
-            onPress={dummyFunctions}
-            icon="message-outline"
           />
           <SettingButton
             text="Unbind Account"

@@ -19,11 +19,8 @@ export const getCoordinates = async (address) => {
       };
     }
 
-    // TODO: Potentially change console.error logs to a popup on the front end
-    // console.error('Geocoding API error:', response.data.status);
     return null;
   } catch (error) {
-    // console.error('Geocoding API error:', error);
     return null;
   }
 };

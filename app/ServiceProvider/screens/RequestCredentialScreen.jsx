@@ -11,45 +11,33 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputField from '../components/TextInputField';
 import TextButton from '../components/TextButton';
-import { getIssuers, PostDefinition } from '../scripts/api'; // Ensure PostDefinition is imported
+import { getIssuers, PostDefinition, trustIssuer } from '../scripts/api'; 
 import styles from '../styles/request';
 
 const { width } = Dimensions.get('window');
 
 const RequestCredentialScreen = ({ navigation }) => {
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [IssuerChecked, setIssuerChecked] = useState('');
   const [FnameChecked, setFnameChecked] = useState(false);
   const [LnameChecked, setLnameChecked] = useState(false);
   const [DOBChecked, setDOBChecked] = useState(false);
   const [photocardChecked, setPhotocardChecked] = useState(false);
   const [driversLicenseChecked, setDriversLicenseChecked] = useState(false);
   const [selectedIssuer, setSelectedIssuer] = useState('');
-  const [issuers, setIssuers] = useState([]);
 
   useEffect(() => {
-    loadIssuers();
+    
   }, []);
 
-  const loadIssuers = async () => {
-    try {
-      const result = await getIssuers();
-      if (result && result.issuers) {
-        setIssuers(result.issuers);
-      } else {
-        throw new Error('No issuer data found');
-      }
-    } catch (error) {
-      setError('Failed to fetch issuers: ' + error.message);
-    }
-  };
-
   const UserInfo = async () => {
-    if (!email || !password || !selectedIssuer) {
-      setError('Please fill in all fields');
-      return;
-    }
+    // if (!email || !password || !selectedIssuer) {
+    //   setSuccessMessage('New Issuer has Been Trusted');
+    //   return;
+    // }
 
     const requiredAttributes = [];
     if (FnameChecked) requiredAttributes.push('firstName');
@@ -62,14 +50,21 @@ const RequestCredentialScreen = ({ navigation }) => {
     };
 
     try {
-      const response = await PostDefinition(payload.type, selectedIssuer, requiredAttributes);
+      // get issuer id
+      let issuer_id = await getIssuers();
+      // make verifier trust it
+      await trustIssuer(issuer_id);
+      response = await PostDefinition(payload.type, selectedIssuer, requiredAttributes);
       if (response) {
-        Alert.alert('Success', 'Your information has been submitted successfully');
+        setSuccessMessage('Your information has been submitted successfully');
+        setError('');
       } else {
         setError('Failed to submit information');
+        setSuccessMessage('Your information has been submitted with some issues');
       }
     } catch (error) {
       setError('An error occurred: ' + error.message);
+      setSuccessMessage('Your information has been submitted with some issues');
     }
   };
 
@@ -90,24 +85,30 @@ const RequestCredentialScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {successMessage ? (
+          <View style={localStyles.successMessageContainer}>
+            <Text style={localStyles.successMessage}>{successMessage}</Text>
+          </View>
+        ) : null}
+        
         {error ? (
           <View style={localStyles.errorMessageContainer}>
             <Text style={localStyles.errorMessage}>{error}</Text>
           </View>
         ) : null}
-        <Text style={localStyles.text}>Register User to Receive Credential</Text>
 
-        <TextInputField 
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email address"
-        />
-        <TextInputField
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          isPassword
-        />
+        <Text style={localStyles.text1}>Select Issuer to Trust</Text>
+        <View style={localStyles.switchContainer2}>
+          <View style={localStyles.switchRow}>
+            <Switch
+              value={IssuerChecked}
+              onValueChange={setIssuerChecked}
+              trackColor={{ false: '#000', true: '#71d444' }}
+              thumbColor={IssuerChecked ? 'white' : 'white'}
+            />
+            <Text style={localStyles.label}>NSW Government</Text>
+          </View>
+        </View>
 
         <Text style={localStyles.text}>Select Details Required From Credential</Text>
         <View style={localStyles.switchContainer}>
@@ -115,8 +116,8 @@ const RequestCredentialScreen = ({ navigation }) => {
             <Switch
               value={FnameChecked}
               onValueChange={setFnameChecked}
-              trackColor={{ false: '#000', true: '#81b0ff' }}
-              thumbColor={FnameChecked ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: '#000', true: '#71d444' }}
+              thumbColor={FnameChecked ? 'white' : 'white'}
             />
             <Text style={localStyles.label}>First Name</Text>
           </View>
@@ -124,8 +125,8 @@ const RequestCredentialScreen = ({ navigation }) => {
             <Switch
               value={LnameChecked}
               onValueChange={setLnameChecked}
-              trackColor={{ false: '#000', true: '#81b0ff' }}
-              thumbColor={LnameChecked ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: 'white', true: '#71d444' }}
+              thumbColor={LnameChecked ? 'white' : 'white'}
             />
             <Text style={localStyles.label}>Last Name</Text>
           </View>
@@ -133,8 +134,8 @@ const RequestCredentialScreen = ({ navigation }) => {
             <Switch
               value={DOBChecked}
               onValueChange={setDOBChecked}
-              trackColor={{ false: '#000', true: '#81b0ff' }}
-              thumbColor={DOBChecked ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: '#000', true: '#71d444' }}
+              thumbColor={DOBChecked ? 'white' : 'white'}
             />
             <Text style={localStyles.label}>Date of Birth</Text>
           </View>
@@ -146,8 +147,8 @@ const RequestCredentialScreen = ({ navigation }) => {
             <Switch
               value={photocardChecked}
               onValueChange={togglePhotocardSwitch}
-              trackColor={{ false: '#000', true: '#81b0ff' }}
-              thumbColor={photocardChecked ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: '#000', true: '#71d444' }}
+              thumbColor={photocardChecked ? 'white' : 'white'}
             />
             <Text style={localStyles.label}>Photocard</Text>
           </View>
@@ -155,8 +156,8 @@ const RequestCredentialScreen = ({ navigation }) => {
             <Switch
               value={driversLicenseChecked}
               onValueChange={toggleDriversLicenseSwitch}
-              trackColor={{ false: '#000', true: '#81b0ff' }}
-              thumbColor={driversLicenseChecked ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: '#000', true: '#71d444' }}
+              thumbColor={driversLicenseChecked ? 'white' : 'white'}
             />
             <Text style={localStyles.label}>Driver's License</Text>
           </View>
@@ -173,6 +174,20 @@ const RequestCredentialScreen = ({ navigation }) => {
 };
 
 const localStyles = StyleSheet.create({
+  successMessageContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 10,
+    backgroundColor: '#71d444', 
+    borderRadius: 5,
+    marginVertical: 10,
+    marginBottom: 25,
+  },
+  successMessage: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   errorMessageContainer: {
     justifyContent: 'center', 
     alignItems: 'center', 
@@ -195,10 +210,20 @@ const localStyles = StyleSheet.create({
     width: width * 0.95,
     alignItems: 'center',
   },
+  text1: {
+    color: 'white',
+    marginTop: -5,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20, 
+    marginBottom: 20,
+  },
   text: {
     color: 'white',
+    marginTop: 20,
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 16, 
+    fontSize: 20, 
     marginBottom: 20,
   },
   switchContainer: {
@@ -209,10 +234,12 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 5,
+    backgroundColor: '#D6EE41',
+    borderRadius: 20,
   },
   label: {
     margin: 8,
-    color: 'white',
+    color: 'black',
   },
 });
 
