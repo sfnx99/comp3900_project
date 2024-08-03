@@ -3,7 +3,7 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
 // const port = 8082;
-const url = 'http://ablac.dev:8082/v2';
+const url = 'http://192.168.1.122/v2';
 
 export const IssueRegisterUser = async (email, password) => {
   try {
