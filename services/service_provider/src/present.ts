@@ -3,7 +3,7 @@ import { resolve } from '@decentralized-identity/ion-tools';
 // @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
-import { getDefinition, trusted } from './db';
+import { getDefinition, initialiseDefinition, trusted } from './db';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
@@ -105,7 +105,6 @@ function constructChunks(pres: Presentation, vcIndex: number): disclosedMessages
     })
     const filteredChunks = [initialChunk, ...dataChunks, finalChunk].map(c => new TextEncoder().encode(c));
     const indexes = JSON.parse(vc.proof.proofValue[0]);
-    
 
     return {
         disclosedMessages: filteredChunks,
@@ -155,6 +154,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Validate ID of presentation definition matches the one provided as
     //  compared to the one given in the presentation submission.
     */
+    initialiseDefinition();
     if (!validateDefinition(presSub)) {
         return {
             status: 500,

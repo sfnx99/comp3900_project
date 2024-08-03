@@ -4,15 +4,12 @@
     "@types/express": "^4.17.21",
     "@types/figlet": "^1.5.8",
     "@types/node": "^20.14.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "ts-node": "^10.9.1",
     "@types/uuid": "^10.0.0",
     "typescript": "^5.4.5"
   },
   "name": "service_provider",
   "version": "1.0.0",
-  "description": "`# Self-Sovereign Identity (Service Provider)\r The Service Provider (SP) is responsible for ensuring that an Identity Holder (IH) is supplying valid credentials.",
+  "description": "Self-Sovereign Identity (Service Provider)\n The Service Provider (SP) is responsible for ensuring that an Identity Holder (IH) is supplying valid credentials.",
   "main": "index.js",
   "dependencies": {
     "@decentralized-identity/ion-tools": "^1.1.4",

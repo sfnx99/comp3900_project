@@ -190,6 +190,7 @@ export async function postPresentationV2(session_data: SessionData, verifier: st
         "vp_token": presentation,
         "state": "oeih1129"
     }
+    console.log(verifierData);
     const res = await axios.post(verifierPresent, verifierData)
     return {
         status: res.status,
