@@ -129,12 +129,14 @@ const RequestCredentialScreen = ({ navigation }) => {
           setErrorMessage('Failed to issue credential');
         }
       } catch (error) {
+        console.error('Authorization Error:', error);
         setErrorMessage(`Error: ${JSON.stringify(error)}`);
       }
     } else {
       setErrorMessage('Please select an issuer and a detail.');
     }
   };
+  
 
   const clearError = () => {
     setError('');

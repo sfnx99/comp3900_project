@@ -111,12 +111,19 @@
                 });
 
                 if (res.ok) {
-                    window.location.href = get_params.get('redirect_uri');
+                    const responseData = await res.json();
+                    const encodedResponseData = encodeURIComponent(JSON.stringify(responseData));
+                    const finalRedirectUri = `${get_params.get('redirect_uri')}?response=${encodedResponseData}`;
+                    window.location.href = finalRedirectUri;
                 } else {
                     console.log('Authorization failed:', res.statusText);
+                    const finalRedirectUri = `${get_params.get('redirect_uri')}?error=${encodeURIComponent(res.statusText)}`;
+                    window.location.href = finalRedirectUri;
                 }
             } catch (e) {
                 console.log('Error:', e);
+                const finalRedirectUri = `${get_params.get('redirect_uri')}?error=${encodeURIComponent(e.message)}`;
+                window.location.href = finalRedirectUri;
             }
         }
     </script>
