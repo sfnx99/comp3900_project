@@ -101,9 +101,12 @@ export async function makePresentation(token: string, verifier: string, format: 
 
 export async function getPresentationV2(session_data: SessionData, verifier: string): Promise<ResponseV2> {
     const verifierRequest = verifier + "/v2/request";
+    console.log(`Obtaining metadata from verifier...`);
     const res = await axios.get(verifierRequest);
     const res_data: VerifierV2Request = res.data;
-    const descriptor = res_data.presentation_definition.input_descriptors[0] // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
+    const descriptor = res_data.presentation_definition.input_descriptors[0]; // TODO: Fix this in sprint 3 (project requires only one input descriptor for sprint 2)
+    console.log(`Successfully obtained metadata: ${JSON.stringify(res_data.presentation_definition.input_descriptors[0])}`);
+    console.log(`Verifying that user possesses a valid credential...`);
     const userCred = session_data.user.credentialsV2.find(
         c => c.type.includes(descriptor.id)
         && descriptor.constraints.fields.every(
@@ -117,6 +120,7 @@ export async function getPresentationV2(session_data: SessionData, verifier: str
             }
         }
     }
+    console.log(`Successfully verified`);
     // Update session data.
     const data = getData()
     session_data.active_presentation_request = res_data.presentation_definition

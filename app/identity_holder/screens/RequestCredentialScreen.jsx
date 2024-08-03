@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
@@ -61,7 +62,8 @@ const RequestCredentialScreen = ({ navigation }) => {
   const handleIssuerSelection = async (itemValue) => {
     setSelectedIssuer(itemValue);
     if (itemValue === 'NSW Government') {
-      const issuerDID = 'did:ion:EiAnIJ29X_DqH-xlrd0eT00TifSqBzITDTNO1tMiuMW8CQ:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJrZXktMSIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJhRmp4U2FmWjlSbHBraFJfQTNONGFhX3ZPdFdETVM0b0dJdlpoeG1YVzljIiwieSI6Ii16TTdUbWxWLVdyeTA1Y2hoVmo5ZDY5dnVaeWh6OTVLMHJfMjdBNl9lQjQifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6IkVjZHNhU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOSJ9XSwic2VydmljZXMiOlt7ImlkIjoidmMtZGF0YSIsInNlcnZpY2VFbmRwb2ludCI6eyJjcmVkZW50aWFsX2NvbmZpZ3VyYXRpb25zX3N1cHBvcnRlZCI6eyJEcml2ZXJMaWNlbmNlQ3JlZGVudGlhbCI6eyJmb3JtYXQiOiJsZHBfdmMifX0sImNyZWRlbnRpYWxfZW5kcG9pbnQiOiJodHRwOi8vYWJsYWMuZGV2OjgwODIiLCJrZXkiOiJbMTYwLDI0MSwyMjYsOTEsMjQyLDE4MSwyMjEsNjQsMTcyLDEyMywxOTUsMjE4LDIwOSwxOTIsOCwxODcsMTQ4LDExMywyMTIsMjU1LDIwOSw2OSwxNzcsOTksMiwxNzMsMTI5LDE5NiwxNzAsNDYsNTIsMzgsNSwyMjcsMTcyLDEyOCwxMjksMjU0LDYzLDE4OCwxNjAsMTYxLDE1MSwxNTYsMTM4LDE1NSw0MSwxNDIsOSwxMzAsMTQ3LDI1MywxNDAsNjAsMTQwLDIyNCwxODMsMzIsMTg2LDE3OCwyNSwxODksMjUsMTU4LDIyLDI0Miw2LDc4LDEyOCwyMjMsMjI5LDEwNiwxNDcsOTcsMzksMTg1LDE2NSwyMjcsMjUsMTAwLDE2MiwxMSw2OCw2Myw2MSw1NywxNzAsNzQsMTUyLDksMzYsNDcsNTQsMTEyLDE3Myw0Ml0iLCJuYW1lIjoiTlNXR292ZXJubWVudCJ9LCJ0eXBlIjoidmMtZGF0YSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzFBMHpaSVpjZXp3WlRnRHlxSGdJRjBwUnA5WkgwSkQtRmJTSlplMWpBbHcifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUJfRGdwQW5MQWdMTEpROUxNMk9yU0Y3WkJuWmVjOXVld1FCV2Y1a2szUU5nIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlBOXVvZUhUYmdfWTF2aVFHNUhYQjVvVFF0RVRJbUl3MzJLT1NCN2VsVFV1USJ9fQ';
+      const data = await getIssuers();
+      const issuerDID = data.issuers[0];
       setPickerVisible(false);
       setIssuerConfirmationVisible(true);
       try {
@@ -120,7 +122,8 @@ const RequestCredentialScreen = ({ navigation }) => {
         // Wait for the redirect URL
         const redirectUrl = await waitForRedirect();
         const authCode = redirectUrl.split('?')[1].split('&')[0].split('=')[1];
-        const issuerDID = 'did:ion:EiAnIJ29X_DqH-xlrd0eT00TifSqBzITDTNO1tMiuMW8CQ:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJrZXktMSIsInB1YmxpY0tleUp3ayI6eyJjcnYiOiJzZWNwMjU2azEiLCJrdHkiOiJFQyIsIngiOiJhRmp4U2FmWjlSbHBraFJfQTNONGFhX3ZPdFdETVM0b0dJdlpoeG1YVzljIiwieSI6Ii16TTdUbWxWLVdyeTA1Y2hoVmo5ZDY5dnVaeWh6OTVLMHJfMjdBNl9lQjQifSwicHVycG9zZXMiOlsiYXV0aGVudGljYXRpb24iXSwidHlwZSI6IkVjZHNhU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOSJ9XSwic2VydmljZXMiOlt7ImlkIjoidmMtZGF0YSIsInNlcnZpY2VFbmRwb2ludCI6eyJjcmVkZW50aWFsX2NvbmZpZ3VyYXRpb25zX3N1cHBvcnRlZCI6eyJEcml2ZXJMaWNlbmNlQ3JlZGVudGlhbCI6eyJmb3JtYXQiOiJsZHBfdmMifX0sImNyZWRlbnRpYWxfZW5kcG9pbnQiOiJodHRwOi8vYWJsYWMuZGV2OjgwODIiLCJrZXkiOiJbMTYwLDI0MSwyMjYsOTEsMjQyLDE4MSwyMjEsNjQsMTcyLDEyMywxOTUsMjE4LDIwOSwxOTIsOCwxODcsMTQ4LDExMywyMTIsMjU1LDIwOSw2OSwxNzcsOTksMiwxNzMsMTI5LDE5NiwxNzAsNDYsNTIsMzgsNSwyMjcsMTcyLDEyOCwxMjksMjU0LDYzLDE4OCwxNjAsMTYxLDE1MSwxNTYsMTM4LDE1NSw0MSwxNDIsOSwxMzAsMTQ3LDI1MywxNDAsNjAsMTQwLDIyNCwxODMsMzIsMTg2LDE3OCwyNSwxODksMjUsMTU4LDIyLDI0Miw2LDc4LDEyOCwyMjMsMjI5LDEwNiwxNDcsOTcsMzksMTg1LDE2NSwyMjcsMjUsMTAwLDE2MiwxMSw2OCw2Myw2MSw1NywxNzAsNzQsMTUyLDksMzYsNDcsNTQsMTEyLDE3Myw0Ml0iLCJuYW1lIjoiTlNXR292ZXJubWVudCJ9LCJ0eXBlIjoidmMtZGF0YSJ9XX19XSwidXBkYXRlQ29tbWl0bWVudCI6IkVpQzFBMHpaSVpjZXp3WlRnRHlxSGdJRjBwUnA5WkgwSkQtRmJTSlplMWpBbHcifSwic3VmZml4RGF0YSI6eyJkZWx0YUhhc2giOiJFaUJfRGdwQW5MQWdMTEpROUxNMk9yU0Y3WkJuWmVjOXVld1FCV2Y1a2szUU5nIiwicmVjb3ZlcnlDb21taXRtZW50IjoiRWlBOXVvZUhUYmdfWTF2aVFHNUhYQjVvVFF0RVRJbUl3MzJLT1NCN2VsVFV1USJ9fQ';
+        const data = await getIssuers();
+        const issuerDID = data.issuers[0];
         const postResponse = await PostIssue(issuerDID, authCode, redirectUri, selectedDetail);
         if (postResponse) {
           setSuccessMessage('Credential issued successfully');

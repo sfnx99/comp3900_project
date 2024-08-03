@@ -154,7 +154,7 @@ export async function presentSubmission(presSub: PresentationSubmission, pres: P
     //  Validate ID of presentation definition matches the one provided as
     //  compared to the one given in the presentation submission.
     */
-    initialiseDefinition();
+    // initialiseDefinition();
     if (!validateDefinition(presSub)) {
         return {
             status: 500,
