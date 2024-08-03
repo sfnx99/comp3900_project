@@ -64,16 +64,14 @@ export const formatCamelCase = (str) => {
 };
 
 export const credentialPropType = PropTypes.exact({
-  id: PropTypes.string.isRequired,
-  issuer: PropTypes.string.isRequired,
-  type: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  favourite: PropTypes.bool,
-  cryptosuite: PropTypes.string.isRequired,
+  client_id: PropTypes.string.isRequired,
   credential: PropTypes.shape({
     id: PropTypes.string,
-    firstName: PropTypes.string,
-    lastName: PropTypes.string,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
   }).isRequired,
+  cryptosuite: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
 });
 
 export const notificationPropType = PropTypes.shape({

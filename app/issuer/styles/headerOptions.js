@@ -11,7 +11,6 @@ const createHeaderScreenOptions = (theme) => (
       height: 100,
     },
     headerTitle: {
-      color: 'white',
       fontWeight: 'bold',
       paddingTop: 25,
       fontSize: 20,
@@ -19,7 +18,6 @@ const createHeaderScreenOptions = (theme) => (
     headerLeft: {
       paddingTop: 25,
       size: 30,
-      color: 'white',
     },
   })
 );

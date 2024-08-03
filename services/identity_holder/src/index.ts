@@ -182,19 +182,24 @@ app.post("/v2/issue", async (req: Request, res: Response) => {
 
 // Presentation
 app.get("/v2/present", async (req: Request, res: Response) => {
+    console.log(`Received request for metadata`);
     const token = req.headers.authorization;
     let verifier_uri = req.query.verifier_uri;
     if (typeof verifier_uri !== "string") {
         verifier_uri = "";
     }
     const result = await wrapAuthorisation(token, getPresentationV2, verifier_uri);
+    console.log(`Success: returning metadata: ${JSON.stringify(result.body)}`);
     res.status(result.status).json(result.body);
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {
+    console.log(`Received request to make presentation`);
     const token = req.headers.authorization;
     const { verifier_uri, credential_id } = req.body;
+    console.log(`Making presentation: verifier at ${verifier_uri}, with credential ${credential_id}`);
     const result = await wrapAuthorisation(token, postPresentationV2, verifier_uri, credential_id);
+    console.log(`Success: presentation result: ${result.status}`);
     res.status(result.status).json(result.body);
 });
 

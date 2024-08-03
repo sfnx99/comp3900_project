@@ -23,6 +23,7 @@ const TextInputField = ({
   placeholder,
   textAlign = 'left',
   isPassword = false,
+  labelStyle, // Add the labelStyle prop
 }) => {
   const { theme } = useContext(ThemeContext);
 
@@ -52,7 +53,7 @@ const TextInputField = ({
       borderRadius: 10,
       backgroundColor: '#F5FFB9',
       paddingHorizontal: 10,
-      height: height*0.052 ,
+      height: height * 0.052,
     },
     input: {
       flex: 1,
@@ -70,7 +71,7 @@ const TextInputField = ({
 
   return (
     <View style={styles.container}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, labelStyle]}>{label}</Text> : null}
       <View style={styles.inputContainer}>
         <TextInput
           value={value}
@@ -103,6 +104,7 @@ TextInputField.propTypes = {
   textAlign: PropTypes.oneOf(['center', 'left', 'right', 'justify']),
   isPassword: PropTypes.bool,
   placeholder: PropTypes.string,
+  labelStyle: PropTypes.object, // Add prop type for labelStyle
 };
 
 export default TextInputField;

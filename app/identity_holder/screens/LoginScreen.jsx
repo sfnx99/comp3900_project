@@ -17,15 +17,17 @@ import { tokenActive, loginUser } from '../scripts/api';
 import TextButton from '../components/TextButton';
 import ErrorMessage from '../components/ErrorMessage';
 import { AccountContext } from '../context/AccountContext';
+import PinSetupModal from '../components/modals/PinSetupModal';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const { bindedEmail, bindEmail } = useContext(AccountContext);
+  const { bindedEmail, bindEmail, pin } = useContext(AccountContext);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [email, setEmail] = useState(bindedEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [sessionValid, setSessionValid] = useState(false);
+  const [pinModalVisible, setPinModalVisible] = useState(false);
 
   useEffect(() => {
     /**
@@ -67,6 +69,10 @@ const LoginScreen = () => {
     }
   };
 
+  const navigateMainApp = () => {
+    navigation.replace('MainApp');
+  };
+
   const login = async () => {
     try {
       if (!email || !password) {
@@ -76,7 +82,12 @@ const LoginScreen = () => {
 
       await loginUser(email, password);
       bindEmail(email);
-      navigation.replace('MainApp');
+
+      if (!pin) {
+        setPinModalVisible(true);
+      } else {
+        navigateMainApp();
+      }
     } catch (err) {
       setError(`Could not login: ${err.message}`);
     }
@@ -87,58 +98,65 @@ const LoginScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={clearError}>
-      <View style={styles.container}>
-        <Image
-          source={Logo}
-          style={styles.logo}
-        />
-        <Text style={styles.text}>BW Credentials</Text>
-
-        {!bindedEmail && (
-          <TextInputField
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email address"
+    <>
+      <TouchableWithoutFeedback onPress={clearError}>
+        <View style={styles.container}>
+          <Image
+            source={Logo}
+            style={styles.logo}
           />
-        )}
-        <TextInputField
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          isPassword
-        />
+          <Text style={styles.text}>BW Credentials</Text>
 
-        <Modal
-          visible={!!error}
-          transparent
-          animationType="fade"
-        >
-          <ErrorMessage message={error} onPress={clearError} />
-        </Modal>
-
-        <View>
-          <TextButton
-            style={styles.button}
-            text="Login"
-            onPress={login}
-          />
-          {isBiometricSupported && sessionValid && (
-            <TextButton
-              style={styles.buttonInverted}
-              text="Login with Face ID"
-              onPress={authenticate}
-              inverted
+          {!bindedEmail && (
+            <TextInputField
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email address"
             />
           )}
-          {!bindedEmail && (
-            <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.registerText}>Register</Text>
-            </TouchableOpacity>
-          )}
+          <TextInputField
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            isPassword
+          />
+
+          <Modal
+            visible={!!error}
+            transparent
+            animationType="fade"
+          >
+            <ErrorMessage message={error} onPress={clearError} />
+          </Modal>
+
+          <View>
+            <TextButton
+              style={styles.button}
+              text="Login"
+              onPress={login}
+            />
+            {isBiometricSupported && sessionValid && (
+              <TextButton
+                style={styles.buttonInverted}
+                text="Login with Face ID"
+                onPress={authenticate}
+                inverted
+              />
+            )}
+            {!bindedEmail && (
+              <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerText}>Register</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+      <PinSetupModal
+        modalVisible={pinModalVisible}
+        onRequestClose={setPinModalVisible}
+        onSuccess={navigateMainApp}
+      />
+    </>
   );
 };
 

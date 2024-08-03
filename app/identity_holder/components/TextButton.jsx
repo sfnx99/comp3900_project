@@ -1,5 +1,10 @@
-import { Text, StyleSheet, View, Dimensions } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  Text,
+  StyleSheet,
+  View,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import PropTypes from 'prop-types';
 
 import theme from '../styles/colors';
@@ -21,9 +26,8 @@ const TextButton = ({
       borderColor: theme.primary,
       borderWidth: 1,
       borderRadius: 10,
-      width: width*0.85,
+      width: width * 0.85,
       justifyContent: 'center',
-      
     },
     text: {
       color: theme.text,

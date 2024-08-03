@@ -10,6 +10,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import TextInputField from '../components/TextInputField';
 import TextButton from '../components/TextButton';
 import { renderIconByName } from '../scripts/util';
+import { getPresentation } from '../scripts/api';
 
 const PresentationScreen = () => {
   const navigation = useNavigation();
@@ -30,25 +31,29 @@ const PresentationScreen = () => {
     setError('');
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!url) {
       const errorMessage = 'No issuer data found';
       setError(`Failed to fetch issuers: ${errorMessage}`);
       return;
     }
 
-    setUrl('');
+    try {
+      const presentData = await getPresentation(url);
 
-    navigation.navigate('Home', {
-      screen: 'SelectCredentialScreen',
-      params: {
-        presentData: {
-          type: 'CredentialType1',
-          requiredAttributes: ['firstName', 'lastName'],
+      navigation.navigate('Home', {
+        screen: 'SelectCredentialScreen',
+        params: {
+          presentData,
+          url,
         },
-        url,
-      },
-    });
+      });
+    } catch (err) {
+      setError(err.message);
+      return;
+    }
+
+    setUrl('');
   };
 
   return (

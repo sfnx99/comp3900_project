@@ -18,7 +18,7 @@ const CredentialCard = ({ credential }) => {
   const { theme } = useContext(ThemeContext);
 
   const handlePress = () => {
-    navigation.navigate('WalletStack', {
+    navigation.navigate('Home', {
       screen: 'CredentialInformation',
       params: { credential },
     });
@@ -57,7 +57,7 @@ const CredentialCard = ({ credential }) => {
       </TouchableOpacity>
 
       <View style={styles.details}>
-        <Text style={styles.text}>{credential.id}</Text>
+        <Text style={styles.text}>{credential.type}</Text>
       </View>
     </View>
   );

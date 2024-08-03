@@ -85,21 +85,27 @@ app.post("/v2/credential", async (req: Request, res: Response) => {
 // frontend endpoints
 
 app.post("/v2/register", (req: Request, res: Response) => {
+    console.log(`Register user ${req.body.email} with password ${req.body.password}`);
     try {
         const { email, password } = req.body;
         registerUser(email, password);
+        console.log(`Successfully registered`);
         res.sendStatus(200);
     } catch (err) {
+        console.log(`Failed to register`);
         res.status(500).json(err);
     }
 });
 
 app.post("/v2/info", (req: Request, res: Response) => {
+    console.log(`Add information ${JSON.stringify(req.body.info)} for user ${req.body.email}`);
     try {
         const { email, info } = req.body;
         modifyUser(email, info);
+        console.log(`Successfully added information`);
         res.sendStatus(200);
     } catch (err) {
+        console.log(`Failed to add information`);
         res.status(500).json(err);
     }
 });

@@ -95,7 +95,7 @@ const CredentialsProvider = ({ children }) => {
       saveCredentialsLocally(allCredentials);
     };
 
-    loadCredentials();
+    // loadCredentials();
   }, []);
 
   const contextValue = useMemo(() => ({ credentials, toggleFavourite }), [credentials]);

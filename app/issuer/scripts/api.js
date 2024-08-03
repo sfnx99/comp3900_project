@@ -3,8 +3,7 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
 // const port = 8082;
-const url = `http://ablac.dev:8082/v2`;
-
+const url = 'http://192.168.4.22:8082/v2';
 
 export const IssueRegisterUser = async (email, password) => {
   try {
@@ -18,14 +17,12 @@ export const IssueRegisterUser = async (email, password) => {
       throw new Error(`Registration failed with status code ${response.status}.`);
     }
 
-    return response.data; 
-
+    return response.data;
   } catch (error) {
     console.error('Registration error:', error.message);
     throw error; // Re-throw the error after logging it
   }
 };
-
 
 export const PostInformation = async (email, fname, lname, dob) => {
   try {
@@ -33,16 +30,25 @@ export const PostInformation = async (email, fname, lname, dob) => {
       throw new Error('A field is missing');
     }
 
-    const response = await axios.post(`${url}/info`, { email, fname, lname, dob });
+    const response = await axios.post(`${url}/info`, { email, info: {firstName: fname, lastName: lname, dob} });
 
     if (response.status !== 200) {
       throw new Error(`Registration failed with status code ${response.status}.`);
     }
 
-    return response.data; 
-
-  } catch (error) {
+    return response.data;
+} catch (error) {
     console.error('Registration error:', error.message);
     throw error; // Re-throw the error after logging it
+  }
+};
+
+export const getCredentials = async () => {
+  try {
+    const response = await axios.get(`${url}/credentials`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching credentials:', error.message);
+    throw error;
   }
 };
