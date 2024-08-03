@@ -161,11 +161,6 @@ const SettingsScreen = () => {
             icon="email-outline"
           />
           <SettingButton
-            text="Support"
-            onPress={dummyFunctions}
-            icon="message-outline"
-          />
-          <SettingButton
             text="Unbind Account"
             onPress={handleUnbindAccount}
             icon="link-variant-off"

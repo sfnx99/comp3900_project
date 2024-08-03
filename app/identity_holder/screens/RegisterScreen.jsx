@@ -60,7 +60,7 @@ const RegisterScreen = () => {
     }
 
     if (password !== confirmPassword) {
-      setError('The passwords don\'t match.');
+      setError("The passwords don't match.");
       return;
     }
 
@@ -80,21 +80,6 @@ const RegisterScreen = () => {
       setError(`Could not register: ${err.message}`);
     }
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: '#FFFFFF',
-      paddingTop: 20,
-      flex: 1,
-    },
-    inputContainer: {
-      marginHorizontal: 24,
-    },
-    buttonContainer: {
-      alignItems: 'center',
-      marginTop: 10,
-    },
-  });
 
   return (
     <>
@@ -125,30 +110,41 @@ const RegisterScreen = () => {
             />
           </View>
 
-          <Modal
-            visible={!!error}
-            transparent
-            animationType="fade"
-          >
+          <Modal visible={!!error} transparent animationType="fade">
             <ErrorMessage message={error} onPress={clearError} />
           </Modal>
 
           <View style={styles.buttonContainer}>
-            <TextButton
-              text="Submit"
-              onPress={submitForm}
-            />
+            <TextButton text="Submit" onPress={submitForm} />
           </View>
         </View>
       </TouchableWithoutFeedback>
 
       <PinSetupModal
         modalVisible={pinModalVisible}
-        onRequestClose={() => setPinModalVisible(true)}
-        onSuccess={navigateToHome}
+        onRequestClose={() => setPinModalVisible(false)}
+        onSuccess={() => {
+          setPinModalVisible(false);
+          navigateToHome();
+        }}
       />
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    paddingTop: 20,
+    flex: 1,
+  },
+  inputContainer: {
+    marginHorizontal: 24,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+});
 
 export default RegisterScreen;
