@@ -3,7 +3,7 @@ import { resolve } from '@decentralized-identity/ion-tools';
 // @ts-expect-error no types in module
 import * as bbs from '@digitalbazaar/bbs-signatures';
 import { CredentialSubject, disclosedMessages, Presentation, PresentationSubmission, ResponseV2 } from './interface';
-import { getDefinition, initialiseDefinition, trusted } from './db';
+import { getDefinition, trusted } from './db';
 
 function getCredentialSubjectName(input: string): string {
     const lastIndex = input.lastIndexOf('.');
