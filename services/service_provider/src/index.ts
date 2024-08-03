@@ -61,6 +61,7 @@ app.get('/v2/presentations', (req: Request, res: Response) => {
 });
 
 app.post('/v2/trust', (req: Request, res: Response) => {
+    console.log(`Trust ${req.body.id}`);
     const { id } = req.body;
     trust(id);
     res.sendStatus(200);
@@ -73,6 +74,7 @@ app.post('/v2/untrust', (req: Request, res: Response) => {
 });
 
 app.post('/v2/definition', (req: Request, res: Response) => {
+    console.log(`Update definition: require ${req.body.type} with attributes ${req.body.requiredAttributes}`);
     const { type, requiredAttributes } = req.body;
     const attr: string[] = requiredAttributes;
     modifyDefinition({
@@ -86,5 +88,6 @@ app.post('/v2/definition', (req: Request, res: Response) => {
             }
         ]
     });
+    console.log(`Successfully updated`);
     res.sendStatus(200);
 });
