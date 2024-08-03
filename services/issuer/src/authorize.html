@@ -4,8 +4,74 @@
     <meta charset="UTF-8">
     <title>Issuer Authorize</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .info {
+            text-align: center;
+            color: grey;
+        }
+    </style>
 </head>
 <body>
+    <img src="./images/image.png" alt="NSW Government Logo" class="logo">
+    <p>Sign in to NSW Government</p>
     <form>
         <div>
             <label for="mail">Email:</label>
@@ -16,13 +82,14 @@
             <label for="password">Password:</label>
             <input type="password" id="password"/>
         </div>
+        <p class="info">The NSW Government will provide you access to request a credential.</p>
+        <div>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </div>
     </form>
-    <div>
-        <button onclick="submit()">Submit</button>
-    </div>
 
     <script>
-        async function submit() {
+        async function submitForm() {
             const query = window.location.search.substring(1);
             const get_params = new URLSearchParams(query);
             console.log(get_params);
