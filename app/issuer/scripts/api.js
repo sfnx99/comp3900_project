@@ -3,7 +3,7 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
 // const port = 8082;
-const url = 'http://ablac.dev:8082/v2';
+const url = 'http://192.168.4.22:8082/v2';
 
 export const IssueRegisterUser = async (email, password) => {
   try {
@@ -30,7 +30,7 @@ export const PostInformation = async (email, fname, lname, dob) => {
       throw new Error('A field is missing');
     }
 
-    const response = await axios.post(`${url}/info`, { email, fname, lname, dob });
+    const response = await axios.post(`${url}/info`, { email, info: {firstName: fname, lastName: lname, dob} });
 
     if (response.status !== 200) {
       throw new Error(`Registration failed with status code ${response.status}.`);
