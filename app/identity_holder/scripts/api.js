@@ -4,8 +4,8 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import * as Linking from 'expo-linking';
 import { save, getValueFor, deleteItem } from './util';
 
-const port = 8081;
-const url = `${'http://192.168.1.122'}:${port}/v2`;
+const port = WALLET_PORT || 8081;
+const url = `${WALLET_HOST || 'http://192.168.1.122'}:${port}/v2`;
 
 const getToken = async () => {
   try {
@@ -166,14 +166,13 @@ export const getPresentation = async (verifierUri) => {
 export const postPresentation = async (credentialId, verifierUri) => {
   try {
     const token = await getToken();
-    await axios(`${url}/present`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
+    await axios.post(`${url}/present`, {
         credential_id: credentialId,
         verifier_uri: verifierUri,
-      },
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
     });
   } catch (error) {
     handleError(error);

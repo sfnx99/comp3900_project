@@ -1,12 +1,19 @@
 import { useContext, useEffect, useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Card from '../images/Credential.png';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { CredentialsContext } from '../context/CredentialsContext';
 import { formatCamelCase } from '../scripts/util';
 import { postPresentation } from '../scripts/api';
 import { useTheme } from '../context/ThemeContext';
-import { useNavigation } from '@react-navigation/native';
+import Card from '../images/Credential.png';
 
 const SelectCredentialScreen = ({ route }) => {
   const theme = useTheme();
