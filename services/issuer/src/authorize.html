@@ -88,11 +88,13 @@
         </div>
     </form>
 </body>
-    <script>
-       async function submit() {
-            const query = window.location.search.substring(1);
-            const get_params = new URLSearchParams(query);
-            console.log(get_params);
+<script>
+    async function submit() {
+        const query = window.location.search.substring(1);
+        const get_params = new URLSearchParams(query);
+        console.log(get_params);
+
+        try {
             const resp = await fetch('/v2/authorize', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -105,8 +107,22 @@
                     'Content-Type': 'application/json',
                 }
             });
+
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+
             const data = await resp.json();
-            window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
+            console.log('Response data:', data);
+
+            if (data.code && data.state) {
+                window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
+            } else {
+                console.error('Required data (code, state) not found in the response.');
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
         }
-    </script>
+    }
+</script>
 </html>
