@@ -33,11 +33,14 @@ app.listen(port, () => {
 });
 
 app.get("/v2/request", async (req: Request, res: Response) => {
+    console.log(`Received metadata request`);
     const result = await requestMetadata();
-    res.status(result.status).json(result.body);
+    console.log(`Success: providing metadata: ${result.body}`);
+    res.status(result.status).json(JSON.stringify(result.body));
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {
+    console.log(`Received presentation`);
     const { presentation_submission, vp_token, state } = req.body;
     const result = await presentSubmission(presentation_submission, vp_token, state);
     logPresentation({
@@ -47,6 +50,7 @@ app.post("/v2/present", async (req: Request, res: Response) => {
         credential: vp_token.verifiableCredential[0].credentialSubject,
         status: result.status === 200 ? "accepted" : "denied"
     });
+    console.log(`Success: presentation result: ${result.status}`);
     res.status(result.status).json(result.body);
 });
 
