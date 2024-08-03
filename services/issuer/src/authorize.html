@@ -244,12 +244,12 @@
                 const data = await resp.json();
                 console.log('Response data:', data);
                 
-                if (res.ok) {
+                // if (res.ok) {
                     //window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
                     window.location.href = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
-                } else {
+                // } else {
                     console.log('Authorization failed:', res.statusText);
-                }
+                // }
             } catch (e) {
                 console.log('Error:', e);
             }
