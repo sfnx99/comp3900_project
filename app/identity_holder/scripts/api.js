@@ -4,8 +4,8 @@ import { WALLET_HOST, WALLET_PORT } from '@env';
 import * as Linking from 'expo-linking';
 import { save, getValueFor, deleteItem } from './util';
 
-const port = WALLET_PORT || 8081;
-const url = `${WALLET_HOST || 'http://localhost'}:${port}/v2`;
+const port = 8081;
+const url = `${'http://192.168.1.122'}:${port}/v2`;
 
 const getToken = async () => {
   try {
