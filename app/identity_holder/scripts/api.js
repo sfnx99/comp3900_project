@@ -8,6 +8,7 @@ const port = WALLET_PORT || 8081;
 const url = `http://${WALLET_HOST || '192.168.4.22'}:${port}/v2`;
 const host = `http://${WALLET_HOST || '192.168.4.22'}`;
 
+//Auth Token Functions
 const getToken = async () => {
   try {
     const token = await getValueFor('token');
@@ -53,7 +54,7 @@ export const sanityCheck = async () => {
   } catch (error) {
   }
 };
-
+// REGISTER USER
 export const registerUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/register`, { email, password });
@@ -62,7 +63,7 @@ export const registerUser = async (email, password) => {
     handleError(error);
   }
 };
-
+//LOGIN USER
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${url}/auth/login`, { email, password });
@@ -76,7 +77,7 @@ export const loginUser = async (email, password) => {
     handleError(error);
   }
 };
-
+// LOGOUT USER
 export const logoutUser = async () => {
   try {
     const token = await getToken();
@@ -90,7 +91,7 @@ export const logoutUser = async () => {
     handleError(error);
   }
 };
-
+// FETCH CREDENTIALS
 export const getCredentials = async () => {
   try {
     const token = await getToken();
@@ -106,7 +107,7 @@ export const getCredentials = async () => {
     return null;
   }
 };
-
+// GET INDIVIDUAL CREDENTIAL
 export const getCredential = async (id) => {
   try {
     const token = await getToken();
@@ -122,7 +123,7 @@ export const getCredential = async (id) => {
     return null;
   }
 };
-
+// DELETE A CREDENTIAL
 export const deleteCredential = async (credentialId) => {
   try {
     const token = await getToken();
@@ -179,7 +180,7 @@ export const postPresentation = async (credentialId, verifierUri) => {
     handleError(error);
   }
 };
-
+// GETS THE ISSUERS
 export const getIssuers = async () => {
   try {
     const token = await getToken();
@@ -197,7 +198,7 @@ export const getIssuers = async () => {
     return null;
   }
 };
-
+// GETS DETAILS OF SINGLE ISSUER
 export const getIssue = async (issuer) => {
   try {
     const token = await getToken();
@@ -223,7 +224,7 @@ export const getIssue = async (issuer) => {
     return { error: true, message: error.message };
   }
 };
-
+// POSTS NEW ISSUE
 export const IssueRegisterUser = async (email, password) => {
   try {
     if (!email || !password) {
@@ -235,7 +236,7 @@ export const IssueRegisterUser = async (email, password) => {
     handleError(error);
   }
 };
-
+// AUTHORIZES NEW ISSUE
 export const AuthorizeIssue = async (response_type, email, URL, selectedDetail) => {
   try {
     // const issueURL = `https://${ISSUER_HOST || 'ablac.dev'}:${ISSUER_PORT || 8082}`
@@ -249,7 +250,7 @@ export const AuthorizeIssue = async (response_type, email, URL, selectedDetail) 
     handleError(error);
   }
 };
-
+// POSTS AN ISSUE
 export const PostIssue = async (issuer, code, redirect, types) => {
   try {
     const token = await getToken();

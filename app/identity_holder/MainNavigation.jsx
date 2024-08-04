@@ -20,11 +20,11 @@ import SettingsNavigator from './screens/stacks/SettingsStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
+// Main application navigation screen for app
 const MainApp = () => {
   const [notifications, setNotifications] = useState([]);
   const { theme } = useContext(ThemeContext);
-
+// Notification Dummys 
   useEffect(() => {
     const fetchNotifications = async () => {
       const initialNotifications = [
@@ -64,7 +64,7 @@ const MainApp = () => {
           detail: 'Request for UNSW ID card pending approval.',
         },
       ];
-
+      // Map notifications with locations and details
       const notificationsWithCoordinates = await Promise.all(
         initialNotifications.map(async (notification) => {
           if (notification.type === 'location' && notification.detail) {
@@ -80,7 +80,7 @@ const MainApp = () => {
 
     fetchNotifications();
   }, []);
-
+  // Structure of Navigation bar and headers for main pages
   return (
     <CredentialsProvider>
       <Tab.Navigator
@@ -134,7 +134,7 @@ const MainApp = () => {
     </CredentialsProvider>
   );
 };
-
+// Allow for DarkMode
 const MainNavigation = () => {
   const { theme, darkMode } = useContext(ThemeContext);
 

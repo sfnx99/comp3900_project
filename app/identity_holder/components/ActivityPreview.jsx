@@ -8,6 +8,8 @@ import { notificationPropType } from '../scripts/util';
 const ActivityPreview = ({ activities }) => {
   const [displayed, setDisplayed] = useState([]);
 
+  // Mapping the activities
+
   useEffect(() => {
     const newDisplayed = activities.filter((activity) => activity.type === 'location')
       .map((activity) => ({

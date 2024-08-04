@@ -10,7 +10,7 @@ const Notification = ({ notification }) => {
   const { theme } = useContext(ThemeContext);
 
   const formattedTimestamp = format(new Date(notification.timestamp), 'dd/MM/yyyy');
-
+// Gets the type of notification required
   const getIconName = () => {
     switch (notification.type) {
       case 'approval':
@@ -59,7 +59,7 @@ const Notification = ({ notification }) => {
       fontSize: 14,
     },
   });
-
+ // Structure for notification
   return (
     <View style={styles.notification}>
       <View style={styles.iconContainer}>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 
+// Button for searching
 const SearchButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>

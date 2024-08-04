@@ -12,7 +12,7 @@ const WalletScreen = () => {
   useEffect(() => {
     setFilteredCredentials(credentials);
   }, [credentials]);
-
+// Search Bar in the Wallet
   const handleSearch = (query) => {
     if (!query) {
       setFilteredCredentials(credentials);
@@ -24,7 +24,7 @@ const WalletScreen = () => {
     );
     setFilteredCredentials(filtered);
   };
-
+  // Refresh Wallet so new credential appears
   const handleRefresh = async () => {
     try {
       await loadCredentials();

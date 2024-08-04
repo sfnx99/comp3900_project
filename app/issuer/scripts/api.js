@@ -5,6 +5,7 @@ import { save, getValueFor, deleteItem } from './util';
 const port = ISSUER_PORT || 8082;
 const url = `http://${ISSUER_HOST || '192.168.4.22'}:${port}/v2`;
 
+//Issue user API call
 export const IssueRegisterUser = async (email, password) => {
   try {
     if (!email || !password) {
@@ -23,7 +24,7 @@ export const IssueRegisterUser = async (email, password) => {
     throw error; // Re-throw the error after logging it
   }
 };
-
+//POST INFO API CALL
 export const PostInformation = async (email, fname, lname, dob) => {
   try {
     if (!email || !fname || !lname || !dob) {
@@ -42,7 +43,7 @@ export const PostInformation = async (email, fname, lname, dob) => {
     throw error; // Re-throw the error after logging it
   }
 };
-
+// Get Credentials API Call
 export const getCredentials = async () => {
   try {
     const response = await axios.get(`${url}/credentials`);

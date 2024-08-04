@@ -51,7 +51,7 @@ const LoginScreen = () => {
   useEffect(() => {
     setEmail(bindedEmail);
   }, [bindedEmail]);
-
+  // Authenticating using FACEID
   const authenticate = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
@@ -72,7 +72,7 @@ const LoginScreen = () => {
   const navigateMainApp = () => {
     navigation.replace('MainApp');
   };
-
+  // Login function that checks email/password and makes API call
   const login = async () => {
     try {
       if (!email || !password) {
@@ -97,6 +97,7 @@ const LoginScreen = () => {
     setError('');
   };
 
+  // Structure for page, LOGO then email, password and submit buttons also register new user
   return (
     <>
       <TouchableWithoutFeedback onPress={clearError}>

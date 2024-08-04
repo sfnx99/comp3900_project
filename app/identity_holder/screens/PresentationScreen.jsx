@@ -16,7 +16,7 @@ const PresentationScreen = () => {
   const navigation = useNavigation();
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
-
+// Style and layou of page header
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: renderIconByName('arrow-left', () => navigation.goBack(), {
@@ -30,14 +30,14 @@ const PresentationScreen = () => {
   const clearError = () => {
     setError('');
   };
-
+  // Submit to present Credential
   const submit = async () => {
     if (!url) {
       const errorMessage = 'No issuer data found';
       setError(`Failed to fetch issuers: ${errorMessage}`);
       return;
     }
-
+    // API call to backend to get presentation
     try {
       const presentData = await getPresentation(url);
 
@@ -55,7 +55,7 @@ const PresentationScreen = () => {
 
     setUrl('');
   };
-
+  // Format of the page
   return (
     <SafeAreaView style={styles.outerContainer}>
       <View style={styles.container}>

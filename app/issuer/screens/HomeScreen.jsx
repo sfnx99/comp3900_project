@@ -18,7 +18,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const theme = useTheme();
   const styles = createHomeScreenStyles(theme);
-
+// Structure for Home Screen
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStylestyle={styles.scrollContent}>

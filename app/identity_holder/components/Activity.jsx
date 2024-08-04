@@ -8,7 +8,7 @@ import CircleIcon from './CircleIcon';
 
 const Activity = ({ notification }) => {
   const formattedTimestamp = format(new Date(notification.timestamp), 'dd/MM/yyyy');
-
+  // Types of activities
   const getIconName = () => {
     switch (notification.type) {
       case 'approval':

@@ -15,7 +15,7 @@ import show from '../images/hide.png';
 import hide from '../images/show.png';
 
 const { height } = Dimensions.get('window');
-
+// Style and values for text input boxes
 const TextInputField = ({
   label,
   value,
