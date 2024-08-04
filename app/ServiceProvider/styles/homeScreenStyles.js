@@ -83,6 +83,7 @@ export const createHomeScreenStyles = (theme) => (
       alignItems: 'center',
     },
     presentationText: {
+      marginBottom: 4,
       fontSize: 16,
       color: '#333333',
     },
