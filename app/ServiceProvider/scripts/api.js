@@ -118,3 +118,13 @@ export const PostDefinition = async (type, issuer, requiredAttributes) => {
     return null;
   }
 };
+
+export const getPresentations = async () => {
+  try {
+    const response = await axios.get(`${url}/presentations`);
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return null;
+  }
+};
