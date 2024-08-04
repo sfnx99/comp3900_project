@@ -63,5 +63,41 @@ export const createHomeScreenStyles = (theme) => (
       marginBottom: 0,
       width: width * 0.9,
     },
+    presentationItem: {
+      width: width * 0.9,
+      padding: 16,
+      marginBottom: 16,
+      backgroundColor: '#ffffff',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#cccccc',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    presentationContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    presentationText: {
+      fontSize: 16,
+      color: '#333333',
+    },
+    boldText: {
+      fontWeight: 'bold',
+    },
+    timestamp: {
+      fontSize: 14,
+      color: '#666666',
+      marginBottom: 8,
+    },
+    scanIcon: {
+      width: 24,
+      height: 24,
+      marginLeft: 16,
+    },
   })
 );
