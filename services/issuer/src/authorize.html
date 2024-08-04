@@ -62,11 +62,11 @@
             <label for="password">Password:</label>
             <input type="password" id="password" required/>
         </div>
-        <button onclick="submit()">submit</button>
+        <button type="button" onclick="submitURI()">Submit</button>
     </form>
 </body>
     <script>
-        async function submit() {
+        async function submitURI() {
             const query = window.location.search.substring(1);
             const get_params = new URLSearchParams(query);
             console.log(get_params);
