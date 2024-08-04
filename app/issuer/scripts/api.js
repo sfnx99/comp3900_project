@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { WALLET_HOST, WALLET_PORT } from '@env';
+import { ISSUER_HOST, ISSUER_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
-// const port = 8082;
-const url = 'http://ablac.dev:8082/v2';
+const port = ISSUER_PORT || 8082;
+const url = `http://${ISSUER_HOST || '192.168.4.22'}:${port}/v2`;
 
 export const IssueRegisterUser = async (email, password) => {
   try {
