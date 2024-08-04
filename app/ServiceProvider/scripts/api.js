@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { WALLET_HOST, WALLET_PORT } from '@env';
+import { SERVICE_PROVIDER_HOST, SERVICE_PROVIDER_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
-const port = process.env.WALLET_PORT || 8083;
-const url = `${process.env.WALLET_HOST || 'http://192.168.4.22'}:${port}/v2`;
-const host = `${process.env.WALLET_HOST || 'http://192.168.4.22'}`;
+const port = SERVICE_PROVIDER_PORT || 8083;
+const url = `http://${SERVICE_PROVIDER_HOST || '192.168.4.22'}:${port}/v2`;
+const host = `http://${SERVICE_PROVIDER_HOST || '192.168.4.22'}`;
 
 
 const getToken = async () => {

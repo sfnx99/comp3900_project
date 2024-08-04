@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { WALLET_HOST, WALLET_PORT } from '@env';
+import { WALLET_HOST, WALLET_PORT, ISSUER_HOST } from '@env';
 
 import * as Linking from 'expo-linking';
 import { save, getValueFor, deleteItem } from './util';
 
 const port = WALLET_PORT || 8081;
-const url = `${WALLET_HOST || 'http://192.168.4.22'}:${port}/v2`;
-const host = `${WALLET_HOST || 'http://192.168.4.22'}`;
+const url = `http://${WALLET_HOST || '192.168.4.22'}:${port}/v2`;
+const host = `http://${WALLET_HOST || '192.168.4.22'}`;
 
 const getToken = async () => {
   try {
@@ -238,7 +238,9 @@ export const IssueRegisterUser = async (email, password) => {
 
 export const AuthorizeIssue = async (response_type, email, URL, selectedDetail) => {
   try {
-    const codeURL = `https://ablac.dev:8443/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=xys&scope=${selectedDetail}`;
+    // const issueURL = `https://${ISSUER_HOST || 'ablac.dev'}:${ISSUER_PORT || 8082}`
+    // const codeURL = `${issueURL}/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=xys&scope=${selectedDetail}`;
+    const codeURL = `http://${ISSUER_HOST || 'ablac.dev'}:8082/v2/authorize/?response_type=${response_type}&client_id=${email}&redirect_uri=${encodeURIComponent(URL)}&state=xys&scope=${selectedDetail}`;
     const response = await axios.get(codeURL);
     if (response.status === 200) {
       Linking.openURL(codeURL);

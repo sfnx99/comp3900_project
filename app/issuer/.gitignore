@@ -63,6 +63,4 @@ buck-out/
 .expo/*
 web-build/
 
-.env
-
 package-lock.json
