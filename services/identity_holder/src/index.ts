@@ -175,7 +175,7 @@ app.get("/v2/issue", async (req: Request, res: Response) => {
 app.post("/v2/issue", async (req: Request, res: Response) => {
     const token = req.headers.authorization;
     const { issuer_id, auth_code, type, redirect_uri } = req.body;
-    console.log(`Received request to issue credential: ${{ issuer_id, auth_code, type, redirect_uri }}`);
+    console.log(`Received request to issue credential: ${JSON.stringify({ issuer_id, auth_code, type, redirect_uri })}`);
     const result = await wrapAuthorisation(token, makeRequestV2, issuer_id, auth_code, type, redirect_uri);
     res.status(result.status).json(result.body);
 })

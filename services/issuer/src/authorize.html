@@ -26,10 +26,8 @@
             const query = window.location.search.substring(1);
             const get_params = new URLSearchParams(query);
             console.log(get_params);
-            fetch('/v2/authorize', {
+            const resp = await fetch('/v2/authorize', {
                 method: 'POST',
-                mode: 'cors',
-                redirect: 'follow',
                 body: JSON.stringify({
                     client_id: get_params.get('client_id'),
                     redirect_uri: get_params.get('redirect_uri'),
@@ -39,8 +37,9 @@
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            }).then((res) => console.log(res))
-            .catch((e) => console.log(e));
+            });
+            const data = await resp.json();
+            window.location = `${get_params.get('redirect_uri')}?code=${data.code}&state=${data.state}`;
         }
     </script>
 </html>

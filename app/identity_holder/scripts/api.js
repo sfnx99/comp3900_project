@@ -5,7 +5,8 @@ import * as Linking from 'expo-linking';
 import { save, getValueFor, deleteItem } from './util';
 
 const port = WALLET_PORT || 8081;
-const url = `${WALLET_HOST || 'http://192.168.1.122'}:${port}/v2`;
+const url = `${WALLET_HOST || 'http://192.168.4.22'}:${port}/v2`;
+const host = `${WALLET_HOST || 'http://192.168.4.22'}`;
 
 const getToken = async () => {
   try {
@@ -185,7 +186,7 @@ export const getIssuers = async () => {
     if (!token) {
       throw new Error('Authentication required.');
     }
-    const response = await axios.get(`${url}/issuers`, {
+    const response = await axios.get(`${host}:8081/v2/issuers`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -27,16 +27,16 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server");
 });
 
-app.listen(port, () => {
-    initialiseDefinition();
+app.listen(port, async () => {
+    await initialiseDefinition();
     console.log(`[server]: Service Provider is running at http://localhost:${port}`);
 });
 
 app.get("/v2/request", async (req: Request, res: Response) => {
     console.log(`Received metadata request`);
     const result = await requestMetadata();
-    console.log(`Success: providing metadata: ${result.body}`);
-    res.status(result.status).json(JSON.stringify(result.body));
+    console.log(`Success: providing metadata: ${JSON.stringify(result.body)}`);
+    res.status(result.status).json(result.body);
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {
