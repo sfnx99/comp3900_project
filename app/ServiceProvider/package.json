@@ -39,11 +39,11 @@
     "globals": "^15.6.0"
   },
   "scripts": {
-    "start": "expo start --port 7999",
-    "tunnel": "expo start --tunnel --port 7999",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "start": "expo start --port 7997",
+    "tunnel": "expo start --tunnel --port 7998",
+    "android": "expo start --android --port 7999",
+    "ios": "expo start --ios --port 7998",
+    "web": "expo start --web --port 7998",
     "lint": "eslint ."
   },
   "plugins": [
