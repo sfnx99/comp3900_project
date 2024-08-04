@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+// TODO, create selective disclosure page
 const SelectiveDisclosure = () => {
   return (
     <SafeAreaView style={styles.container}>

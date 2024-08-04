@@ -9,11 +9,11 @@ import { notificationPropType } from '../scripts/util';
 const ActivityHistory = ({ notifications }) => {
   const navigation = useNavigation();
   const [activities, setActivities] = useState([]);
-
+  // Function to load all previous notifications as activities
   useEffect(() => {
     setActivities(notifications.filter((notification) => notification.type === 'location'));
   }, [notifications]);
-
+  //Layout correctly
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,

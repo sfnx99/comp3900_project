@@ -8,7 +8,7 @@ import {
 import PropTypes from 'prop-types';
 
 import theme from '../styles/colors';
-
+// Change colour when pressing
 const TextButton = ({
   text,
   onPress,

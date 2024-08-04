@@ -7,10 +7,10 @@ import SearchBar from '../components/SearchNotiBar';
 import { notificationPropType } from '../scripts/util';
 import PropTypes from 'prop-types';
 
-
+// Functions to call notifications from components
 const NotificationsScreen = ({ notifications }) => {
   const [filteredNotifications, setFilteredNotifications] = useState(notifications);
-
+// Function to apply search bar functionality
   const handleSearch = (query) => {
     const filtered = notifications.filter((notification) =>
       notification.name.toLowerCase().includes(query.toLowerCase())

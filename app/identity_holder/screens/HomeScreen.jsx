@@ -19,6 +19,7 @@ import { CredentialsContext } from '../context/CredentialsContext';
 import { UserPreferenceContext } from '../context/UserPreferencesContext';
 import CircleIcon from '../components/CircleIcon';
 
+// Home Screen with display name from User Context, Credentials and Main Navigation
 const HomeScreen = ({ activities }) => {
   const navigation = useNavigation();
   const { credentials } = useContext(CredentialsContext);
@@ -28,7 +29,7 @@ const HomeScreen = ({ activities }) => {
   const styles = createHomeScreenStyles(theme);
 
   const favoriteCredentials = credentials.filter((cred) => cred.favourite);
-
+  // Structure of Home Screen
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStylestyle={styles.scrollContent}>

@@ -18,7 +18,7 @@ const Stack = createNativeStackNavigator();
 
 const MainApp = () => {
   const { theme } = useContext(ThemeContext);
-
+  // General structure for navigation of issuer
   return (
     <CredentialsProvider>
       <Tab.Navigator
@@ -66,7 +66,7 @@ const MainNavigation = () => {
       background: '#6c9897',
     },
   };
-
+  // Navbar for ISSUER app
   return (
     <NavigationContainer theme={navTheme}>
       <StatusBar

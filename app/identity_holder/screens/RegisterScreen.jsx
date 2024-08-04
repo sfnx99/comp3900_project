@@ -27,7 +27,7 @@ const RegisterScreen = () => {
   const [error, setError] = useState('');
 
   const [pinModalVisible, setPinModalVisible] = useState(false);
-
+  // Make sure form is empty
   const clearForm = () => {
     setDisplayName('');
     setEmail('');
@@ -38,16 +38,16 @@ const RegisterScreen = () => {
   const clearError = () => {
     setError('');
   };
-
+  //Check Valid Email
   const isEmailValid = (checkingEmail) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(checkingEmail);
   };
-
+  // Button to return Home
   const navigateToHome = () => {
     navigation.navigate('MainApp', { screen: 'Home' });
   };
-
+  //Submitting form, similar to registering form
   const submitForm = async () => {
     if (!displayName || !email || !password || !confirmPassword) {
       setError('Please fill in all fields.');
@@ -80,7 +80,7 @@ const RegisterScreen = () => {
       setError(`Could not register: ${err.message}`);
     }
   };
-
+  
   return (
     <>
       <TouchableWithoutFeedback onPress={clearError}>

@@ -44,6 +44,7 @@ const RequestCredentialScreen = ({ navigation }) => {
   
 
   useEffect(() => {
+    // API Call to laod issuers from backend
     const loadIssuers = async () => {
       try {
         const result = await getIssuers();
@@ -58,7 +59,7 @@ const RequestCredentialScreen = ({ navigation }) => {
     };
     loadIssuers();
   }, []);
-
+// Modal picker function to select the issuer and type of credential you want from the api call options
   const handleIssuerSelection = async (itemValue) => {
     setSelectedIssuer(itemValue);
     if (itemValue === 'NSW Government') {
@@ -87,7 +88,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       }
     }
   };
-
+// Login Function 
   const handleLogin = async () => {
     try {
       if (!email || !password) {
@@ -101,7 +102,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       setErrorMessage(`Could not login: ${error.message}`); 
     }
   };
-
+// Redirect to external Website
   const waitForRedirect = () => {
     return new Promise((resolve) => {
       const handleUrl = (event) => {
@@ -110,7 +111,7 @@ const RequestCredentialScreen = ({ navigation }) => {
       Linking.addEventListener('url', handleUrl);
     });
   };
-  
+  // Handle the authorization of credential to ensure we are correctly authorized credential, this is an API call
   const handleAuthorize = async () => {
     if (selectedIssuer && selectedDetail) {
       try {
@@ -145,7 +146,7 @@ const RequestCredentialScreen = ({ navigation }) => {
     setError('');
     setErrorMessage(''); 
   };
-
+  // Modal pop ups aswell as api calls to get the issuers to ensure you consent then pick both the issuer and type of credential
   return (
     <SafeAreaView style={styles.container}>
       <RequestSuccessModal

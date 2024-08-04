@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 
+//Switch to toggle
 const ToggleSwitch = ({ toggle, setToggle }) => (
   <View style={styles.view}>
     <Switch
