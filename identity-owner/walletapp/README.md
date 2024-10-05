@@ -23,7 +23,7 @@ Scan the QR code that appears and the app will open on the Expo app.
 ### Installation with Docker
 
 
-It works by doing the following command in the root directory.
+It works by doing the following command in the entities root directory. (identity-owner)
 
 ```bash
 docker-compose up
