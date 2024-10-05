@@ -6,7 +6,6 @@ Our React Native App was built using the Expo SDK. To run the app on your phone 
 
 ### Installation without Docker
 
-Make sure yarn is installed on your computer
 
 Install all the packages:
 
@@ -23,7 +22,6 @@ Scan the QR code that appears and the app will open on the Expo app.
 
 ### Installation with Docker
 
-There is a dockerised version of the wallet however it does not connect to any backends. This can be used to look at and test UI features.
 
 It works by doing the following command in the root directory.
 
