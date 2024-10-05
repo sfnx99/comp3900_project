@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  walletapp:
+    build:
+      context: ./walletapp  
+    ports:
+      - "8081:8081"  # Metro Bundler port
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - REACT_NATIVE_PACKAGER_HOSTNAME=<YOUR_LOCAL_IP_ADDRESS>
+    tty: true
+    stdin_open: true
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
