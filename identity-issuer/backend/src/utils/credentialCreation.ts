@@ -1,7 +1,7 @@
-export function createCredentials(information: any, issuerPrivateKey: number[]) {
+export function createCredential(information: any, issuerPrivateKey: number[]) {
     const credential = {
         information,
-        generateDigitalSignature(information, issuerPrivateKey)
+        generateDigitalSignature(information, issuerPrivateKey),
     }
 
     return credential
