@@ -1,11 +1,11 @@
 import express from 'express'
-import config from 'config'
+import config from '../config/default'
 import routes from './routes'
 import {
     generateIssuerKeys
 } from './utils/keyManagement'
 
-const port = config.get<number>('port')
+const port = config['port']
 
 const app = express()
 app.use(express.json())
@@ -14,7 +14,7 @@ app.use(express.json())
 routes(app)
 // Important to note: This server is AN issuer not mulitple.
 const server = app.listen(port, async () => {
-    generateIssuerKeys()
+    await generateIssuerKeys()
     console.log(`Identity Issuer Backend is running at http://localhost:${port}`)
 })
 
