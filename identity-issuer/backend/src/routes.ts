@@ -13,7 +13,7 @@ function routes(app: Express) {
 
         res.status(201).json({
             message: 'Credential created successfully',
-            credential: credential,
+            credential: credential
         })
     })
 }
