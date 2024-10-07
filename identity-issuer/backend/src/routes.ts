@@ -16,13 +16,6 @@ function routes(app: Express) {
             credential: credential,
         })
     })
-
-    // This route gets the issuer's did Document from its did Id and
-    // is to be used by the Service Provider to retrieve the issuer's
-    // did document
-    app.get('/get/issuer/:did', async (req: Request, res: Response) => {
-        // Not important for now
-    })
 }
 
 export default routes
