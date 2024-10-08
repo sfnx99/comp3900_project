@@ -1,6 +1,6 @@
 import crypto from 'crypto'
-import fs, { PathOrFileDescriptor, PathLike } from 'fs'
-import config from '../../config/default'
+import fs from 'fs'
+import config from '../default'
 
 // KEY GENERATION FOR ISSUER - will generate keys if none exist. If keys exist will not overwrite
 export function generateIssuerKeys() {
@@ -19,18 +19,27 @@ export function generateIssuerKeys() {
 }
 
 export function getPrivateKey(): number[] {
-    const keyPem = fs.readFileSync(config['PATH_TO_PRIVATE_KEY'], 'utf-8');
-    const keyObject = crypto.createPrivateKey(keyPem); // Use createPrivateKey for private key
-    // Convert key to Buffer and then to numbers
-    const keyBuffer = keyObject.export({ type: 'pkcs8', format: 'der' });
-    return Array.from(keyBuffer);
+    try {
+        const keyPem = fs.readFileSync(config['PATH_TO_PRIVATE_KEY'], 'utf-8');
+        const keyObject = crypto.createPrivateKey(keyPem); // Use createPrivateKey for private key
+        // Convert key to Buffer and then to numbers
+        const keyBuffer = keyObject.export({ type: 'pkcs8', format: 'der' });
+        return Array.from(keyBuffer);
+    } catch (error) {
+        console.error('Error reading private key:', error);
+        throw error;
+    }
 }
 
 export function getPublicKey(): number[] {
-    const keyPem = fs.readFileSync(config['PATH_TO_PUBLIC_KEY'], 'utf-8');
-    const keyObject = crypto.createPublicKey(keyPem); // Use createPrivateKey for private key
-    // Convert key to Buffer and then to numbers
-    const keyBuffer = keyObject.export({ type: 'spki', format: 'der' });
-    return Array.from(keyBuffer);
+    try {
+        const keyPem = fs.readFileSync(config['PATH_TO_PUBLIC_KEY'], 'utf-8');
+        const keyObject = crypto.createPublicKey(keyPem); // Use createPublicKey for public key
+        // Convert key to Buffer and then to numbers
+        const keyBuffer = keyObject.export({ type: 'spki', format: 'der' });
+        return Array.from(keyBuffer);
+    } catch (error) {
+        console.error('Error reading public key:', error);
+        throw error;
+    }
 }
-
