@@ -1,71 +1,75 @@
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { Link, useRouter } from 'expo-router';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Header from './Header';  // Importing the Header
+import { useRouter } from 'expo-router';  // Correct hook for navigation
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();
+  const router = useRouter();  // Initialize the router inside the component
 
   const handleSignIn = () => {
+    // Navigate to the home page upon sign in
     router.push('/(tabs)/home');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Sign In" onPress={handleSignIn} />
-      <TouchableOpacity style={styles.registerContainer}>
-        <Link href="/sign-up" style={styles.registerText}>
-          Don't have an account? Register
-        </Link>
-      </TouchableOpacity>
+      {/* Adding the header */}
+      <Header />
+      <View style={styles.formContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        
+        {/* TouchableOpacity button */}
+        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
-export default SignIn;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
     backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
+  formContainer: {
+    padding: 20,
+    marginTop: 20, // Add space below the header
   },
   input: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+    marginBottom: 20,
+    paddingHorizontal: 10,
   },
-  registerContainer: {
-    marginTop: 16,
+  button: {
+    backgroundColor: '#FFCC00',  // Yellow background
+    paddingVertical: 10,
+    borderRadius: 5,
     alignItems: 'center',
   },
-  registerText: {
-    color: 'blue',
+  buttonText: {
+    color: '#000',  // Black text
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
+
+export default SignIn;

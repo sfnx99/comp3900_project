@@ -1,43 +1,79 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { Link } from 'expo-router';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import Header from './(auth)/Header'; // Import the Header component
 
-const Home = () => {
+const IndexPage = () => {
+  const router = useRouter();
+
+  const handleSignIn = () => {
+    router.push('/(auth)/sign-in');
+  };
+
+  const handleSignUp = () => {
+    router.push('/(auth)/sign-up');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome</Text>
-      <Link href="/(auth)/sign-in" style={styles.link}>
-        <Text style={styles.linkText}>Login</Text>
-      </Link>
-      <Link href="/sign-up" style={styles.link}>
-        <Text style={styles.linkText}>Sign Up</Text>
-      </Link>
+      <Header /> {/* Add the Header */}
+      <View style={styles.contentContainer}> {/* Content Container for the main content */}
+        <Text style={styles.title}>Welcome to the App</Text>
+        <Text style={styles.subtitle}>Start by signing in or signing up.</Text>
+
+        {/* Sign In Button */}
+        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
+
+        {/* Sign Up Button */}
+        <TouchableOpacity onPress={handleSignUp} style={[styles.button, styles.signUpButton]}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
-export default Home;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#fff',
   },
+  contentContainer: {
+    padding: 20,
+    marginTop: 20, // Add space below the header
+    alignItems: 'center', // Center the content horizontally
+    justifyContent: 'center', // Center the content vertically
+    flex: 1,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 24,
+    textAlign: 'center',
   },
-  link: {
-    marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#007bff',
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#FFCC00',  // Yellow background
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 12,  // Space between buttons
   },
-  linkText: {
-    color: '#fff',
+  signUpButton: {
+    backgroundColor: '#FFCC00',  
+  },
+  buttonText: {
+    color: '#000',  // Black text
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
+
+export default IndexPage;
