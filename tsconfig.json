@@ -8,6 +8,12 @@
         "skipLibCheck": true,        // Skip type checking of declaration files
         "forceConsistentCasingInFileNames": true // Disallow inconsistently-cased references to the same file
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"], // Adjust as necessary
+    "include": ["src/**/*.ts",
+                "src/**/*.tsx",
+                "tests/**/*.ts",
+                "tests/**/*.tsx",
+                "identity-owner/backend/src/*.ts",
+                "identity-owner/backend/src/**/*.ts",
+                "identity-owner/backend/config/*.ts"], // Adjust as necessary
     "exclude": ["node_modules"] // Don't include node_modules
 }
