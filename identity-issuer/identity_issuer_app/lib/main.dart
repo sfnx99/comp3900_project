@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    title: 'Navigation Basics',
-    home: LoginPage(),
-  ));
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Navigation Basics',
+      home: LoginPage(),
+    );
+  }
 }
 
 class Credential {
@@ -63,7 +72,8 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
                       );
                     },
                   ),
@@ -136,7 +146,9 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const IssueCredentialsRoute()),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const IssueCredentialsRoute()),
                       );
                     },
                     child: const Text('Issue Credentials'),
@@ -156,7 +168,8 @@ class MainScaffold extends StatefulWidget {
   final Widget body;
   final int selectedIndex;
 
-  const MainScaffold({required this.body, required this.selectedIndex, super.key});
+  const MainScaffold(
+      {required this.body, required this.selectedIndex, super.key});
 
   @override
   _MainScaffoldState createState() => _MainScaffoldState();
@@ -174,19 +187,23 @@ class _MainScaffoldState extends State<MainScaffold> {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AddCredentialRoute(onAddCredential: (credential) {})),
+          MaterialPageRoute(
+              builder: (context) =>
+                  AddCredentialRoute(onAddCredential: (credential) {})),
         );
         break;
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ViewCredentialsRoute(credentials: [])),
+          MaterialPageRoute(
+              builder: (context) => ViewCredentialsRoute(credentials: [])),
         );
         break;
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const IssueCredentialsRoute()),
+          MaterialPageRoute(
+              builder: (context) => const IssueCredentialsRoute()),
         );
         break;
     }
@@ -397,7 +414,8 @@ class IssueCredentialsRoute extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CredentialDetailRoute(credential: credential),
+                        builder: (context) =>
+                            CredentialDetailRoute(credential: credential),
                       ),
                     );
                   },
@@ -497,7 +515,7 @@ class BannerWidget extends StatelessWidget {
           const Text(
             'University Student Credentials',
             style: TextStyle(
-              color: Colors.red,
+              color: Colors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -518,7 +536,6 @@ class BannerWidget extends StatelessWidget {
   }
 }
 
-
 class LoginBannerWidget extends StatelessWidget {
   const LoginBannerWidget({super.key});
 
@@ -531,7 +548,7 @@ class LoginBannerWidget extends StatelessWidget {
       child: const Text(
         'Identity Issuer Page',
         style: TextStyle(
-          color: Colors.red,
+          color: Colors.black,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
