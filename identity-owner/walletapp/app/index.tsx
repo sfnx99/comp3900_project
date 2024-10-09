@@ -21,12 +21,12 @@ const IndexPage = () => {
         <Text style={styles.title}>Welcome to the App</Text>
         <Text style={styles.subtitle}>Start by signing in or signing up.</Text>
 
-    
+        {/* Sign In Button */}
         <Pressable onPress={handleSignIn} style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
         </Pressable>
 
-       
+        {/* Sign Up Button */}
         <Pressable onPress={handleSignUp} style={[styles.button, styles.signUpButton]}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
@@ -42,21 +42,18 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
-    marginTop: 20, // Add space below the header
-    alignItems: 'center', // Center the content horizontally
-    justifyContent: 'center', // Center the content vertically
-    flex: 1,
+    marginTop: 40, // Move the content closer to the top
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
+    marginBottom: 16, // Adjust the spacing
+    textAlign: 'left', // Align text to the left
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: 'left', // Align text to the left
   },
   button: {
     backgroundColor: '#FFCC00',  // Yellow background

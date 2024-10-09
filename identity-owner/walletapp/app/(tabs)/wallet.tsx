@@ -12,7 +12,7 @@ const Wallet = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Driver License</Text>
+        <Text style={styles.title}>Student ID Card</Text>
         <View style={styles.statusContainer}>
           <View style={styles.statusValid}>
             <Text style={styles.statusText}>Valid</Text>
@@ -31,7 +31,7 @@ const Wallet = () => {
       <View style={styles.licenseInfo}>
         <Ionicons name="person-circle-outline" size={80} color="black" style={styles.profileIcon} />
         <Text style={styles.infoText}>
-          License Number: {showSensitiveInfo ? '23109874' : '••••••••'}
+          zID: {showSensitiveInfo ? 'z5555555' : '••••••••'}
         </Text>
         <Text style={styles.infoText}>
           Date of Expiry: 02.02.2027
