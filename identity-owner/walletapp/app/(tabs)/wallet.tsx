@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,14 +18,13 @@ const Wallet = () => {
             <Text style={styles.statusText}>Valid</Text>
           </View>
           <Ionicons name="settings-outline" size={24} color="black" style={styles.icon} />
-          <TouchableOpacity onPress={toggleSensitiveInfo}>
+          <Pressable onPress={toggleSensitiveInfo} style={styles.icon}>
             <Ionicons
               name={showSensitiveInfo ? "eye-outline" : "eye-off-outline"}
               size={24}
               color="black"
-              style={styles.icon}
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -53,14 +52,14 @@ const Wallet = () => {
 
       <View style={styles.qrContainer}>
         <Image 
-          source={{ uri: 'https://example-qr-code-link.com' }} // Replace with your QR code URL or local asset
+          source={{ uri: 'https://example-qr-code-link.com' }} 
           style={styles.qrCode}
         />
         <Text style={styles.cardNumber}>Card Number: 2000000000</Text>
       </View>
 
       <Image
-        source={{ uri: 'https://example.com/nsw-logo.png' }} // Replace with your NSW logo link or local asset
+        source={{ uri: 'https://example.com/nsw-logo.png' }} 
         style={styles.logo}
       />
     </View>
@@ -133,7 +132,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 50,
-    resizeMode: 'contain',
     alignSelf: 'center',
   },
 });

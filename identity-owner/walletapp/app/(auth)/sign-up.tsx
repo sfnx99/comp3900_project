@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'; // Replaced TouchableOpacity with Pressable
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import Header from './Header';  // Import the Header component
@@ -18,8 +18,8 @@ const SignUp = () => {
 
   return (
     <View style={styles.container}>
-      <Header /> {/* Add the Header */}
-      <View style={styles.formContainer}> {/* Form Container for styling */}
+      <Header /> 
+      <View style={styles.formContainer}> 
         <Text style={styles.title}>Sign Up</Text>
         <TextInput
           style={styles.input}
@@ -63,10 +63,10 @@ const SignUp = () => {
           secureTextEntry
         />
 
-        {/* TouchableOpacity button */}
-        <TouchableOpacity onPress={handleSignUp} style={styles.button}>
+       
+        <Pressable onPress={handleSignUp} style={styles.button}>
           <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

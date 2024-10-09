@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, Text, Pressable, StyleSheet } from 'react-native'; // Replaced TouchableOpacity with Pressable
 import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
 
@@ -15,7 +15,6 @@ const SignIn = () => {
 
   return (
     <View style={styles.container}>
-      {/* Adding the header */}
       <Header />
       <View style={styles.formContainer}>
         <TextInput
@@ -34,10 +33,10 @@ const SignIn = () => {
           secureTextEntry
         />
         
-        {/* TouchableOpacity button */}
-        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+    
+        <Pressable onPress={handleSignIn} style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

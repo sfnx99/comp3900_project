@@ -35,7 +35,7 @@ export default function RootLayout() {
       >
         {/* Hide header for (tabs) and (auth) screens */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="auth)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
 
         {/* Show header for index and any other screens */}
         <Stack.Screen name="index" options={{ headerShown: false }} />

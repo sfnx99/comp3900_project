@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import Header from './(auth)/Header'; // Import the Header component
 
@@ -16,20 +16,20 @@ const IndexPage = () => {
 
   return (
     <View style={styles.container}>
-      <Header /> {/* Add the Header */}
-      <View style={styles.contentContainer}> {/* Content Container for the main content */}
+      <Header /> 
+      <View style={styles.contentContainer}> 
         <Text style={styles.title}>Welcome to the App</Text>
         <Text style={styles.subtitle}>Start by signing in or signing up.</Text>
 
-        {/* Sign In Button */}
-        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+    
+        <Pressable onPress={handleSignIn} style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        {/* Sign Up Button */}
-        <TouchableOpacity onPress={handleSignUp} style={[styles.button, styles.signUpButton]}>
+       
+        <Pressable onPress={handleSignUp} style={[styles.button, styles.signUpButton]}>
           <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,  // Space between buttons
   },
   signUpButton: {
-    backgroundColor: '#FFCC00',  
+    backgroundColor: '#FFCC00',
   },
   buttonText: {
     color: '#000',  // Black text

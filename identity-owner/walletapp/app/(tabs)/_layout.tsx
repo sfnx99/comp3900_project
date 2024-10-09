@@ -20,16 +20,7 @@ const TabsLayout = () => {
     <View style={styles.container}>
       <Header />
       <Tabs>
-        {/* <Tabs.Screen
-          name="scan"
-          options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name="scan-outline" color={focused ? 'red' : 'black'} size={size} />
-            ),
-            title: 'Scan',
-            headerShown: false, 
-          }}
-        /> */}
+       
         <Tabs.Screen
           name="home"
           options={{
@@ -77,11 +68,12 @@ const styles = StyleSheet.create({
     width: 100,
     height: 50,
     resizeMode: 'contain',
-    marginTop: 25,
+    marginTop: 35,
   },
   iconsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 35,
   },
   icon: {
     marginLeft: 15,

@@ -1,21 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
       
-      {/* Header Section */}
+      
       <View style={styles.header}>
         <View style={styles.headerContent}>
-
           <View style={styles.headerIcons}>
       
           </View>
         </View>
       </View>
 
-      {/* Favourites Section */}
+      
       <View style={styles.favouritesContainer}>
         <Text style={styles.sectionTitle}>Favourites</Text>
         <View style={styles.idCard}>
@@ -28,15 +27,15 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* Services Section */}
+      
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Services</Text>
-        <TouchableOpacity style={styles.button}>
+        <Pressable style={styles.button} onPress={() => console.log('Check license')}>
           <Text style={styles.buttonText}>Check a license or credential</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => console.log('Add credential')}>
           <Text style={styles.buttonText}>Add a credential</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -90,11 +89,8 @@ const styles = StyleSheet.create({
     padding: 40,
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+
+    elevation: 4,  // Keep this for Android
     alignItems: 'center',
   },
   cardTitle: {
@@ -124,11 +120,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 10,
     marginVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+
+    elevation: 2,  // Keep this for Android
   },
   buttonText: {
     fontSize: 16,

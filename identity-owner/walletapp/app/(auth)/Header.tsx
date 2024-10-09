@@ -1,5 +1,4 @@
 import { StyleSheet, View, Image } from 'react-native';
-import { Tabs } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 
@@ -16,34 +15,35 @@ const Header = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    logo : {
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 10,
-      backgroundColor: '#FFCC00',
-    },
-    bannerImage: {
-      width: 100,
-      height: 50,
-      resizeMode: 'contain',
-      marginTop: 25,
-    },
-    iconsContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    icon: {
-      marginLeft: 15,
-    }
-  });
+  container: {
+    flex: 1,
+  },
+  logo : {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#FFCC00',
+  },
+  bannerImage: {
+    width: 100,
+    height: 50,
+    resizeMode: 'contain',
+    marginTop: 35,
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 35,
+  },
+  icon: {
+    marginLeft: 15,
+  }
+});
 
 
   export default Header;
