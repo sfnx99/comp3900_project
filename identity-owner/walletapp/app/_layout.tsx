@@ -28,9 +28,20 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,  // Default: show the header for all screens
+        }}
+      >
+        {/* Hide header for (tabs) and (auth) screens */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
+
+        {/* Show header for index and any other screens */}
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+
+        {/* Handle not-found screens */}
+        <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
       </Stack>
     </ThemeProvider>
   );
