@@ -1,5 +1,4 @@
 import { StyleSheet, View, Image } from 'react-native';
-import { Tabs } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 
@@ -14,40 +13,6 @@ const Header = () => {
     </View>
   );
 };
-
-const TabsLayout = () => {
-  return (
-    <View style={styles.container}>
-      <Header />
-      <Tabs>
-       
-        <Tabs.Screen
-          name="home"
-          options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name="home-outline" color={focused ? 'red' : 'black'} size={size} />
-            ),
-            title: 'Home',
-            headerShown: false, 
-          }}
-        />
-        <Tabs.Screen
-          name="wallet"
-          options={{
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name="wallet-outline" color={focused ? 'red' : 'black'} size={size} />
-            ),
-            title: 'Wallet',
-            headerShown: false, 
-            
-          }}
-        />
-      </Tabs>
-    </View>
-  );
-};
-
-export default TabsLayout;
 
 const styles = StyleSheet.create({
   container: {
@@ -79,3 +44,6 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   }
 });
+
+
+  export default Header;

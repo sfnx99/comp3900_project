@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 8081
 
 # Set the environment variables (make sure to replace with your actual local IP address)
-ENV REACT_NATIVE_PACKAGER_HOSTNAME=<YOUR_LOCAL_IP_ADDRESS>
+ENV REACT_NATIVE_PACKAGER_HOSTNAME=192.168.20.17
 
 # Start the Expo development server using npx
 CMD ["npx", "expo", "start"]
