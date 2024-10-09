@@ -1,19 +1,25 @@
-FROM cirrusci/flutter:latest
+# Use the official Flutter image as the base image
+FROM cirrusci/flutter:stable
 
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy the pubspec.yaml and other necessary project files into the container
-COPY pubspec.yaml ./
-
-# Run flutter pub get to install dependencies
+# Copy the pubspec files and install dependencies
+COPY pubspec.* ./
 RUN flutter pub get
 
-# Copy the rest of the app source code into the container
+# Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose the default Flutter web port (adjust as needed)
-EXPOSE 5000
+# Build the Flutter web application
+RUN flutter build web
 
-# Set the command to run the Flutter app in Chrome
-CMD ["flutter", "run", "-d", "chrome"]
+# Use a simple web server to serve the built Flutter web app
+FROM nginx:alpine
+COPY --from=0 /app/build/web /usr/share/nginx/html
+
+# Expose the port the app runs on
+EXPOSE 80
+
+# Command to run the application
+CMD ["nginx", "-g", "daemon off;"]
