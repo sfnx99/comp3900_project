@@ -1,6 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:qr_flutter/qr_flutter.dart';
 
-class VerifyCredential extends StatelessWidget {
+class VerifyCredential extends StatefulWidget {
+  @override
+  _VerifyCredentialState createState() => _VerifyCredentialState();
+}
+
+class _VerifyCredentialState extends State<VerifyCredential> {
+  String? qrCodeUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _generateQRCode();
+  }
+
+  Future<void> _generateQRCode() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/generate-session'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final sessionUrl = data['url'];
+        setState(() {
+          qrCodeUrl = sessionUrl;
+        });
+      } else {
+        // Handle error
+        print('Error generating QR code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle error
+      print('Error: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,17 +134,21 @@ class VerifyCredential extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20.0),
-              Container(
-                width: 200.0,
-                height: 200.0,
-                color: Colors.white,
-                child: const Center(
-                  child: Text(
-                    'QR Code Placeholder',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
+              qrCodeUrl == null
+                  ? CircularProgressIndicator()
+                  : Image.network(
+                      'http://localhost:3000/qr/${Uri.encodeComponent(qrCodeUrl!)}',
+                      width: 200.0,
+                      height: 200.0,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Text(
+                            'Error loading QR code',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        );
+                      },
+                    ),
             ],
           ),
         ),
