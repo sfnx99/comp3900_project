@@ -6,14 +6,57 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<Credential> credentials = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials();
+  }
+
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? credentialsJson = prefs.getString('credentials');
+    if (credentialsJson != null) {
+      final List<dynamic> credentialsList = json.decode(credentialsJson);
+      setState(() {
+        credentials = credentialsList
+            .map((credentialJson) => Credential.fromJson(credentialJson))
+            .toList();
+      });
+    }
+  }
+
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String credentialsJson =
+        json.encode(credentials.map((c) => c.toJson()).toList());
+    await prefs.setString('credentials', credentialsJson);
+  }
+
+  void _addCredential(Credential credential) {
+    setState(() {
+      credentials.add(credential);
+    });
+    _saveCredentials();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Navigation Basics',
-      home: LoginPage(),
+      home: HomePage(
+        credentials: credentials,
+        addCredential: _addCredential,
+      ),
     );
   }
 }
@@ -93,7 +136,11 @@ class LoginPage extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const HomePage()),
+                            builder: (context) => HomePage(
+                              credentials: [],
+                              addCredential: (credential) {},
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -108,48 +155,15 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends StatelessWidget {
+  final List<Credential> credentials;
+  final Function(Credential) addCredential;
 
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  List<Credential> credentials = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCredentials();
-  }
-
-  Future<void> _loadCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? credentialsJson = prefs.getString('credentials');
-    if (credentialsJson != null) {
-      final List<dynamic> credentialsList = json.decode(credentialsJson);
-      setState(() {
-        credentials = credentialsList
-            .map((credentialJson) => Credential.fromJson(credentialJson))
-            .toList();
-      });
-    }
-  }
-
-  Future<void> _saveCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String credentialsJson =
-        json.encode(credentials.map((c) => c.toJson()).toList());
-    await prefs.setString('credentials', credentialsJson);
-  }
-
-  void _addCredential(Credential credential) {
-    setState(() {
-      credentials.add(credential);
-    });
-    _saveCredentials();
-  }
+  const HomePage({
+    required this.credentials,
+    required this.addCredential,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +228,8 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AddCredentialRoute(
-                                  onAddCredential: _addCredential,
+                                  onAddCredential: addCredential,
+                                  credentials: credentials,
                                 ),
                               ),
                             );
@@ -306,8 +321,13 @@ class _HomePageState extends State<HomePage> {
 
 class AddCredentialRoute extends StatelessWidget {
   final Function(Credential) onAddCredential;
+  final List<Credential> credentials;
 
-  const AddCredentialRoute({required this.onAddCredential, super.key});
+  const AddCredentialRoute({
+    required this.onAddCredential,
+    required this.credentials,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -395,11 +415,26 @@ class AddCredentialRoute extends StatelessWidget {
                               field4: field4.text,
                             );
                             onAddCredential(credential);
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ShowAddedCred(credential: credential),
+                                builder: (context) => ShowAddedCred(
+                                  credential: credential,
+                                  onBack: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomePage(
+                                          credentials: [
+                                            ...credentials,
+                                            credential
+                                          ],
+                                          addCredential: onAddCredential,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           },
@@ -420,51 +455,102 @@ class AddCredentialRoute extends StatelessWidget {
 
 class ShowAddedCred extends StatelessWidget {
   final Credential credential;
+  final VoidCallback onBack;
 
-  const ShowAddedCred({required this.credential, super.key});
+  const ShowAddedCred({
+    required this.credential,
+    required this.onBack,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(credential.field0),
-        backgroundColor: Colors.blue[800],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              credential.field0,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text('Field 1: ${credential.field1}'),
-            Text('Field 2: ${credential.field2}'),
-            Text('Field 3: ${credential.field3}'),
-            Text('Field 4: ${credential.field4}'),
-            const SizedBox(height: 20),
-            Center(
-              child: Container(
-                width: 200.0,
-                height: 200.0,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2.0),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Box',
-                    style: TextStyle(fontSize: 18),
+    return MainScaffold(
+      selectedIndex: 0,
+      body: Column(
+        children: [
+          const BannerWidget(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 400.0,
+                      padding: const EdgeInsets.all(24.0),
+                      decoration: BoxDecoration(
+                        color: Colors.lightBlue[50],
+                        border: Border.all(color: Colors.black, width: 2.0),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              credential.field0,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            credential.field1,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            credential.field2,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            credential.field3,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            credential.field4,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                          const SizedBox(height: 40),
+                          Center(
+                            child: Container(
+                              width: 300.0,
+                              height: 300.0,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.black, width: 2.0),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Replace with valid QR code',
+                                  style: TextStyle(fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: onBack,
+                      child: const Text('Back to Home'),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -483,17 +569,27 @@ class ViewCredentialsRoute extends StatelessWidget {
         children: [
           const BannerWidget(),
           Expanded(
-            child: ListView.builder(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
-              itemCount: credentials.length,
-              itemBuilder: (context, index) {
-                final credential = credentials[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(credential.field0),
+              child: Column(
+                children: [
+                  Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Text(
+                          'Student ID',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ],
@@ -630,27 +726,30 @@ class BannerWidget extends StatelessWidget {
       width: double.infinity,
       color: Colors.blue[900],
       padding: const EdgeInsets.all(16.0),
-      child: Row(
+      child: Stack(
         children: [
-          const Spacer(),
-          const Text(
-            'University Student Credentials',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: const Text(
+              'University Student Credentials',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
-          const Spacer(),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-            child: const Text('Logout'),
+          Positioned(
+            right: 0,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text('Logout'),
+            ),
           ),
         ],
       ),
@@ -660,7 +759,6 @@ class BannerWidget extends StatelessWidget {
 
 class LoginBannerWidget extends StatelessWidget {
   const LoginBannerWidget({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -692,36 +790,24 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
-  void _onItemTapped(int index) {
-    switch (index) {
-      case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-        break;
-      case 1:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  AddCredentialRoute(onAddCredential: (credential) {})),
-        );
-        break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ViewCredentialsRoute(credentials: [])),
-        );
-        break;
-      case 3:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const IssueCredentialsRoute()),
-        );
-        break;
+  List<Credential> credentials = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials();
+  }
+
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? credentialsJson = prefs.getString('credentials');
+    if (credentialsJson != null) {
+      final List<dynamic> credentialsList = json.decode(credentialsJson);
+      setState(() {
+        credentials = credentialsList
+            .map((credentialJson) => Credential.fromJson(credentialJson))
+            .toList();
+      });
     }
   }
 
@@ -758,7 +844,49 @@ class _MainScaffoldState extends State<MainScaffold> {
         selectedLabelStyle: const TextStyle(fontSize: 16, color: Colors.white),
         unselectedLabelStyle:
             const TextStyle(fontSize: 14, color: Colors.white),
-        onTap: _onItemTapped,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(
+                    credentials: credentials,
+                    addCredential: (credential) {},
+                  ),
+                ),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddCredentialRoute(
+                    onAddCredential: (credential) {},
+                    credentials: credentials,
+                  ),
+                ),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ViewCredentialsRoute(credentials: credentials),
+                ),
+              );
+              break;
+            case 3:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const IssueCredentialsRoute(),
+                ),
+              );
+              break;
+          }
+        },
       ),
     );
   }
