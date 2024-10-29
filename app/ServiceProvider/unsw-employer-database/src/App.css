@@ -1,0 +1,87 @@
+.container {
+  font-family: Arial, sans-serif;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Minimum height of the app to fill the viewport */
+}
+
+.App-header {
+  position: relative; /* Positioning context for absolute children */
+  overflow: hidden; /* Prevent overflow */
+  background-color:#f8d601; /* Header background color */
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+}
+
+.remove-button {
+  margin-left: 10px;
+  color: white;
+  background-color: red;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  align-items: center;
+}
+
+.input {
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.add-button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.App-header {
+  position: relative; /* Positioning context for absolute children */
+  overflow: hidden; /* Prevent overflow */
+  background-color:#f8d601; /* Header background color */
+}
+
+.site-logo {
+  width: 100%; /* Stretch to full width */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 200px; /* Limit the maximum height */
+  object-fit: contain; /* Adjust to fit within the specified dimensions */
+}
+
+.Application-item {
+  width: 100%;
+  max-width: 600px; /* Sets a max width for responsiveness */
+  padding: 15px;
+  padding-left: 100px;
+  padding-right: 100px;
+  margin: 15px;
+  font-size: 1rem;
+  background-color: #f8d601;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
