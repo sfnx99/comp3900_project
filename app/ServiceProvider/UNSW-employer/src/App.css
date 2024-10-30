@@ -128,3 +128,7 @@ main {
   align-self: center;
   padding:5%;
 }
+
+.confirmation {
+  padding-left: 0%;
+}

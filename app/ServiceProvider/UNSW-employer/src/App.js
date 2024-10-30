@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import Econ from './pages/Econ'
-import Eng from './pages/Eng'
-import ADA from './pages/ADA'
-import Risk from './pages/Risk'
+import Econ from './pages/Econ';
+import Eng from './pages/Eng';
+import ADA from './pages/ADA';
+import Risk from './pages/Risk';
+import Signup from './pages/Sign-up';
+import {QRCodeSVG} from 'qrcode.react';
+// import {getLocalIPAddress} from './Helper'
 
 export function QR_BUTTON() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const togglePopup = () => {
     setIsPopupOpen(!isPopupOpen);
   };
+  // const localIP = getLocalIPAddress();
+  const localIP="192.168.0.105"
+  const url = localIP.concat(":3000/");
   return (
     <div>
     <button className="qr-code-button" onClick={togglePopup}>
@@ -22,7 +28,7 @@ export function QR_BUTTON() {
         <div className="qr-popup">
           <div className="qr-popup-content">
             <span className="close" onClick={togglePopup}>&times;</span>
-            <h2>Your QR Code</h2>
+             <QRCodeSVG value={url}/>
           </div>
         </div>
       )}
@@ -60,6 +66,7 @@ function App() {
           <Route path="/Econ" element={<Econ/>} />
           <Route path="/ADA" element={<ADA/>} />
           <Route path="/Risk" element={<Risk />} />
+          <Route path="/signuppage" element={<Signup />} />
         </Routes>
       </Router>
       <footer className='App-footer'>
