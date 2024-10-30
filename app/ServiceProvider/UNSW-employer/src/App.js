@@ -15,8 +15,8 @@ export function QR_BUTTON() {
     setIsPopupOpen(!isPopupOpen);
   };
   // const localIP = getLocalIPAddress();
-  const localIP="192.168.0.105"
-  const url = localIP.concat(":3000/");
+  const localIP="http://192.168.0.105"
+  const url = localIP.concat(":8081/access");
   return (
     <div>
     <button className="qr-code-button" onClick={togglePopup}>

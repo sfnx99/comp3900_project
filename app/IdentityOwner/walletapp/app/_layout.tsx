@@ -42,6 +42,9 @@ export default function RootLayout() {
 
         {/* Handle not-found screens */}
         <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
+
+        {/* Access screen*/}
+        <Stack.Screen name="access" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

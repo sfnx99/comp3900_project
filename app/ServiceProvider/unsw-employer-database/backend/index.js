@@ -19,13 +19,10 @@ app.get("/items", (req, res) => {
 
 // Endpoint to add a new item
 app.post("/items", (req, res) => {
-  const { newItem } = req.body;
-  if (newItem) {
-    items.push(newItem);
-    res.status(201).json({ message: "Item added", items });
-  } else {
-    res.status(400).json({ message: "Invalid item" });
-  }
+  const newItem  = JSON.stringify(req.body.zID)
+  items.push(newItem);
+  console.log("STATUS 201: Item added:", newItem)
+  res.status(201).json({ message: "Item added", items });
 });
 
 // Start the server

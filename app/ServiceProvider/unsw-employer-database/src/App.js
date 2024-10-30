@@ -6,21 +6,10 @@ const VariableSizeList = () => {
   const [list, setList] = useState([]);
   const [newItem, setNewItem] = useState("");
 
-  useEffect(() => {
+  const fetch_items = () => {
     axios.get("http://localhost:4999/items")
       .then((response) => setList(response.data.items))
       .catch((error) => console.error("Error fetching items:", error));
-  }, []);
-
-  const addItem = () => {
-    if (newItem.trim()) {
-      axios.post("http://localhost:4999/items", { newItem })
-        .then((response) => {
-          setList(response.data.items);
-          setNewItem("");
-        })
-        .catch((error) => console.error("Error adding item:", error));
-    }
   };
 
   return (
@@ -38,15 +27,8 @@ const VariableSizeList = () => {
             </li>
           ))}
         </ul>
-        <input
-          type="text"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          placeholder="Enter a new item"
-          className="input"
-        />
-        <button onClick={addItem} className="add-button">
-          Add Item
+        <button onClick={fetch_items} className="add-button">
+          Refresh
         </button>
       </div>
     </div>
