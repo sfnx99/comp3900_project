@@ -46,7 +46,7 @@ const Wallet = () => {
           Conditions: None
         </Text>
         <Text style={styles.infoText}>
-          Address: 42 Wallaby Way, Sydney NSW 2000
+          Address: {showSensitiveInfo ? '42 Wallaby Way, Sydney NSW 2000' : '••••••••••••••••••••••••'}
         </Text>
       </View>
 

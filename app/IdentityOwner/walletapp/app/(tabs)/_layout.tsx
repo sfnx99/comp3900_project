@@ -21,6 +21,18 @@ const TabsLayout = () => {
       <Header />
       <Tabs>
        
+      <Tabs.Screen
+          name="scan"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name="scan-outline" color={focused ? 'red' : 'black'} size={size} />
+            ),
+            title: 'Scan',
+            headerShown: false, 
+            
+          }}
+        />
+
         <Tabs.Screen
           name="home"
           options={{
