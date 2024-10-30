@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // In-memory list storage
-let items = ["Item 1", "Item 2", "Item 3"];
+let items = [];
 
 // Endpoint to get all items
 app.get("/items", (req, res) => {
