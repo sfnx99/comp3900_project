@@ -1,0 +1,66 @@
+{
+  "dependencies": {
+    "@expo/html-elements": "^0.10.1",
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-picker/picker": "^2.7.5",
+    "@react-navigation/bottom-tabs": "^6.5.20",
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/native-stack": "^6.9.26",
+    "@react-navigation/stack": "^6.3.29",
+    "axios": "^1.7.2",
+    "date-fns": "^3.6.0",
+    "expo": "^51.0.24",
+    "expo-linking": "~6.3.1",
+    "expo-local-authentication": "~14.0.1",
+    "expo-secure-store": "^13.0.2",
+    "expo-status-bar": "~1.12.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-native": "^0.74.3",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-elements": "^3.4.3",
+    "react-native-encrypted-storage": "^4.0.3",
+    "react-native-gesture-handler": "~2.16.1",
+    "react-native-local-authentication": "^0.1.1",
+    "react-native-maps": "1.14.0",
+    "react-native-pager-view": "^6.3.0",
+    "react-native-reanimated": "^3.10.1",
+    "react-native-safe-area-context": "^4.10.5",
+    "react-native-screens": "^3.31.1",
+    "react-native-vector-icons": "^10.1.0",
+    "react-native-web": "~0.19.6",
+    "react-native-webview": "^13.8.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-native": "^4.1.0",
+    "globals": "^15.6.0"
+  },
+  "scripts": {
+    "start": "expo start --port 7997",
+    "tunnel": "expo start --tunnel --port 7998",
+    "android": "expo start --android --port 7999",
+    "ios": "expo start --ios --port 7998",
+    "web": "expo start --web --port 7998",
+    "lint": "eslint ."
+  },
+  "plugins": [
+    "react",
+    "react-native"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "react-native/react-native": true
+  },
+  "version": "1.0.0",
+  "private": true,
+  "name": "identity_holder"
+}
