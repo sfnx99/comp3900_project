@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 var express = require('./express');
 var path = require('./path');
 var cookieParser = require('./cookie-parser');
