@@ -25,31 +25,46 @@ const HousingApplication = () => {
   };
 
   return (
-    <div style={{ padding: '16px' }}>
-      <h1>University Housing Application</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Student ID:
-            <input
-              type="text"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              required
-            />
-          </label>
-        </div>
+    <div>
+      {/* Header ribbon */}
+      <div
+        style={{
+          backgroundColor: '#FFE600',
+          padding: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <img src="/assets/unsw_logo.png" alt="Logo" style={{ height: '40px', marginLeft: '10px' }} />
+        <h1 style={{ margin: '0 auto', textAlign: 'center' }}>University Housing Application</h1>
+      </div>
 
-        {/* QR Code Generation */}
-        {sessionId && (
-          <div style={{ marginTop: '20px' }}>
-            <h2>Your QR Code:</h2>
-            <QRCodeCanvas value={qrData} size={200} />
+      <div style={{ textAlign: 'center', padding: '16px' }}>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>
+              Student ID:
+              <input
+                type="text"
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                required
+              />
+            </label>
           </div>
-        )}
 
-        <button type="submit" style={{ marginTop: '20px' }}>Submit Application</button>
-      </form>
+          {/* QR Code Generation */}
+          {sessionId && (
+            <div style={{ marginTop: '20px' }}>
+              <h3>Please scan the QR code below to verify your student status.</h3>
+              <QRCodeCanvas value={qrData} size={200} />
+            </div>
+          )}
+
+          <button type="submit" style={{ marginTop: '20px' }}>Submit Application</button>
+        </form>
+      </div>
     </div>
   );
 };
