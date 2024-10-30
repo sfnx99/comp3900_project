@@ -1,0 +1,49 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #423e39;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Ensure links inherit color and have no underline */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Change link color to blue on hover */
+a:hover {
+  color: blue;
+  text-decoration: none;
+}
+
+/* Ensure visited links do not change color */
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Style for main content */
+.mainContent {
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Add scroll if content exceeds viewport height */
+}
+
+/* Style for footer */
+footer {
+  background-color: #343434;
+  color: white;
+}
