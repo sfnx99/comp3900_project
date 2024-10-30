@@ -1,14 +1,14 @@
-const express = require('express');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
-const cors = require('cors');
+import express, { Router, json } from './express';
+import { createTransport, getTestMessageUrl } from './nodemailer';
+import { verify, sign } from './jsonwebtoken';
+import { v4 as uuidv4 } from './uuid';
+import cors from './cors';
 
-const router = express.Router();
+const router = Router();
 const app = express();
-const port = process.env.PORT || 8082;
+// const port = process.env.PORT || 8082;
 
-app.use(express.json());
+app.use(json());
 app.use(cors());
 
 const JWT_SECRET = 'your_jwt_secret_key';
@@ -21,7 +21,7 @@ const users = [
 let credentialsStore = [];
 let notificationsStore = [];
 
-const transporter = nodemailer.createTransport({
+const transporter = createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
     secure: false, // true for port 465, false for other ports
@@ -44,7 +44,7 @@ async function sendEmail(email, subject, text, html) {
     try {
         const info = await transporter.sendMail(mailOptions);
         console.log("Message sent: %s", info.messageId);
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        console.log("Preview URL: %s", getTestMessageUrl(info));
     } catch (error) {
         console.error('Error sending email:', error);
         throw error;
@@ -57,7 +57,7 @@ function authenticateToken(req, res, next) {
 
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    verify(token, JWT_SECRET, (err, user) => {
         if (err) return res.sendStatus(403);
         req.user = user;
         next();
@@ -92,7 +92,7 @@ router.post('/auth/login', (req, res) => {
 
     const user = users.find(user => user.email === email && user.password === password);
     if (user) {
-        const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+        const token = sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
         console.log("User logged in:", { email, password });
         console.log("Generated token:", token);
         res.status(200).json({ message: 'Login successful', token: token });
@@ -190,4 +190,4 @@ router.delete('/cred/:id', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
