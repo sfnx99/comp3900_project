@@ -370,7 +370,7 @@ describe('Test integration', () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-        
+
             const type = res.data.type;
             const attrs = res.data.requiredAttributes;
             expect(type).toStrictEqual("PhotoCardCredential");
