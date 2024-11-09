@@ -31,7 +31,7 @@ describe('Test integration', () => {
         exec('docker-compose down');
         return new Promise(r => setTimeout(r, 15000)); // 15 seconds allowed for all agents to end
     }, 16000);
-
+    
     test('Successful flow with user known to issuer', async () => {
         try {
             let res;
@@ -370,7 +370,7 @@ describe('Test integration', () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-        
+
             const type = res.data.type;
             const attrs = res.data.requiredAttributes;
             expect(type).toStrictEqual("PhotoCardCredential");
