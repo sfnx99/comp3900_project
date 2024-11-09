@@ -45,7 +45,7 @@ export default function accessScreen() {
   async function sendData(zID: string) {
     setModalVisible(false);
     try {
-      const response = await axios.post('http://192.168.0.105:4999/items', {
+      const response = await axios.post('http://172.20.10.3:4999/items', {
         zID, // Send the new item as part of the request body
       });
       console.log('Item added:', response.data);

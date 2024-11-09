@@ -7,16 +7,69 @@ import ADA from './pages/ADA';
 import Risk from './pages/Risk';
 import Signup from './pages/Sign-up';
 import {QRCodeSVG} from 'qrcode.react';
-// import {getLocalIPAddress} from './Helper'
+import axios from 'axios'
+
+const IPconfig = require('./config.json')
+// // Service Provider backend is listening on 8083
+const url= JSON.stringify(IPconfig.credential_endpoint);
+const verifier_url = "http://localhost:8083"
+const issuer_url = "http://localhost:8082"
+const wallet_url = "http://localhost:8081"
+
+const res = await axios.get(issuer_url)
+const issuer_did = res.data.did_uri;
+await axios.post(verifier_url + "/v2/trust", {
+  "id": issuer_did
+});
+await axios.post(verifier_url + '/v2/definition', {
+  type: "UNSWCredential",
+  requiredAttributes: ["zID", "expiryDate"]
+});
+
+const request = async () => {
+  try {
+    const response = await fetch(`${verifier_url}/v2/request`, {
+    });    
+    if (!response.ok) {
+      throw Error
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching credential:', error);
+    throw error;
+  }
+}
+
 
 export function QR_BUTTON() {
+  const [preso, setPreso] = useState(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const togglePopup = () => {
+
+  const togglePopup = async () => {
     setIsPopupOpen(!isPopupOpen);
+    let data = await request()
+    setPreso(data)
   };
-  // const localIP = getLocalIPAddress();
-  const localIP="http://192.168.0.105"
-  const url = localIP.concat(":8081/access");
+
+  const QRCodeComponent = async (preso) => {
+  
+    // Combine URL and JSON object as a string
+    const combinedData = `${url}\n${JSON.stringify(preso)}`;
+    return (
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <h2>QR Code with URL and JSON Data</h2>
+        <QRCodeSVG 
+          value={combinedData} 
+          size={256} 
+          bgColor={"#ffffff"} 
+          fgColor={"#000000"} 
+          level={"L"} 
+        />
+      </div>
+    );
+  };
+
   return (
     <div>
     <button className="qr-code-button" onClick={togglePopup}>
@@ -28,7 +81,7 @@ export function QR_BUTTON() {
         <div className="qr-popup">
           <div className="qr-popup-content">
             <span className="close" onClick={togglePopup}>&times;</span>
-             <QRCodeSVG value={url}/>
+            <QRCodeComponent value= {preso}/>
           </div>
         </div>
       )}
