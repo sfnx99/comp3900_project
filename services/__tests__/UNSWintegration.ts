@@ -71,7 +71,7 @@ describe('Test integration for UNSW use cases', () => {
             });
             // These must be held onto by the issuer for next step of issuance
             const auth_code = res.data.code;
-            const state = res.data.state;
+
             // User will also provide information to issuer (Both of these steps are probably best combined together on frontend)
             res = await axios.post(issuer_url + "/v2/info", {
                 email: "bob@test.com",
@@ -116,13 +116,13 @@ describe('Test integration for UNSW use cases', () => {
             // We also get a credential ID returned here (not necessary need all the time)
             // Can use this to get details of credential through
             // "wallet_url + /v2/credentials" - gives list of credentials as an array
-            let cred_id = res.data.credential_id
-            let headers = {
+            const cred_id = res.data.credential_id
+            const headers = {
                 Authorization: `Bearer ${token}`
             };
             res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`, { headers });
-            let cred_r = res.data;
-            let cred = cred_r.credential; // This block of code is useless unless you want to inspect the fields (need for displaying on wallet app)
+            const cred_r = res.data;
+            const cred = cred_r.credential; // This block of code is useless unless you want to inspect the fields (need for displaying on wallet app)
             expect(cred_r.issuer).toStrictEqual(issuer_did);
             expect(cred_r.type).toContain("UNSWCredential");
             expect(cred.firstName).toStrictEqual("Bob");
@@ -161,8 +161,8 @@ describe('Test integration for UNSW use cases', () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            let type = res.data.type;
-            let attrs = res.data.requiredAttributes;
+            const type = res.data.type;
+            const attrs = res.data.requiredAttributes;
             expect(type).toStrictEqual("UNSWCredential");
             expect(attrs).toStrictEqual(["zID", "expiryDate"]);
             expect(res.status).toStrictEqual(200);
