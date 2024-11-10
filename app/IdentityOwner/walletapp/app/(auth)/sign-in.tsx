@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, Pressable, StyleSheet } from 'react-native'; // Replaced TouchableOpacity with Pressable
 import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
+import axios from 'axios';
+import IPconfig from '../config.json';
+const wallet_url = JSON.stringify(IPconfig.wallet_url)
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();  // Initialize the router inside the component
+  const router = useRouter();
+  // User needs to sign in after scanning QR code to access their credentials for submission
+  const searchParams = new URLSearchParams()
+ 
+  const verifier_url = searchParams.get("verifier_url")
+  const requestStep = searchParams.get('request')
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     // Navigate to the home page upon sign in
+    const res = await fetch(`${wallet_url}/v2/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+    console.log(res)
+    // // Parse the JSON response
+    // const data = await res.json();
+
+    // // Get the token from the response
+    // const token = data.token;
+    // console.log(requestStep)
+    // if (requestStep === 'True)') {
+    //   router.push(`/access?verifier_url=${verifier_url}&token=${token}}`)
+    // } else {
+    //   router.push('/(tabs)/home');
+    // }      
     router.push('/(tabs)/home');
   };
 

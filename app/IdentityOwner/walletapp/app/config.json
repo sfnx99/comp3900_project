@@ -1,0 +1,6 @@
+{
+  "credential_endpoint": "http://192.168.0.251:8081/access",
+  "wallet_url": "http://localhost:8081",
+  "issuer_url": "http://localhost:8082",
+  "verifier_url": "http:/localhost:8083"
+}

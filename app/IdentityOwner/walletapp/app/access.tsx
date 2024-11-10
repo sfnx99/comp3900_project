@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
-
+import { useLocation } from 'react-router-dom';
 import { View, Text, StyleSheet, Button, Modal, FlatList, Image, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 import axios from "axios";
 
+const IPconfig = require('./config.json')
+const wallet_url= JSON.stringify(IPconfig.wallet_url);
 interface Item {
   id: string;
   title: string;
 }
 
+// // Function to get the value of a specific query parameter
+// const getQueryParam = (param: string) => {
+//   const location = useLocation();
+//   const urlParams = new URLSearchParams(location.search); // Get query string from location object
+//   return urlParams.get(param); // Return the value of the query parameter
+// };
+
+// const verifier_url = getQueryParam("verifier_url");
+// const token = getQueryParam("token");
+// const getData = async () => {
+//   const res = await fetch(wallet_url + `/v2/present?verifier_uri=${verifier_url}`, {
+//     headers: {
+//         Authorization: `Bearer ${token}`
+//     }
+//   });
+// }
+// getData()
 export default function accessScreen() {
 
   const items: Item[] = [
