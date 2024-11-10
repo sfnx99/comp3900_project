@@ -21,19 +21,26 @@ const housingOptions = [
 
 const HomePage = () => {
   return (
-    <div style={{ textAlign: 'center', padding: '16px' }}>
-      <h1>University Housing Options</h1>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {housingOptions.map((option, index) => (
-          <div key={index} style={{ marginBottom: '16px', border: '1px solid #ccc', width: '300px' }}>
-            <img src={option.imagePath} alt={option.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-            <h2>{option.title}</h2>
-            <p>{option.description}</p>
-            <Link to="/apply">
-              <button style={{ padding: '8px 16px', marginTop: '8px' }}>Apply</button>
-            </Link>
-          </div>
-        ))}
+    <div>
+      {/* Header ribbon */}
+      <div style={{ backgroundColor: '#FFE600', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <img src="/assets/unsw_logo.png" alt="Logo" style={{ height: '40px', marginLeft: '10px' }} />
+        <h1 style={{ margin: '0 auto', textAlign: 'center' }}>University Housing Options</h1>
+      </div>
+
+      <div style={{ textAlign: 'center', padding: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {housingOptions.map((option, index) => (
+            <div key={index} style={{ marginBottom: '16px', border: '1px solid #ccc', width: '300px' }}>
+              <img src={option.imagePath} alt={option.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
+              <h2>{option.title}</h2>
+              <p>{option.description}</p>
+              <Link to="/apply">
+                <button style={{ padding: '8px 16px', marginTop: '8px' }}>Apply</button>
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

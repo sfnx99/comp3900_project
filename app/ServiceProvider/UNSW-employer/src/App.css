@@ -1,12 +1,32 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Minimum height of the app to fill the viewport */
+}
+
+html, body {
+  height: 100%; /* Ensure the body takes full height */
+  margin: 0; /* Remove default margin */
 }
 
 .App-header {
   position: relative; /* Positioning context for absolute children */
   overflow: hidden; /* Prevent overflow */
   background-color:#f8d601; /* Header background color */
-  padding: 20px; /* Padding around the header */
+}
+
+.App-footer {
+  position: relative; /* Positioning context for absolute children */
+  overflow: hidden; /* Prevent overflow */
+  background-color:#f8d601; /* Header background color */
+  padding: 10px; /* Padding around the header */
+}
+
+.footer-notes {
+  text-align: left;
+  font-size: 30px;
+  padding-left: 10%;
 }
 
 .site-logo {
@@ -19,7 +39,9 @@
 .job-description {
   text-align: left;
   padding-left: 10%;
+  padding-right: 10%;
 }
+
 h1 {
   color: #333; /* Text color */
   margin-top: 20px; /* Space between logo and heading */
@@ -30,16 +52,47 @@ h1 {
   color: black; 
   border: none;
   border-radius: 5px; 
-  padding: 10px 20px; 
+  padding: 2%; 
   font-size: 30px; 
   transition: background-color 0.3s;
 }
+
 .qr-code-button:hover {
   background-color: #f8d600; /* Darker shade on hover */
   transform: scale(1.05); /* Slightly increase size on hover */
 }
+
+.qr-button {
+  padding-top: 2%;
+}
 main {
-  padding: 20px;
+  padding: 5px;
+}
+
+.button-container {
+  display: flex; /* Use flexbox for the layout */
+  justify-content: space-evenly; /* Evenly space the buttons */
+  padding: 1px; /* Add some padding around the container */
+  padding-left:8%;
+  padding-right:5%;
+  padding-bottom: 5%;
+  flex: 1; /* Allows the content area to grow */
+}
+
+.job-button {
+  background-color: #f8d601;
+  color: black; 
+  border: none;
+  border-radius: 5px; 
+  width: 20%; /* Set width for the button */
+  height: 150px; /* Set height for the button */
+  font-size: 20px; 
+  transition: background-color 0.3s;
+}
+
+.job-button:hover {
+  background-color: #f8d600; /* Darker shade on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
 }
 
 .qr-popup {
@@ -68,4 +121,14 @@ main {
   position: absolute;
   top: 10px;
   right: 20px;
+}
+
+.job-image {
+  width: 80%;
+  align-self: center;
+  padding:5%;
+}
+
+.confirmation {
+  padding-left: 0%;
 }

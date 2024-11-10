@@ -1,0 +1,34 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.Navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+}
+
+.mainContent {
+  flex: 1;
+
+  background-color: white;
+}
+
+footer {
+  background-color: #343434;
+  color: white;
+  text-align: left;
+  padding: 10px 20px;
+  font-size: 0.8em;
+  line-height: 1.4;
+}
