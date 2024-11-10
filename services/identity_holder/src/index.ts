@@ -136,6 +136,12 @@ app.post("/v1/credential/present", async (req: Request, res: Response) => {
 
 // Authorization
 
+// Check server is responsive
+app.get("/hello", async (req: Request, res: Response) => {
+    console.log("I (the server) am alive");
+    res.status(200).send("Hello, world!"); // Send a response back to the client
+});
+
 app.post('/v2/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
     const result = authRegisterV2(email, password);
@@ -173,6 +179,7 @@ app.get("/v2/issue", async (req: Request, res: Response) => {
 });
 
 app.post("/v2/issue", async (req: Request, res: Response) => {
+    console.log("In this route");
     const token = req.headers.authorization;
     const { issuer_id, auth_code, type, redirect_uri } = req.body;
     console.log(`Received request to issue credential: ${JSON.stringify({ issuer_id, auth_code, type, redirect_uri })}`);
