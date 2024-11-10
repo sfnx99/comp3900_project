@@ -12,8 +12,26 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const handleSignUp = () => {
-    router.push('/(tabs)/home');
+  const IPconfig = require('../config.json')
+  const wallet_url= JSON.stringify(IPconfig.wallet_url);
+
+  const handleSignUp = async () => {
+    const res = await fetch("http://localhost:8081/v2/auth/register", {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json", // Ensure the content type is JSON
+      },
+      body: JSON.stringify({
+        "email": email,
+        "password": password
+      })
+    });
+    console.log(res.status)
+    if (res.status != 200) {
+      alert("Invalid details")
+    } else {
+      router.push('/(tabs)/home');
+    }
   };
 
   return (

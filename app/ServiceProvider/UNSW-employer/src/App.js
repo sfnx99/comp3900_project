@@ -20,6 +20,7 @@ const setup = async () => {
   // const issuer_did = res.data.did_uri;
   const data = await res.json()
   const issuer_did = data.did_uri;
+  
   await fetch(`${verifier_url}/v2/trust`, {
     method: "POST",
     body: JSON.stringify({
@@ -37,30 +38,11 @@ const setup = async () => {
 }
 
 
-// const request = async () => {
-//   try {
-//     const response = await fetch(`${verifier_url}/v2/request`, {
-//     });    
-//     if (!response.ok) {
-//       throw Error
-//     }
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error('Error fetching credential:', error);
-//     throw error;
-//   }
-// }
-
-
 export function QR_BUTTON() {
-  // const [preso, setPreso] = useState(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const togglePopup = async () => {
     setIsPopupOpen(!isPopupOpen);
-    // let data = await request()
-    // setPreso(data)
   };
 
   const QRCodeComponent = () => {
@@ -68,12 +50,12 @@ export function QR_BUTTON() {
     // Combine URL and JSON object as a string
     // Need to construct the data more carefully
 
-    const combinedData = `${endpoint}?verifier_url=${encodeURIComponent(verifier_url)}&request=True`;
+    const combinedData = `${endpoint}`;
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <h2>QR Code with URL and JSON Data</h2>
         <QRCodeSVG 
-          value={combinedData + "lol"}
+          value={combinedData}
           size={256} 
           bgColor={"#ffffff"} 
           fgColor={"#000000"} 

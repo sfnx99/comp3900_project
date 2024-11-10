@@ -11,24 +11,38 @@ interface Item {
   title: string;
 }
 
-// // Function to get the value of a specific query parameter
-// const getQueryParam = (param: string) => {
-//   const location = useLocation();
-//   const urlParams = new URLSearchParams(location.search); // Get query string from location object
-//   return urlParams.get(param); // Return the value of the query parameter
-// };
+const getCredentials = async (token: string | null) => {
+  const res = await fetch("http://localhost:8081/v2/credentials", {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  // Parse the JSON response
+  const data = await res.json();
+  return data
+}
 
-// const verifier_url = getQueryParam("verifier_url");
-// const token = getQueryParam("token");
-// const getData = async () => {
-//   const res = await fetch(wallet_url + `/v2/present?verifier_uri=${verifier_url}`, {
-//     headers: {
-//         Authorization: `Bearer ${token}`
-//     }
-//   });
-// }
-// getData()
+const getMdoc = async (token: string | null, verifier_url: string | null) => {
+  const res = await fetch(`http://localhost:8081/v2/present?verifier_uri=${verifier_url}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`
+    } 
+  });
+  // Parse the JSON response
+  const data = await res.json();
+  console.log(data)
+  return data
+
+}
 export default function accessScreen() {
+  const params = new URL(location.href).searchParams;
+  const verifier_uri = params.get('verifier_url');
+  const token  = params.get('token');
+
+  const MDoc = getMdoc(token, verifier_uri);
+  const credentials = getCredentials(token);
 
   const items: Item[] = [
     { id: '1', title: 'UNSW Credentials' },
@@ -62,15 +76,18 @@ export default function accessScreen() {
     );
   };
   async function sendData(zID: string) {
-    setModalVisible(false);
-    try {
-      const response = await axios.post('http://172.20.10.3:4999/items', {
-        zID, // Send the new item as part of the request body
-      });
-      console.log('Item added:', response.data);
-    } catch (error) {
-      console.error('Error adding item:', error);
-    }
+    // setModalVisible(false);
+    // const params = new URL(location.href).searchParams;
+    // const verifier_uri = params.get('verifier_url');
+    // const token = params.get('token');
+    // const res = await axios.post(wallet_url + "/v2/present", {
+    //   verifier_uri: verifier_uri,
+    //   credential_id: "cred_id"
+    // }, {
+    //   headers: {
+    //       Authorization: `Bearer ${token}`
+    //   }
+    // });
   }
   return (
     <>
