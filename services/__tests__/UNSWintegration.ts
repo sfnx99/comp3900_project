@@ -59,7 +59,6 @@ describe('Test integration for UNSW use cases', () => {
             expect(res.status).toStrictEqual(200);
             // This token must be held onto on wallet side for use later on
             const token = res.data.token;
-            console.log(token);
             // Issuer Registration: User will register with the issuer
             // Not sure on the point of this but it is a requirement for bookworms to work
             res = await axios.post(issuer_url + "/v2/authorize", {
@@ -102,8 +101,6 @@ describe('Test integration for UNSW use cases', () => {
             
             // Wallet app can scan and convert these to variables to now use
             // Ask to have credential issued (called by wallet after QR scan)
-            
-            res = await axios.get(wallet_url + '/hello');
 
             res = await axios.post(wallet_url + "/v2/issue", {
                 issuer_id: issuer_did,
@@ -117,13 +114,14 @@ describe('Test integration for UNSW use cases', () => {
 
             // We also get a credential ID returned here (not necessary need all the time)
             // Can use this to get details of credential through
-            let cred_id = res.data.credential_id
-            let headers = {
+            // "wallet_url + /v2/credentials" - gives list of credentials as an array
+            const cred_id = res.data.credential_id
+            const headers = {
                 Authorization: `Bearer ${token}`
             };
             res = await axios.get(`${wallet_url}/v2/credential?credential_id=${cred_id}`, { headers });
-            let cred_r = res.data;
-            let cred = cred_r.credential; // This block of code is useless unless you want to inspect the fields (need for displaying on wallet app)
+            const cred_r = res.data;
+            const cred = cred_r.credential; // This block of code is useless unless you want to inspect the fields (need for displaying on wallet app)
             expect(cred_r.issuer).toStrictEqual(issuer_did);
             expect(cred_r.type).toContain("UNSWCredential");
             expect(cred.firstName).toStrictEqual("Bob");
@@ -162,8 +160,9 @@ describe('Test integration for UNSW use cases', () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            let type = res.data.type;
-            let attrs = res.data.requiredAttributes;
+
+            const type = res.data.type;
+            const attrs = res.data.requiredAttributes;
             expect(type).toStrictEqual("UNSWCredential");
             expect(attrs).toStrictEqual(["zID", "expiryDate"]);
             expect(res.status).toStrictEqual(200);
@@ -180,6 +179,30 @@ describe('Test integration for UNSW use cases', () => {
             });
             // Right now this is just a bool? Not sure how the verifier captures the data
             expect(res.status).toStrictEqual(200);
+
+            // Once the presentation has been made - service provider can check the presentation in the following route
+            res = await axios.get(verifier_url + '/v2/presentations');
+            const presentation_array = res.data; // Gives an array of presentations
+            const recent_pres = presentation_array[presentation_array.length - 1]; // Gives most recent presentation
+            
+            // Presentation has following structure
+            /*
+            {
+                issuer: "DID of issuer",
+                type: "UNSWCredential",
+                crytosuite: 't11a-bookworms-bbs',
+                credential: {
+                    zID: '....'                                       << this here will contain the fields you want to check
+                    expiryDate: '...'                                 << For this example we have zId and expiryDate
+                }
+                status: 'accepted / not accepted'
+            }
+            */
+
+            // Front end will need to call this route and inspect the fields you asked for before making any status changes
+            
+            expect(recent_pres.credential.zID).toStrictEqual("z111111"); // Ignore these just for testing
+            expect(recent_pres.credential.expiryDate).toStrictEqual("16/09/2010");
         } catch(err) {
             if (err instanceof axios.AxiosError) {
                 throw new Error(`Failed to make request: ${JSON.stringify(err)}`);
