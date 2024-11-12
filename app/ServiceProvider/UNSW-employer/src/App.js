@@ -10,7 +10,7 @@ import {QRCodeSVG} from 'qrcode.react';
 
 const IPconfig = require('./config.json')
 // // Service Provider backend is listening on 8083
-let endpoint= JSON.stringify(IPconfig.credential_endpoint);
+// let endpoint= JSON.stringify(IPconfig.credential_endpoint);
 const verifier_url= JSON.stringify(IPconfig.verifier_url);
 const issuer_url = JSON.stringify(IPconfig.issuer_url)
 
@@ -49,13 +49,18 @@ export function QR_BUTTON() {
   
     // Combine URL and JSON object as a string
     // Need to construct the data more carefully
-
-    const combinedData = `${endpoint}`;
+    const [qrCodeValue, setQrCodeValue] = useState('');
+    const qrCodeData = { 
+      verifier_url: "http://localhost:8081",
+      request: 'True'
+    }; 
+    setQrCodeValue(JSON.stringify(qrCodeData));
+    // const combinedData = `${endpoint}`;
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <h2>QR Code with URL and JSON Data</h2>
+        <h2>Scan to sign in</h2>
         <QRCodeSVG 
-          value={combinedData}
+          value={qrCodeValue}
           size={256} 
           bgColor={"#ffffff"} 
           fgColor={"#000000"} 

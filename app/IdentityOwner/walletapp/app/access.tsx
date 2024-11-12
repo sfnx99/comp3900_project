@@ -3,16 +3,20 @@ import { useLocation } from 'react-router-dom';
 import { View, Text, StyleSheet, Button, Modal, FlatList, Image, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 import axios from "axios";
-
+import { useLocalSearchParams } from 'expo-router';
+ 
 const IPconfig = require('./config.json')
 const wallet_url= JSON.stringify(IPconfig.wallet_url);
+
 interface Item {
   id: string;
   title: string;
 }
 
-const getCredentials = async (token: string | null) => {
-  const res = await fetch("http://localhost:8081/v2/credentials", {
+const { token , verifier_uri } = useLocalSearchParams()
+
+const getCredentials = async (token: string | string[]) => {
+  const res = await fetch("http://192.168.0.103:8081/v2/credentials", {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -23,8 +27,8 @@ const getCredentials = async (token: string | null) => {
   return data
 }
 
-const getMdoc = async (token: string | null, verifier_url: string | null) => {
-  const res = await fetch(`http://localhost:8081/v2/present?verifier_uri=${verifier_url}`, {
+const getMdoc = async (token: string | string[], verifier_url: string| string[]) => {
+  const res = await fetch(`http://192.168.0.103:8081/v2/present?verifier_uri=${verifier_url}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`
@@ -37,9 +41,9 @@ const getMdoc = async (token: string | null, verifier_url: string | null) => {
 
 }
 export default function accessScreen() {
-  const params = new URL(location.href).searchParams;
-  const verifier_uri = params.get('verifier_url');
-  const token  = params.get('token');
+  // const params = new URL(location.href).searchParams;
+  // const verifier_uri = params.get('verifier_url');
+  // const token  = params.get('token');
 
   const MDoc = getMdoc(token, verifier_uri);
   const credentials = getCredentials(token);

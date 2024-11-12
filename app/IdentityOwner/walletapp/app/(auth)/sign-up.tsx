@@ -16,7 +16,8 @@ const SignUp = () => {
   const wallet_url= JSON.stringify(IPconfig.wallet_url);
 
   const handleSignUp = async () => {
-    const res = await fetch("http://localhost:8081/v2/auth/register", {
+
+    const res = await fetch("http://192.168.0.103:8081/v2/auth/register", {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON
@@ -26,11 +27,19 @@ const SignUp = () => {
         "password": password
       })
     });
-    console.log(res.status)
-    if (res.status != 200) {
-      alert("Invalid details")
+
+    if (res.status === 200) {
+      const data = await res.json();
+      // Get the token from the response
+      const { token } = data.token;
+      router.push({
+        pathname: '/(tabs)/home',
+        params: {
+          token: token
+        }
+      });
     } else {
-      router.push('/(tabs)/home');
+      alert("Invalid details")
     }
   };
 
@@ -44,12 +53,14 @@ const SignUp = () => {
           placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
           placeholder="Last Name"
           value={lastName}
           onChangeText={setLastName}
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -58,6 +69,7 @@ const SignUp = () => {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -65,6 +77,7 @@ const SignUp = () => {
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           keyboardType="phone-pad"
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -72,6 +85,7 @@ const SignUp = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -79,6 +93,7 @@ const SignUp = () => {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
 
        

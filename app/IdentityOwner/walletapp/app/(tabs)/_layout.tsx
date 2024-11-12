@@ -1,8 +1,10 @@
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Pressable } from 'react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
+import { useRouter } from 'expo-router';  // Correct hook for navigation
 
+const router = useRouter()
 const Header = () => {
   return (
     <View style={styles.header}>
@@ -29,7 +31,6 @@ const TabsLayout = () => {
             ),
             title: 'Scan',
             headerShown: false, 
-            
           }}
         />
 

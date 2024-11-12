@@ -17,7 +17,7 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
-import { getCredential, logCredential, getCredentials, setFormats } from "./db.js";
+import { getCredential, logCredential, getCredentials, setFormats, getUser } from "./db.js";
 import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
 require('dotenv').config() // eslint-disable-line
@@ -92,6 +92,18 @@ app.post("/v2/register", (req: Request, res: Response) => {
         registerUser(email, password);
         console.log(`Successfully registered`);
         res.sendStatus(200);
+    } catch (err) {
+        console.log(`Failed to register`);
+        res.status(500).json(err);
+    }
+});
+
+app.post("/v1/login", (req: Request, res: Response) => {
+    console.log(`Logging in`);
+    try {
+        const { email, password } = req.body;
+        getUser(email)
+        res.sendStatus(200)
     } catch (err) {
         console.log(`Failed to register`);
         res.status(500).json(err);

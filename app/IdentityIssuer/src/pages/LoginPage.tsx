@@ -9,11 +9,18 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const data = await login(email, password);
-      console.log('Login successful:', data);
-      localStorage.setItem('token', data.token); 
-      console.log('Token stored in local storage:', data.token);
-      navigate('/');
+      const res = await fetch("http://localhost:8082/v1/login", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json", // Ensure the content type is JSON
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+      console.log("Successful login")
+      navigate('/home');
     } catch (error) {
       console.error('Error during login:', error);
       alert('Invalid credentials');

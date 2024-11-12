@@ -1,11 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+const router = useRouter();
+
+const { token } = useLocalSearchParams()
+const handleCredentialPress = () => {
+  router.push({
+    pathname: '/(tabs)/scan',
+    params: {
+      token: token
+    },
+  })
+} 
 
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      
-      
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.headerIcons}>
@@ -33,8 +43,11 @@ const HomeScreen = () => {
         <Pressable style={styles.button} onPress={() => console.log('Check license')}>
           <Text style={styles.buttonText}>Check a license or credential</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => console.log('Add credential')}>
+        <Pressable style={styles.button} onPress={handleCredentialPress}>
           <Text style={styles.buttonText}>Add a credential</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={handleCredentialPress}>
+          <Text style={styles.buttonText}>Scan</Text>
         </Pressable>
       </View>
     </View>
