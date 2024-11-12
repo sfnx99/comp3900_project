@@ -14,6 +14,11 @@ export type User = {
     info: {[key: string] : string}
 }
 
+export interface IssuerAdmin {
+    admin_id: string;
+    info: {[key: string] : string}
+}
+
 export type CredentialLog = {
     client_id: string,
     type: string,

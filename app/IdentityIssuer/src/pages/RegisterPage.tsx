@@ -1,6 +1,6 @@
 import React, { useState, CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../scripts/api'; 
+import { register, registerOwner } from '../scripts/api'; 
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ function RegisterPage() {
     }
 
     try {
-      const data = await register(email, password);
+      const data = await registerOwner(email, password);
       alert('Registration successful! Please check your email to complete account setup.');
       navigate('/login');
     } catch (error) {
