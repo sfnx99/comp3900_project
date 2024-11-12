@@ -17,7 +17,7 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
-import { getCredential, logCredential, getCredentials, setFormats, addIssuerAdmin, addCredentialLog, getCredentialLogs } from "./db.js";
+import { getCredential, logCredential, getCredentials, setFormats, addIssuerAdmin, addCredentialLog, getCredentialLogs, getCredentialLog } from "./db.js";
 import { authenticateIssuerAdmin, authorizeIssuerAdmin } from './oauth.js';
 import { registerUser, modifyUser, modifyFormat, registerIssuer } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
@@ -59,7 +59,7 @@ app.use(cors(corsOptions)); // Use the CORS middleware with the specified option
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
-    console.error(`Served DID at /: ${did_uri}`);
+    // console.error(`Served DID at /: ${did_uri}`);
     res.json({ did_uri });
 });
 
@@ -126,20 +126,19 @@ app.get("/v2/list-credentials", (req: Request, res: Response) => {
     }
 });
 
-app.get("/v2/view-credential-by-name/:name", (req: Request, res: Response) => {
+
+app.get("/v2/credential-logs", (req: Request, res: Response) => {
     try {
-      const { name } = req.params;
-      const credential = getCredentials().find(credential => credential.format === name);
-      if (!credential) {
-        return res.status(404).json({ error: 'Credential not found' });
-      }
-      res.status(200).json(credential);
+        const { format } = req.query;
+        let logs = getCredentialLog(format as string);
+        res.status(200).json(logs);
     } catch (err) {
-      res.status(500).json({ error: (err instanceof Error ? err.message : 'Internal Server Error') });
+        console.error("Error fetching credential logs:", err);
+        res.status(500).json({
+            error: (err instanceof Error ? err.message : 'Internal Server Error')
+        });
     }
-  });
-
-
+});
 
 
 app.post("/v2/authorize", (req: Request, res: Response) => {
@@ -226,29 +225,28 @@ app.post("/v2/name", async (req: Request, res: Response) => {
     }
 });
 
-app.get("/v2/credential-logs", (req: Request, res: Response) => {
-    try {
-        const logs = getCredentialLogs();
-        res.status(200).json(logs);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: (err instanceof Error ? err.message : 'Internal Server Error')
-        });
-    }
-});
+// app.get("/v2/credential-logs", (req: Request, res: Response) => {
+//     try {
+//         const logs = getCredentialLogs();
+//         res.status(200).json(logs);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({
+//             error: (err instanceof Error ? err.message : 'Internal Server Error')
+//         });
+//     }
+// });
 
 app.post('/v2/save-code', (req, res) => {
     const { auth_code } = req.body;
     authCodeStorage.push(auth_code);
     res.status(200).json({ message: 'Auth code saved successfully' });
-  });
+});
   
-  // Route to get the auth code
-  app.post('/v2/get-code', (req, res) => {
+app.post('/v2/get-code', (req, res) => {
     const auth_code = authCodeStorage[0];
     res.status(200).json({ auth_code });
-  });
+});
 
 
 app.post("/v2/info", (req: Request, res: Response) => {
@@ -256,7 +254,14 @@ app.post("/v2/info", (req: Request, res: Response) => {
     try {
         const { email, info } = req.body;
         modifyUser(email, info);
-        console.log(`Successfully added information`);
+        addCredentialLog({
+            client_id: email,
+            type: "UNSWCredential",
+            cryptosuite: "t11a-bookworms-bbs",
+            credential: info
+        });
+
+        // console.log(`Successfully added to credential log ${JSON.stringify(info)}`);
         res.sendStatus(200);
     } catch (err) {
         console.log(`Failed to add information`);

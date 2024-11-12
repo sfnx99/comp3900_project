@@ -78,6 +78,16 @@ export function logCredential(credential: CredentialLog) {
     }
 }
 
+export function getCredentialLog(format: string): CredentialLog[] {
+    for (const log of credentialLogs) {
+        if (log.credential.format === format) {
+            return [log];
+        }
+    }
+    return [];
+}
+
+
 export function getCredentialLogs() {
     return credentialLogs;
 }
@@ -88,9 +98,6 @@ export function getCredentials() {
 
 export function addCredentialLog(credential: CredentialLog): void {
     credentialLogs.push(credential);
-    if (credentialLogs.length > 10) {
-        credentialLogs.shift();
-    }
 }
 
 // Issuer admin management functions
