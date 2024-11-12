@@ -51,7 +51,8 @@ export function QR_BUTTON() {
     // Need to construct the data more carefully
     const [qrCodeValue, setQrCodeValue] = useState('');
     const qrCodeData = { 
-      verifier_url: "http://localhost:8081",
+      // fetch
+      verifier_url: "http://localhost:8083",
       request: 'True'
     }; 
     setQrCodeValue(JSON.stringify(qrCodeData));

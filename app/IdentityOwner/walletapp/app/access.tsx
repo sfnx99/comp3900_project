@@ -41,9 +41,6 @@ const getMdoc = async (token: string | string[], verifier_url: string| string[])
 
 }
 export default function accessScreen() {
-  // const params = new URL(location.href).searchParams;
-  // const verifier_uri = params.get('verifier_url');
-  // const token  = params.get('token');
 
   const MDoc = getMdoc(token, verifier_uri);
   const credentials = getCredentials(token);
@@ -53,11 +50,13 @@ export default function accessScreen() {
   ];
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState('');
+  const [credential, setCredential] = useState('');
 
   // Handle item click
   const handleItemClick = (title: string) => {
     setSelectedTitle(title);
     setModalVisible(true); // Show the modal
+    setCredential("1")
   };
 
   // Render each item in the list
@@ -79,19 +78,18 @@ export default function accessScreen() {
       </View>      
     );
   };
-  async function sendData(zID: string) {
-    // setModalVisible(false);
-    // const params = new URL(location.href).searchParams;
-    // const verifier_uri = params.get('verifier_url');
-    // const token = params.get('token');
-    // const res = await axios.post(wallet_url + "/v2/present", {
-    //   verifier_uri: verifier_uri,
-    //   credential_id: "cred_id"
-    // }, {
-    //   headers: {
-    //       Authorization: `Bearer ${token}`
-    //   }
-    // });
+  async function sendData() {
+    setModalVisible(false);
+    const res = await fetch("http://192.168.0.103:8081/v2/present", {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        'verifier_uri': verifier_uri,
+        'credential_id': 1,
+      }),
+    });
   }
   return (
     <>
@@ -115,7 +113,7 @@ export default function accessScreen() {
             <Text style={styles.modalTitle}>Authorise?</Text>
             <View style={styles.buttonContainer}>
               <View style={styles.button}>
-                 <Button title="Send" onPress={() => sendData("z5361805")} />
+                 <Button title="Send" onPress={() => sendData()} />
               </View>
               <View style={styles.button}>
                  <Button title="No" onPress={() => setModalVisible(false)} />
