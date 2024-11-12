@@ -15,12 +15,15 @@ import express, { Express, Request, Response } from "express";
 import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
 import { initialiseDefinition, getPresentations, modifyDefinition, logPresentation, trust, untrust } from "./db";
+import cors from 'cors';
 
 // dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 8083;
+// Express backend setup
 
+app.use(cors()); // Enable CORS for all routes
 app.use(express.json())
 
 app.get("/", (req: Request, res: Response) => {
@@ -36,7 +39,7 @@ app.get("/v2/request", async (req: Request, res: Response) => {
     console.log(`Received metadata request`);
     const result = await requestMetadata();
     console.log(`Success: providing metadata: ${JSON.stringify(result.body)}`);
-    res.status(result.status).json(result.body);
+    return res.status(result.status).json(result.body);
 });
 
 app.post("/v2/present", async (req: Request, res: Response) => {

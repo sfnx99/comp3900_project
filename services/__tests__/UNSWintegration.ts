@@ -59,7 +59,6 @@ describe('Test integration for UNSW use cases', () => {
             expect(res.status).toStrictEqual(200);
             // This token must be held onto on wallet side for use later on
             const token = res.data.token;
-            
             // Issuer Registration: User will register with the issuer
             // Not sure on the point of this but it is a requirement for bookworms to work
             res = await axios.post(issuer_url + "/v2/authorize", {
@@ -71,7 +70,7 @@ describe('Test integration for UNSW use cases', () => {
             });
             // These must be held onto by the issuer for next step of issuance
             const auth_code = res.data.code;
-
+            const state = res.data.state;
             // User will also provide information to issuer (Both of these steps are probably best combined together on frontend)
             res = await axios.post(issuer_url + "/v2/info", {
                 email: "bob@test.com",
@@ -161,6 +160,7 @@ describe('Test integration for UNSW use cases', () => {
                     Authorization: `Bearer ${token}`
                 }
             });
+
             const type = res.data.type;
             const attrs = res.data.requiredAttributes;
             expect(type).toStrictEqual("UNSWCredential");
@@ -177,6 +177,7 @@ describe('Test integration for UNSW use cases', () => {
                     Authorization: `Bearer ${token}`
                 }
             });
+            // Right now this is just a bool? Not sure how the verifier captures the data
             expect(res.status).toStrictEqual(200);
 
             // Once the presentation has been made - service provider can check the presentation in the following route

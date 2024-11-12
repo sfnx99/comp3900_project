@@ -1,0 +1,5 @@
+{
+  "wallet_url": "http://localhost:8081",
+  "issuer_url": "http://localhost:8082",
+  "verifier_url": "http:/localhost:8083"
+}

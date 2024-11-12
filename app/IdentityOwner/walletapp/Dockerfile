@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose the Metro Bundler port (default is 8081 for React Native/Expo)
-EXPOSE 8081
+EXPOSE 8084
 
 # Set the environment variables (make sure to replace with your actual local IP address)
 ENV REACT_NATIVE_PACKAGER_HOSTNAME=192.168.20.17

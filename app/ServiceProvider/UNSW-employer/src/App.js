@@ -7,16 +7,64 @@ import ADA from './pages/ADA';
 import Risk from './pages/Risk';
 import Signup from './pages/Sign-up';
 import {QRCodeSVG} from 'qrcode.react';
-// import {getLocalIPAddress} from './Helper'
+
+const IPconfig = require('./config.json')
+// // Service Provider backend is listening on 8083
+let endpoint= JSON.stringify(IPconfig.credential_endpoint);
+const verifier_url= JSON.stringify(IPconfig.verifier_url);
+const issuer_url = JSON.stringify(IPconfig.issuer_url)
+
+// Sets up service provider definition
+const setup = async () => {
+  const res= await fetch(issuer_url);
+  // const issuer_did = res.data.did_uri;
+  const data = await res.json()
+  const issuer_did = data.did_uri;
+  
+  await fetch(`${verifier_url}/v2/trust`, {
+    method: "POST",
+    body: JSON.stringify({
+      id: issuer_did,
+    }),
+  });
+
+  await fetch(`${verifier_url}/v2/definition`, {
+    method: "POST",
+    body: JSON.stringify({
+      type: "UNSWCredential",
+      requiredAttributes: ["zID", "expiryDate"],
+    }),
+  });
+}
+
 
 export function QR_BUTTON() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const togglePopup = () => {
+
+  const togglePopup = async () => {
     setIsPopupOpen(!isPopupOpen);
   };
-  // const localIP = getLocalIPAddress();
-  const localIP="http://192.168.0.105"
-  const url = localIP.concat(":8081/access");
+
+  const QRCodeComponent = () => {
+  
+    // Combine URL and JSON object as a string
+    // Need to construct the data more carefully
+
+    const combinedData = `${endpoint}`;
+    return (
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <h2>QR Code with URL and JSON Data</h2>
+        <QRCodeSVG 
+          value={combinedData}
+          size={256} 
+          bgColor={"#ffffff"} 
+          fgColor={"#000000"} 
+          level={"L"} 
+        />
+      </div>
+    );
+  };
+
   return (
     <div>
     <button className="qr-code-button" onClick={togglePopup}>
@@ -28,7 +76,7 @@ export function QR_BUTTON() {
         <div className="qr-popup">
           <div className="qr-popup-content">
             <span className="close" onClick={togglePopup}>&times;</span>
-             <QRCodeSVG value={url}/>
+            <QRCodeComponent/>
           </div>
         </div>
       )}
@@ -47,6 +95,7 @@ export function JOB_BUTTON({ text, url }) {
   );
 }
 function App() {
+  setup()
   return ( 
     <div className='App'>
       <header className="App-header">

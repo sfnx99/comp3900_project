@@ -17,6 +17,7 @@ import { deleteCredential, deleteCredentialV2, getCredential, getCredentials, ge
 import { getIssuers, getIssuersV2, getRequest, getRequestV2, makeRequest, makeRequestV2 } from './issuer';
 import { getPresentation, getPresentationV2, makePresentation, postPresentationV2 } from './verifier';
 import { wrapAuthorisation } from "./wrapper";
+import cors from 'cors';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const app: Express = express();
 const port = process.env.PORT || 8081;
 
 // Parse request body
+app.use(cors()); // Enable CORS for all routes
 app.use(express.json())
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
@@ -144,11 +146,14 @@ app.get("/hello", async (req: Request, res: Response) => {
 
 app.post('/v2/auth/register', (req: Request, res: Response) => {
     const {email, password} = req.body;
+    console.log(email)
+    console.log(password)
     const result = authRegisterV2(email, password);
     res.status(result.status).json(result.body);
 });
 
 app.post('/v2/auth/login', (req: Request, res: Response) => {
+    console.log("logging in")
     const {email, password} = req.body;
     const result = authLoginV2(email, password);
     res.status(result.status).json(result.body);
@@ -212,6 +217,7 @@ app.post("/v2/present", async (req: Request, res: Response) => {
 
 // Management of Credentials
 app.get("/v2/credentials", async (req: Request, res: Response) => {
+    console.log("Retrieving all credentials")
     const token = req.headers.authorization;
     const result = await wrapAuthorisation(token, getCredentialsV2);
     res.status(result.status).json(result.body);

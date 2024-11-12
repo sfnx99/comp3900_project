@@ -1,15 +1,48 @@
 import React, { useState } from 'react';
-
+import { useLocation } from 'react-router-dom';
 import { View, Text, StyleSheet, Button, Modal, FlatList, Image, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 import axios from "axios";
 
+const IPconfig = require('./config.json')
+const wallet_url= JSON.stringify(IPconfig.wallet_url);
 interface Item {
   id: string;
   title: string;
 }
 
+const getCredentials = async (token: string | null) => {
+  const res = await fetch("http://localhost:8081/v2/credentials", {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  // Parse the JSON response
+  const data = await res.json();
+  return data
+}
+
+const getMdoc = async (token: string | null, verifier_url: string | null) => {
+  const res = await fetch(`http://localhost:8081/v2/present?verifier_uri=${verifier_url}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`
+    } 
+  });
+  // Parse the JSON response
+  const data = await res.json();
+  console.log(data)
+  return data
+
+}
 export default function accessScreen() {
+  const params = new URL(location.href).searchParams;
+  const verifier_uri = params.get('verifier_url');
+  const token  = params.get('token');
+
+  const MDoc = getMdoc(token, verifier_uri);
+  const credentials = getCredentials(token);
 
   const items: Item[] = [
     { id: '1', title: 'UNSW Credentials' },
@@ -43,15 +76,18 @@ export default function accessScreen() {
     );
   };
   async function sendData(zID: string) {
-    setModalVisible(false);
-    try {
-      const response = await axios.post('http://192.168.0.105:4999/items', {
-        zID, // Send the new item as part of the request body
-      });
-      console.log('Item added:', response.data);
-    } catch (error) {
-      console.error('Error adding item:', error);
-    }
+    // setModalVisible(false);
+    // const params = new URL(location.href).searchParams;
+    // const verifier_uri = params.get('verifier_url');
+    // const token = params.get('token');
+    // const res = await axios.post(wallet_url + "/v2/present", {
+    //   verifier_uri: verifier_uri,
+    //   credential_id: "cred_id"
+    // }, {
+    //   headers: {
+    //       Authorization: `Bearer ${token}`
+    //   }
+    // });
   }
   return (
     <>

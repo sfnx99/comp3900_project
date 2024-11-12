@@ -1,16 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, Pressable, StyleSheet } from 'react-native'; // Replaced TouchableOpacity with Pressable
 import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
+import axios from 'axios';
 
+
+import IPconfig from '../config.json';
+const wallet_url= JSON.stringify(IPconfig.wallet_url);
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();  // Initialize the router inside the component
+  const router = useRouter();
+  // User needs to sign in after scanning QR code to access their credentials for submission
 
-  const handleSignIn = () => {
+  const params = new URL(location.href).searchParams;
+  const verifier_url = params.get('verifier_url');
+  const requestStep = params.get('request');
+  const handleSignIn = async () => {
+
+    // Please implement sign-in step to get a token
+
     // Navigate to the home page upon sign in
-    router.push('/(tabs)/home');
+    const res = await fetch("http://localhost:8081/v2/auth/login", {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json", // Ensure the content type is JSON
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+    // Parse the JSON response
+    const data = await res.json();
+    console.log(data)
+    // Get the token from the response
+    const token = data.token;
+
+    if (requestStep === 'True' && res.status === 200) {
+      router.push(`/access?verifier_url=${verifier_url}&token=${token}`)
+    } else if (requestStep != 'True' && res.status === 200){
+      router.push('/(tabs)/home');
+    } else {
+      alert("Invalid login")
+    }
   };
 
   return (

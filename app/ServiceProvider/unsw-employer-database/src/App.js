@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+const verifier_url = "http://localhost:8083"
+const issuer_url = "http://localhost:8082"
+const wallet_url = "http://localhost:8081"
+
+const getPresentations = async () => {
+  try {
+    const response = await fetch(`${verifier_url}/v2/presentations`, {
+    });    
+    if (!response.ok) {
+      throw Error
+    }
+    const data = await response.json();
+    return data
+  } catch (error) {
+    console.error('Error fetching credential:', error);
+    throw error;
+  }
+}
 
 const VariableSizeList = () => {
   const [list, setList] = useState([]);
   const [newItem, setNewItem] = useState("");
-
-  const fetch_items = () => {
-    axios.get("http://localhost:4999/items")
-      .then((response) => setList(response.data.items))
-      .catch((error) => console.error("Error fetching items:", error));
-  };
-
+  setList(getPresentations)
   return (
     <div className="App">
       <header className="App-header">
