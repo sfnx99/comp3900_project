@@ -1,13 +1,14 @@
 import React, { useState, CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../scripts/api'; 
+import { login } from '../scripts/api'; // Ensure the correct import path
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const res = await fetch("http://localhost:8082/v1/login", {
         method: 'POST',
@@ -34,31 +35,33 @@ function LoginPage() {
       </div>
       <div style={styles.formContainer}>
         <h2 style={styles.header}>Sign in to UNSW ID Management</h2>
-        <div style={styles.inputContainer}>
-          <label htmlFor="email" style={styles.label}>Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            style={styles.input}
-            required
-          />
-        </div>
-        <div style={styles.inputContainer}>
-          <label htmlFor="password" style={styles.label}>Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            style={styles.input}
-            required
-          />
-        </div>
-        <button onClick={handleLogin} style={styles.button}>Login</button>
+        <form onSubmit={handleLogin}>
+          <div style={styles.inputContainer}>
+            <label htmlFor="email" style={styles.label}>Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              style={styles.input}
+              required
+            />
+          </div>
+          <div style={styles.inputContainer}>
+            <label htmlFor="password" style={styles.label}>Password:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              style={styles.input}
+              required
+            />
+          </div>
+          <button type="submit" style={styles.button}>Login</button>
+        </form>
         <p style={styles.registerText}>
           Don't have an account? <Link to="/register" style={styles.registerLink}>Register</Link>
         </p>

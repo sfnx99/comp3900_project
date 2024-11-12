@@ -17,13 +17,18 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
-import { getCredential, logCredential, getCredentials, setFormats, getUser } from "./db.js";
-import { registerUser, modifyUser, modifyFormat } from "./frontend.js"
+import { getCredential, logCredential, getCredentials, setFormats, addIssuerAdmin, addCredentialLog, getCredentialLogs, getCredentialLog } from "./db.js";
+import { authenticateIssuerAdmin, authorizeIssuerAdmin } from './oauth.js';
+import { registerUser, modifyUser, modifyFormat, registerIssuer } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
 require('dotenv').config() // eslint-disable-line
 import fs from "fs";
 import http from "http";
 import https from "https";
+import { v4 as uuidv4 } from 'uuid';
+import { CLIENT_RENEG_WINDOW } from 'tls';
+let authCodeStorage: string[] = [];
+
 const privateKey  = fs.readFileSync('key.pem', 'utf8'); // Hardcoded
 const certificate = fs.readFileSync('cert.pem', 'utf8'); // Hardcoded
 
@@ -45,17 +50,143 @@ let did_uri = '';
 let secretKey = new Uint8Array();
 let publicKey = new Uint8Array();
 
+const corsOptions = {
+    origin: 'http://localhost:3000', // Allow requests from this origin
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions)); // Use the CORS middleware with the specified options
 app.use(express.json());
-app.use(cors())
 
 app.get("/", (req: Request, res: Response) => {
-    console.error(`Served DID at /: ${did_uri}`);
+    // console.error(`Served DID at /: ${did_uri}`);
     res.json({ did_uri });
 });
 
-app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
+// app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
+
+app.post("/v2/admin/login", (req: Request, res: Response) => {
+    try {
+        const { admin_id, admin_secret, did_url} = req.body;
+
+        // Check if all required parameters are present
+        if (!admin_id || !admin_secret) {
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        // Authorize admin using the provided DID URL
+        const token = authorizeIssuerAdmin(admin_id, admin_secret, did_url);
+        return res.json({ token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: (err instanceof Error ? err.message : 'Internal Server Error')
+        });
+    }
+});
+
+
+// frontend endpoints
+
+app.post("/v2/admin/register", (req: Request, res: Response) => {
+    console.log(`Register issuer admin ${req.body.email} with password ${req.body.password}`);
+    try {
+        const { email, password } = req.body;
+        addIssuerAdmin(email, { admin_secret: password });
+        console.log(`Successfully registered`);
+        res.status(200).json({ message: 'Registration successful' });
+    } catch (err) {
+        console.error(`Failed to register`, err);
+        if (err instanceof Error) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: String(err) });
+        }
+    }
+});
+
+app.get("/v2/credentials", (req: Request, res: Response) => {
+    try {
+        res.status(200).json(getCredentials());
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+
+app.get("/v2/list-credentials", (req: Request, res: Response) => {
+    try {
+        const credentials = getCredentials().map(credential => ({
+            credentialName: credential.format, // Use nameOfCredential for the credential name
+            ...credential
+        }));
+        res.status(200).json(credentials);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+
+app.get("/v2/credential-logs", (req: Request, res: Response) => {
+    try {
+        const { format } = req.query;
+        let logs = getCredentialLog(format as string);
+        res.status(200).json(logs);
+    } catch (err) {
+        console.error("Error fetching credential logs:", err);
+        res.status(500).json({
+            error: (err instanceof Error ? err.message : 'Internal Server Error')
+        });
+    }
+});
+
 
 app.post("/v2/authorize", (req: Request, res: Response) => {
+    try {
+        const { application, client_id, client_secret, redirect_uri, state, scope } = req.body;
+        console.log('Received request body:', req.body);
+
+        const credential = getCredential(application.client_id, application.credentialType);
+        if (!credential) {
+            console.error('Credential not found for application:', application);
+            return res.status(404).json({ error: 'Credential not found' });
+        }
+
+        addCredentialLog({
+            client_id: application.client_id,
+            type: application.credentialType,
+            cryptosuite: 't11a-bookworms-bbs',
+            credential: credential.fields,
+        });
+
+        const authResponse = authorize(client_id, client_secret, redirect_uri, state, scope);
+        res.json(authResponse);
+    } catch (err) {
+        console.error('Error in /v2/authorize endpoint:', err);
+        res.status(500).json({
+            error: (err instanceof Error ? err.message : 'Internal Server Error')
+        });
+    }
+});
+
+app.post("/v2/register", (req: Request, res: Response) => {
+    console.log(`Register user ${req.body.email} with password ${req.body.password}`);
+    try {
+        const { email, password } = req.body;
+        registerUser(email, password);
+        console.log(`Successfully registered`);
+        res.status(200).json({ message: 'Registration successful' });
+    } catch (err) {
+        console.error(`Failed to register`, err);
+        if (err instanceof Error) {
+            res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+        } else {
+            res.status(500).json({ error: String(err) });
+        }
+    }
+});
+
+app.post("/v2/authorize/client", (req: Request, res: Response) => {
     try {
         const { client_id, client_secret, redirect_uri, state, scope } = req.body;
         console.log(`Authorize client: ${client_id} to receive credential type ${scope}`);
@@ -67,6 +198,7 @@ app.post("/v2/authorize", (req: Request, res: Response) => {
     }
 })
 
+// access token created by owner auth code 
 app.post("/v2/token", (req: Request, res: Response) => {
     const { code, client_id } = req.body;
     res.json({ access_token: token(client_id, code), token_type: 'bearer' })
@@ -82,18 +214,13 @@ app.post("/v2/credential", async (req: Request, res: Response) => {
     }
 });
 
-
-// frontend endpoints
-
-app.post("/v2/register", (req: Request, res: Response) => {
-    console.log(`Register user ${req.body.email} with password ${req.body.password}`);
+app.post("/v2/name", async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
-        registerUser(email, password);
-        console.log(`Successfully registered`);
+        const { name } = req.body;
+        console.log(`Recieved request to change name to ${name}`);
+        await updateName(name);
         res.sendStatus(200);
-    } catch (err) {
-        console.log(`Failed to register`);
+    } catch(err) {
         res.status(500).json(err);
     }
 });
@@ -115,7 +242,14 @@ app.post("/v2/info", (req: Request, res: Response) => {
     try {
         const { email, info } = req.body;
         modifyUser(email, info);
-        console.log(`Successfully added information`);
+        addCredentialLog({
+            client_id: email,
+            type: "UNSWCredential",
+            cryptosuite: "t11a-bookworms-bbs",
+            credential: info
+        });
+
+        // console.log(`Successfully added to credential log ${JSON.stringify(info)}`);
         res.sendStatus(200);
     } catch (err) {
         console.log(`Failed to add information`);
@@ -126,27 +260,12 @@ app.post("/v2/info", (req: Request, res: Response) => {
 app.post("/v2/format", async (req: Request, res: Response) => {
     try {
         const { type, attributes } = req.body;
+        console.log("Changing format to be of type");
+        console.log(type);
+        console.log("Changing attributes to be");
+        console.log(attributes);
         modifyFormat(type, attributes);
         await updateFormat(type);
-        res.sendStatus(200);
-    } catch(err) {
-        res.status(500).json(err);
-    }
-});
-
-app.get("/v2/credentials", (req: Request, res: Response) => {
-    try {
-        res.status(200).json(getCredentials());
-    } catch(err) {
-        res.status(500).json(err);
-    }
-});
-
-app.post("/v2/name", async (req: Request, res: Response) => {
-    try {
-        const { name } = req.body;
-        console.log(`Recieved request to change name to ${name}`);
-        await updateName(name);
         res.sendStatus(200);
     } catch(err) {
         res.status(500).json(err);

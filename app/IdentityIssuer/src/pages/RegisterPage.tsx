@@ -1,6 +1,6 @@
 import React, { useState, CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../scripts/api'; 
+import { register, registerOwner } from '../scripts/api'; 
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -15,6 +15,7 @@ function RegisterPage() {
     }
 
     try {
+<<<<<<< HEAD
       const res = await fetch("http://localhost:8082/v2/register", {
         method: 'POST',
         headers: {
@@ -25,6 +26,10 @@ function RegisterPage() {
           "password": password
         })
       });
+=======
+      const data = await registerOwner(email, password);
+      alert('Registration successful! Please check your email to complete account setup.');
+>>>>>>> main
       navigate('/login');
     } catch (error) {
       alert('Registration failed. Please try again.');
