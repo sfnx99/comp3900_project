@@ -31,7 +31,7 @@ function ListCredentialPage() {
         <p style={styles.description}>Page to view, edit and see information on valid credentials</p>
         <div style={styles.credentialsContainer}>
           {credentials.map((credential) => (
-            <Link to={`/credential/view/${credential.id}`} key={credential.id} style={styles.credentialBox}>
+            <Link to={`/credential/${credential.id}`} key={credential.id} style={styles.credentialBox}>
               {credential.credentialName}
             </Link>
           ))}
@@ -79,6 +79,8 @@ const styles: { [key: string]: CSSProperties } = {
     backgroundColor: '#fff',
     textAlign: 'center',
     fontSize: '0.6em', 
+    textDecoration: 'none',
+    color: '#333',
   },
 };
 

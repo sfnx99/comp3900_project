@@ -17,11 +17,11 @@ function HomePage() {
             <FaIdCard style={styles.icon} />
             <span style={styles.linkText}>View Credential</span>
           </Link>
-          <Link to="/credentials/accept1" style={styles.serviceBox}>
+          <Link to="/issue-credentials" style={styles.serviceBox}>
             <MdCreditCardOff style={styles.icon} />
-            <span style={styles.linkText}>Accept Credential</span>
+            <span style={styles.linkText}>Issue Credential</span>
           </Link>
-          <Link to="/credentials/revoke1" style={styles.serviceBox}>
+          <Link to="/revoke-credentials" style={styles.serviceBox}>
             <FaRegUserCircle style={styles.icon} />
             <span style={styles.linkText}>Revoke Credential</span>
           </Link>

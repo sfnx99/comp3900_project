@@ -5,7 +5,7 @@ import AddCredentialPage from './pages/AddCredentialPage';
 import ListCredentialPage from './pages/ListCredentialPage';
 import ViewCredentialPage from './pages/ViewCredentialPage';
 import VerifyCredentialsPage from './pages/VerifyCredentialsPage';
-import RevokeCredentialsPage from './pages/RevokeCredentialsPage';
+import RevokeCredentialsPage from './pages/RevokeCredentialPage';
 import NotificationPage from './pages/NotificationPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
@@ -14,6 +14,8 @@ import NavigationBar from './components/NavigationBar';
 import MobileNavigationBar from './components/MobileNavigationBar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import IssueCredentialsPage from './pages/IssueCredentialsPage';
+import AuthorizeCredentialPage from './pages/AuthorizeCredentialPage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
@@ -44,11 +46,12 @@ function App() {
           <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/credential/add" element={<ProtectedRoute><AddCredentialPage /></ProtectedRoute>} />
           <Route path="/credentials/list" element={<ProtectedRoute><ListCredentialPage /></ProtectedRoute>} />
-          <Route path="/credential/view/:id" element={<ProtectedRoute><ViewCredentialPage /></ProtectedRoute>} />
-          <Route path="/credentials/verify" element={<ProtectedRoute><VerifyCredentialsPage /></ProtectedRoute>} />
-          <Route path="/credentials/revoke" element={<ProtectedRoute><RevokeCredentialsPage /></ProtectedRoute>} />
+          <Route path="/credential/unswcredential" element={<ProtectedRoute><ViewCredentialPage /></ProtectedRoute>} />
+          <Route path="/revoke-credentials" element={<ProtectedRoute><RevokeCredentialsPage /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><NotificationPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          {/* <Route path="/issue-credentials" element={<ProtectedRoute><IssueCredentialsPage /></ProtectedRoute>} /> */}
+          {/* <Route path="/credential/authorize/:id" element={<AuthorizeCredentialPage />} /> */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

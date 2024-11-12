@@ -1,13 +1,25 @@
-import { Format, Credential, CredentialLog, User } from "./types.js";
+import { Format, Credential, CredentialLog, User, IssuerAdmin } from "./types.js";
 
 let formats: Format[] = [];
-const credentials: CredentialLog[] = [];
+const credentials: Credential[] = []; // Credential list
+const credentialLogs: CredentialLog[] = []; // Credential log
 const users: User[] = [
-    {client_id: "bob@test.com", info: {"firstName":"bob", "lastName":"smith", "licenseNo":"234955",  "expiryDate": "10/2025", "dob": "1/1/2000"} },
-    { client_id: "james@test.com", info: {"firstName":"james", "lastName":"smith",  "expiryDate": "10/2026", "dob": "8/1/1969"}}
+    { client_id: "bob@test.com", info: { "firstName": "bob", "lastName": "smith", "zID": "z1234567", "dob": "1/1/2000", "USI": "234955", "faculty": "Engineering", "expiryDate": "10/2025", "program": "Software Engineering", "COMP3900Grade": "HD" } },
+    { client_id: "james@test.com", info: { "firstName": "james", "lastName": "smith", "zID": "z7654321", "dob": "8/1/1969", "USI": "123456", "faculty": "Science", "expiryDate": "10/2026", "program": "Computer Science", "COMP3900Grade": "DN" } }
 ];
 
-export function editUser(client_id: string, info: {[key: string] : string}) {
+const issuerAdmins: IssuerAdmin[] = [
+    {
+        admin_id: 'unsw@gmail.com',
+        info: {
+            admin_secret: '1234',
+            token: 'xyz' 
+        }
+    }
+];
+
+// User management functions
+export function editUser(client_id: string, info: { [key: string]: string }) {
     for (const i in users) {
         if (users[i].client_id === client_id) {
             users[i].info = info;
@@ -26,7 +38,7 @@ export function getUser(client_id: string) {
     throw new Error(`getUser: user ${client_id} does not exist`);
 }
 
-export function addUser(client_id: string, info: {[key: string] : string}) {
+export function addUser(client_id: string, info: { [key: string]: string }) {
     users.push({ client_id, info });
 }
 
@@ -60,12 +72,47 @@ export function setFormats(new_formats: Format[]) {
 }
 
 export function logCredential(credential: CredentialLog) {
-    credentials.push(credential);
-    if (credentials.length > 10) {
-        credentials.shift();
+    credentialLogs.push(credential);
+    if (credentialLogs.length > 10) {
+        credentialLogs.shift();
     }
+}
+
+export function getCredentialLogs() {
+    return credentialLogs;
 }
 
 export function getCredentials() {
     return credentials;
+}
+
+export function addCredentialLog(credential: CredentialLog): void {
+    credentialLogs.push(credential);
+    if (credentialLogs.length > 10) {
+        credentialLogs.shift();
+    }
+}
+
+// Issuer admin management functions
+export function editIssuerAdmin(admin_id: string, info: { [key: string]: string }) {
+    for (const i in issuerAdmins) {
+        if (issuerAdmins[i].admin_id === admin_id) {
+            issuerAdmins[i].info = { ...issuerAdmins[i].info, ...info };
+            return;
+        }
+    }
+    throw new Error(`editIssuerAdmin: admin ${admin_id} does not exist`);
+}
+
+export function getIssuerAdmin(admin_id: string) {
+    for (const admin of issuerAdmins) {
+        if (admin.admin_id === admin_id) {
+            return admin;
+        }
+    }
+    throw new Error(`getIssuerAdmin: admin ${admin_id} does not exist`);
+}
+
+export function addIssuerAdmin(admin_id: string, info: { [key: string]: string }) {
+    issuerAdmins.push({ admin_id, info });
 }
