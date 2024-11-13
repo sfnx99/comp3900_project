@@ -21,7 +21,7 @@ export const issueAndVerifyCredential = async () => {
         // Identity holder must now register in the wallet application & Issuer
         // Wallet Registration: This route should be called through front end of wallet app
         res = await axios.post(config.wallet_url + "/v2/auth/register", {
-            email: "bob25@test.com",
+            email: "bob29@test.com",
             password: "hunter2"
         });
         // This token must be held onto on wallet side for use later on

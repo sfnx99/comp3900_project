@@ -58,9 +58,32 @@ const VerifyScreen = ({ route }: any) => {
     fetchAttributes();
   }, [walletData, uri]);
 
-  const handleAgree = () => {
-    Alert.alert("Agreement", "You have agreed to share the information.");
-    // Logic to handle sharing data (e.g., sending data to a backend)
+  const handleAgree = async () => {
+    if (!walletData) {
+      Alert.alert("Error", "No wallet data available.");
+      return;
+    }
+
+    try {
+      const cred_id = walletData.cred.id; // Ensure this is available in walletData
+
+      // Make the POST request
+      const res = await axios.post(`${config.wallet_url}/v2/present`, {
+        verifier_uri: uri,
+        credential_id: cred_id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${walletData.token}`,  // Use the token stored in walletData
+        }
+      });
+
+      // Handle the response here (e.g., success message or navigation)
+      Alert.alert("Success", "Data shared successfully.");
+      router.push('/home');  // Navigate to the 'home' tab after success
+    } catch (error) {
+      console.error("Error in sharing data:", error.response || error.message);
+      Alert.alert("Error", "There was an issue sharing the information.");
+    }
   };
 
   const handleDeny = () => {

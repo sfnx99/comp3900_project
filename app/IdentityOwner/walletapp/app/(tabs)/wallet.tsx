@@ -1,9 +1,7 @@
 import { View, Text, StyleSheet, Image, Pressable, Button, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
-import * as Linking from 'expo-linking';
 
 const Wallet = () => {
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
