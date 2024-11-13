@@ -28,14 +28,45 @@ const ScanScreen: React.FC = () => {
 
   const { token } = useLocalSearchParams()
 
-  const handleBarCodeScanned = ({ data }: { data: string }) => {
-    router.push({
-      pathname: '/access',
-      params: { 
-        token: token,
-        verifier_url: data
-      }
-    })
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
+    try {
+      const auth_code = JSON.stringify(JSON.parse(data).auth_code)
+      const licenseType = JSON.stringify(JSON.parse(data).type)
+      const issuer_id = JSON.stringify(JSON.parse(data).issuer_id)
+      const wallet_url = JSON.parse(data).redirect_uri
+      const res = await fetch(`${wallet_url}/v2/issue`, {
+        method: 'POST',
+        headers: {
+        Authorization: `Bearer ${token}`
+        }, 
+        body: JSON.stringify({
+          issuer_id: issuer_id,
+          auth_code: auth_code,
+          redirect_uri: wallet_url,
+          type: licenseType
+        })
+      });
+      router.push({
+        pathname: '/home',
+        params: { 
+          token: token,
+          verifier_url: ""
+        }
+      })
+    } catch {
+      router.push({
+        pathname: '/access',
+        params: { 
+          token: token,
+          verifier_url: ""
+        }
+      })
+    }
+      // if (res.status === 200) {
+      //   router.push('/access')
+      // } else {
+      //   router.push('/home')
+      // }
   };
 
 

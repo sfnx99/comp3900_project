@@ -1,8 +1,8 @@
 import { redirect } from "react-router-dom";
 
-const issuer_url = "http://localhost:8082";
-const wallet_url = "http://localhost:8081";
-const verifier_url = "http://localhost:8083";
+const issuer_url = "http://172.20.10.10:8082";
+const wallet_url = "http://172.20.10.10:8081";
+const verifier_url = "http://172.20.10.10:8083";
 
 import axios from 'axios';
 

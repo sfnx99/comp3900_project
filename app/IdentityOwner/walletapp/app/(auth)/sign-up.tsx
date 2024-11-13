@@ -12,12 +12,19 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
+//   function stripFirstAndLastChar(str: string) {
+//     // Check if the string length is greater than 1
+//     if (str.length > 1) {
+//         return str.slice(1, -1); // Remove first and last character
+//     }
+//     return str; // Return the original string if length is 1 or less
+// }
   const IPconfig = require('../config.json')
-  const wallet_url= JSON.stringify(IPconfig.wallet_url);
+  const IPaddress = IPconfig.IPaddress
+  const wallet_url= IPconfig.wallet_url;
 
   const handleSignUp = async () => {
-
-    const res = await fetch("http://192.168.0.103:8081/v2/auth/register", {
+    const res = await fetch(`http://${IPaddress}:8081/v2/auth/register`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON

@@ -5,7 +5,9 @@ import { deleteCredentialById, getToken, getAuthCode, fetchCredentialByName } fr
 import { FaTrash } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
-const wallet_url = "http://localhost:8081";
+const IPconfig = require('../config.json')
+const IPaddress = IPconfig.IPaddress;
+const wallet_url = `http://${IPaddress}:8081`;
 
 interface Credential {
   client_id: string;

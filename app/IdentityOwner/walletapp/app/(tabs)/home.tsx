@@ -6,6 +6,14 @@ const router = useRouter();
 const { token } = useLocalSearchParams()
 const handleCredentialPress = () => {
   router.push({
+    pathname: '/(tabs)/scan_cred',
+    params: {
+      token: token
+    },
+  })
+} 
+const handleScanPress = () => {
+  router.push({
     pathname: '/(tabs)/scan',
     params: {
       token: token
@@ -46,7 +54,7 @@ const HomeScreen = () => {
         <Pressable style={styles.button} onPress={handleCredentialPress}>
           <Text style={styles.buttonText}>Add a credential</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={handleCredentialPress}>
+        <Pressable style={styles.button} onPress={handleScanPress}>
           <Text style={styles.buttonText}>Scan</Text>
         </Pressable>
       </View>

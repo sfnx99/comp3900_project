@@ -5,12 +5,7 @@
     "@types/uuid": "^10.0.0",
     "expo": "^51.0.14",
     "express": "^4.21.1",
-<<<<<<< HEAD
     "metro": "^0.80.9"
-=======
-    "metro": "^0.80.9",
-    "ts-node": "^10.9.2"
->>>>>>> main
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

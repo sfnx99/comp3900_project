@@ -15,24 +15,11 @@ function RegisterPage() {
     }
 
     try {
-<<<<<<< HEAD
-      const res = await fetch("http://localhost:8082/v2/register", {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json", // Ensure the content type is JSON
-        },
-        body: JSON.stringify({
-          "email": email,
-          "password": password
-        })
-      });
-=======
       const data = await registerOwner(email, password);
       alert('Registration successful! Please check your email to complete account setup.');
->>>>>>> main
       navigate('/login');
     } catch (error) {
-      alert('Registration failed. Please try again.');
+      alert(`Registration failed. Please try again. ${error}`);
     }
   };
 

@@ -6,7 +6,8 @@ import axios from "axios";
 import { useLocalSearchParams } from 'expo-router';
  
 const IPconfig = require('./config.json')
-const wallet_url= JSON.stringify(IPconfig.wallet_url);
+const wallet_url= IPconfig.wallet_url;
+const IPaddress = IPconfig.IPaddress
 
 interface Item {
   id: string;
@@ -16,7 +17,7 @@ interface Item {
 const { token , verifier_uri } = useLocalSearchParams()
 
 const getCredentials = async (token: string | string[]) => {
-  const res = await fetch("http://192.168.0.103:8081/v2/credentials", {
+  const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -28,7 +29,7 @@ const getCredentials = async (token: string | string[]) => {
 }
 
 const getMdoc = async (token: string | string[], verifier_url: string| string[]) => {
-  const res = await fetch(`http://192.168.0.103:8081/v2/present?verifier_uri=${verifier_url}`, {
+  const res = await fetch(`http://${IPaddress}:8081/v2/present?verifier_uri=${verifier_url}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`
