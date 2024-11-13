@@ -1,24 +1,23 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Pressable, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router'
 import { getToken }from '../script.js'
 
-const IPconfig = require('../config.json');
-const IPaddress = IPconfig.IPaddress;
+const config = require('../config.json');
+import * as FileSystem from 'expo-file-system';
 
 
 const Wallet = () => {
 
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+  const [walletData, setWalletData] = useState(null);
 
+  // Toggle to show sensitive information
   const toggleSensitiveInfo = () => {
     setShowSensitiveInfo(!showSensitiveInfo);
   };
 
-
-
-  const getCredentials = async () => {
+<!--   const getCredentials = async () => {
     const token = await getToken();
     const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
       method: 'GET',
@@ -31,7 +30,31 @@ const Wallet = () => {
     console.log(data)
     return data
   }
-  console.log(getCredentials())
+  console.log(getCredentials()) -->
+
+  useEffect(() => {
+    // Fetch the response.json data (or import it directly)
+    const fetchWalletData = async () => {
+      try {
+        const fileUri = FileSystem.documentDirectory + 'response.json';
+
+        const fileContents = await FileSystem.readAsStringAsync(fileUri);
+
+        const data = JSON.parse(fileContents);
+
+        setWalletData(data);  // Assuming the response is structured correctly
+      } catch (error) {
+        console.error('Error fetching wallet data:', error.response || error.message);
+        Alert.alert('Error', 'Failed to load wallet data.');
+      }
+    };
+
+    fetchWalletData();
+  }, []); // Empty dependency array means this effect runs once when the component mounts
+
+  if (!walletData) {
+    return <Text>Loading...</Text>; // Show loading state while fetching data
+  }
 
   return (
     <View style={styles.container}>
@@ -55,22 +78,22 @@ const Wallet = () => {
       <View style={styles.licenseInfo}>
         <Ionicons name="person-circle-outline" size={80} color="black" style={styles.profileIcon} />
         <Text style={styles.infoText}>
-          zID: {showSensitiveInfo ? 'z5555555' : '••••••••'}
+          zID: {showSensitiveInfo ? walletData.cred.zID : '••••••••'}
         </Text>
         <Text style={styles.infoText}>
-          Date of Expiry: 02.02.2027
+          Date of Expiry: {walletData.cred.expiryDate}
         </Text>
         <Text style={styles.infoText}>
-          Date of Birth: {showSensitiveInfo ? '16 SEP 2003' : '••••••••'}
+          Date of Birth: {showSensitiveInfo ? walletData.cred.dob : '••••••••'}
         </Text>
         <Text style={styles.infoText}>
-          Class: C
+          Class: 'C'
         </Text>
         <Text style={styles.infoText}>
-          Conditions: None
+          Conditions: 'C'
         </Text>
         <Text style={styles.infoText}>
-          Address: {showSensitiveInfo ? '42 Wallaby Way, Sydney NSW 2000' : '••••••••••••••••••••••••'}
+          Address: {showSensitiveInfo ? 'Address' : '••••••••••••••••••••••••'}
         </Text>
       </View>
 

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "walletapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -15,19 +15,31 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "This app needs access to the camera to scan QR codes."
+        "NSCameraUsageDescription": "This app needs access to the camera to scan QR codes.",
+        "deepLinking": {
+          "enabled": true,
+          "scheme": "walletapp"
+        }
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "deepLinking": {
+          "enabled": true,
+          "scheme": "walletapp"
+        }
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "deepLinking": {
+        "enabled": true,
+        "scheme": "walletapp"
+      }
     },
     "plugins": [
       "expo-router"

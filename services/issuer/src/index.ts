@@ -50,11 +50,6 @@ let did_uri = '';
 let secretKey = new Uint8Array();
 let publicKey = new Uint8Array();
 
-// const corsOptions = {
-//     origin: 'http://localhost:3001', // Allow requests from this origin
-//     optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
-
 app.use(cors()); // Use the CORS middleware with the specified options
 app.use(express.json());
 

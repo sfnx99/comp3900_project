@@ -16,6 +16,8 @@ import { presentSubmission } from "./present";
 import { requestMetadata } from "./request";
 import { initialiseDefinition, getPresentations, modifyDefinition, logPresentation, trust, untrust } from "./db";
 import cors from 'cors';
+import axios from 'axios';
+import config from "./config.json";
 
 // dotenv.config();
 
@@ -25,6 +27,40 @@ const port = process.env.PORT || 8083;
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json())
+
+app.post('/initialize', async (req, res) => {
+    const { issuer_did, verifier_url } = req.body;
+    console.log('Received request with body:', req.body);
+
+    try {
+        console.log('Sending trust request...');
+        const trustResponse = await axios.post(`${verifier_url}/v2/trust`, {
+            id: issuer_did
+        });
+        console.log('Issuer trusted successfully:', trustResponse.status);
+        res.status(200).send('Issuer trusted successfully');
+    } catch (error) {
+        console.error('Error trusting issuer:', error);
+        return res.status(500).send('Failed to trust issuer');
+    }
+});
+
+app.post('/define', async (req, res) => {
+    const { verifier_url } = req.body;
+        console.log('Received request with body:', req.body);
+    try {
+        console.log('Sending definition request...');
+        const definitionResponse = await axios.post(verifier_url + '/v2/definition', {
+            type: config.licenseType,
+            requiredAttributes: config.requiredAttributes
+        });
+        console.log('Service Provider Defined Fields successfully:', definitionResponse.status);
+        res.status(200).send('Service Provider Defined Fields successfully');
+    } catch (error) {
+        console.error('Error defining fields:', error);
+        return res.status(500).send('Failed to define service provider fields');
+    }
+});
 
 app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server");

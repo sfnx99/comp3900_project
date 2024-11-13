@@ -1,6 +1,5 @@
 {
-  "wallet_url": "http://localhost:8081",
-  "issuer_url": "http://localhost:8082",
-  "verifier_url": "http:/localhost:8083",
-  "IPaddress": "172.20.10.2"
+  "wallet_url": "http://10.0.0.10:8081",
+  "issuer_url": "http://10.0.0.10:8082",
+  "verifier_url": "http://10.0.0.10:8083"
 }

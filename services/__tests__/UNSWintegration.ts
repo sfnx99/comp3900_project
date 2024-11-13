@@ -158,8 +158,8 @@ describe('Test integration for UNSW use cases', () => {
             */
            const verifier_uri = "http://host.docker.internal:8083"; // Note this one is differnet to just local host it has the docker line
 
-        // Now we request what the verifier actually wants
-        res = await axios.get(wallet_url + `/v2/present?verifier_uri=${verifier_uri}`, {
+            // Now we request what the verifier actually wants
+            res = await axios.get(wallet_url + `/v2/present?verifier_uri=${verifier_uri}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform, SafeAreaView, StatusBar, Linking } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Platform, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
-import {  useLocalSearchParams, useRouter } from 'expo-router';
 
-const router = useRouter()
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -11,6 +11,13 @@ const ScanScreen: React.FC = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState<boolean>(false);
   const qrLock = useRef(false);
+  const router = useRouter();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setScanned(false);  // Reset the scanned state when screen is focused
+    }, [])
+  );
 
   useEffect(() => {
     if (!permission) {
@@ -28,21 +35,38 @@ const ScanScreen: React.FC = () => {
 
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
-    if (data && !qrLock.current) {
-      qrLock.current = true;
-      setScanned(true);
-      setTimeout(async () => {
-        await Linking.openURL(data);
-        qrLock.current = false;
-      }, 500);
-    }
-    router.push({
-      pathname: '/access',
-      params: { 
-        token: "",
-        verifier_url: data
+    console.log('Scanned QR code data:', data);
+  
+    // Check if the data includes the 'walletapp://verify' URL scheme
+    if (data.includes('walletapp://verify')) {
+      try {
+        const parsedUrl = new URL(data); // Parse the URL to extract query parameters
+        const uri = parsedUrl.searchParams.get('uri');
+        const sp = parsedUrl.searchParams.get('sp');
+  
+        if (uri && sp) {
+          // Alert to show the scanned service provider data
+          Alert.alert('QR Code Scanned', `Service Provider: ${sp}`);
+  
+          // Navigate to the VerifyScreen with qrData and sp as query parameters
+          router.push(`/verify?uri=${uri}&sp=${sp}`);
+        } else {
+          // If either qrData or sp is missing, show an alert or fallback message
+          Alert.alert('Error', 'Missing or invalid QR data.');
+        }
+      } catch (error) {
+        // Catch any errors that occur during URL parsing
+        Alert.alert('Error', 'Failed to parse QR data.');
+        console.error('Error parsing URL:', error);
       }
-    })
+    } else {
+      // If the scanned QR code does not match the expected format
+      Alert.alert('Error', 'Invalid QR code.');
+    }
+
+  
+    // Lock scanning until user presses "Scan Again"
+    setScanned(true);
   };
 
 

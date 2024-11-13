@@ -1,0 +1,4 @@
+{
+    "licenseType": "UNSWCredential",
+    "requiredAttributes": ["zID", "expiryDate"]
+}
