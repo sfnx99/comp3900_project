@@ -1,22 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { View, Text, StyleSheet, Button, Modal, FlatList, Image, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 import axios from "axios";
 import { useLocalSearchParams } from 'expo-router';
- 
+import { getToken } from './script'
 const IPconfig = require('./config.json')
-const wallet_url= IPconfig.wallet_url;
 const IPaddress = IPconfig.IPaddress
 
-interface Item {
-  id: string;
-  title: string;
-}
+// const { token , verifier_uri } = useLocalSearchParams()
+const verifier_uri = `http://${IPaddress}:8083`
 
-const { token , verifier_uri } = useLocalSearchParams()
-
-const getCredentials = async (token: string | string[]) => {
+const getCredentials = async () => {
+  const token = await getToken();
   const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
     method: 'GET',
     headers: {
@@ -25,6 +21,7 @@ const getCredentials = async (token: string | string[]) => {
   });
   // Parse the JSON response
   const data = await res.json();
+  console.log(data)
   return data
 }
 
@@ -41,29 +38,47 @@ const getMdoc = async (token: string | string[], verifier_url: string| string[])
   return data
 
 }
+
 export default function accessScreen() {
-
-  const MDoc = getMdoc(token, verifier_uri);
-  const credentials = getCredentials(token);
-
-  const items: Item[] = [
-    { id: '1', title: 'UNSW Credentials' },
-  ];
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [credential, setCredential] = useState('');
+  const [items, setItems] = useState<string[]>([])
+  const [haveSet, setHaveSet] = useState<boolean>(false);
+  const getInfo = async () => {
+    const token = await getToken()
+    // const MDoc = await getMdoc(token, verifier_uri);
+    const credentials = await getCredentials();
+    if (haveSet === false) {
+      setItems(credentials)
+      setHaveSet(true)
+    }
+  }
+  getInfo()
+
+
 
   // Handle item click
-  const handleItemClick = (title: string) => {
+  const handleItemClick = async (title: string) => {
     setSelectedTitle(title);
     setModalVisible(true); // Show the modal
-    setCredential("1")
+  //   setCredential("1")
+  //   res = await axios.post(wallet_url + "/v2/present", {
+  //     verifier_uri: verifier_uri,
+  //     credential_id: cred_id
+  // }, {
+  //     headers: {
+  //         Authorization: `Bearer ${token}`
+  //     }
+  // });
   };
+  const getCredentialName = () => {
 
+  }
   // Render each item in the list
-  const renderItem = ({ item }: { item: Item }) => (
-    <TouchableOpacity onPress={() => handleItemClick(item.title)} style={styles.item}>
-      <Text style={styles.title}>{item.title}</Text>
+  const renderItem = ({ item }: { item: string }) => (
+    <TouchableOpacity onPress={() => handleItemClick("item")} style={styles.item}>
+      <Text style={styles.title}>{item}</Text>
     </TouchableOpacity>
   );
   const Header = () => {
@@ -79,9 +94,12 @@ export default function accessScreen() {
       </View>      
     );
   };
+
+
   async function sendData() {
+    const token = await getToken()
     setModalVisible(false);
-    const res = await fetch("http://192.168.0.103:8081/v2/present", {
+    const res = await fetch(`http://${IPaddress}:8081/v2/present`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
@@ -95,10 +113,10 @@ export default function accessScreen() {
   return (
     <>
       <Header/>
-      <FlatList
+      <FlatList<string>
       data={items}
       renderItem={renderItem}
-      keyExtractor={item => item.id}
+      keyExtractor={item => item}
       />
       <Modal
         animationType="none"

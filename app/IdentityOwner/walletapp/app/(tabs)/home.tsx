@@ -1,27 +1,43 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, Router} from 'expo-router';
 const router = useRouter();
+const IPconfig = require('../config.json')
+const IPaddress = IPconfig.IPaddress
+const getToken = async () => {
+  const res = await fetch(`http://${IPaddress}:8081/v2/get-code`, {
+    method: 'POST'
+  });
 
-const { token } = useLocalSearchParams()
+  const data = await res.json()
+  return data.token
+}
+
 const handleCredentialPress = () => {
+
   router.push({
-    pathname: '/(tabs)/scan_cred',
-    params: {
-      token: token
-    },
+    pathname: '/(tabs)/scan_cred'
   })
 } 
+
+const handleCheckCredential = () => {
+  router.push({
+    pathname: '/(tabs)/wallet',
+  })
+}
 const handleScanPress = () => {
   router.push({
     pathname: '/(tabs)/scan',
-    params: {
-      token: token
-    },
   })
 } 
-
-const HomeScreen = () => {
+function HomeScreen() {
+  let token = ''
+  const gettingToken = async () => {
+    console.log("in homepage")
+    token = await getToken()
+    console.log(token)
+  } 
+  gettingToken()
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -48,7 +64,7 @@ const HomeScreen = () => {
       
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Services</Text>
-        <Pressable style={styles.button} onPress={() => console.log('Check license')}>
+        <Pressable style={styles.button} onPress={handleCheckCredential}>
           <Text style={styles.buttonText}>Check a license or credential</Text>
         </Pressable>
         <Pressable style={styles.button} onPress={handleCredentialPress}>

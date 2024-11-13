@@ -38,16 +38,26 @@ const SignUp = () => {
     if (res.status === 200) {
       const data = await res.json();
       // Get the token from the response
+<<<<<<< HEAD
 
       console.log("hi i am the data from the register request" + JSON.stringify(data));
       const { token } = data;
       console.log("token: " + token);
       console.log("hi the token is here in sign up.... attempting to pass to homepage now");
+=======
+      const { token } = data;
+      console.log(token)
+      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token })
+      });
+>>>>>>> db58e78 (up to final access page)
       router.push({
         pathname: '/(tabs)/home',
-        params: {
-          token: token
-        }
+        params: token,
       });
     } else {
       alert("Invalid details")

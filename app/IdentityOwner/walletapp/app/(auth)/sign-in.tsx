@@ -4,7 +4,8 @@ import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
 
 import IPconfig from '../config.json';
-const wallet_url= JSON.stringify(IPconfig.wallet_url);
+const IPaddress = IPconfig.IPaddress;
+const wallet_url= IPconfig.wallet_url;
 const SignIn = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ const SignIn = () => {
 
     // Navigate to the home page upon sign in
 
-    const res = await fetch("http://192.168.0.103:8081/v2/auth/login", {
+    const res = await fetch(`http://${IPaddress}:8081/v2/auth/login`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON
@@ -33,11 +34,15 @@ const SignIn = () => {
       console.log(data)
       // Get the token from the response
       const { token } = data.token;
+      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(token)
+      });
       router.push({
         pathname: '/(tabs)/home',
-        params: {
-          token: token
-        }
       });
     } else {
       alert("Failed Login")

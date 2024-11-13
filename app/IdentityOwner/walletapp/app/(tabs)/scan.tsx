@@ -26,13 +26,20 @@ const ScanScreen: React.FC = () => {
     return <Text>No access to camera</Text>;
   }
 
-  const { token } = useLocalSearchParams()
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
+    if (data && !qrLock.current) {
+      qrLock.current = true;
+      setScanned(true);
+      setTimeout(async () => {
+        await Linking.openURL(data);
+        qrLock.current = false;
+      }, 500);
+    }
     router.push({
       pathname: '/access',
       params: { 
-        token: token,
+        token: "",
         verifier_url: data
       }
     })
