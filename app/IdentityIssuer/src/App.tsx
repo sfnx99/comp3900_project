@@ -43,7 +43,8 @@ function App() {
       <div className="mainContent">
         <Routes>
           <Route path="/" element={getToken() ? <Navigate to="/home" /> : <Navigate to="/login" />} />
-          <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          {/* <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> */}
+          <Route path="/home" element={<ProtectedRoute><HomePage /> </ProtectedRoute>}></Route>
           <Route path="/credential/add" element={<ProtectedRoute><AddCredentialPage /></ProtectedRoute>} />
           <Route path="/credentials/list" element={<ProtectedRoute><ListCredentialPage /></ProtectedRoute>} />
           <Route path="/credential/unswcredential" element={<ProtectedRoute><ViewCredentialPage /></ProtectedRoute>} />

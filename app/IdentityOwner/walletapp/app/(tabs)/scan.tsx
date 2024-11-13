@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -32,6 +33,7 @@ const ScanScreen: React.FC = () => {
     return <Text>No access to camera</Text>;
   }
 
+
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     console.log('Scanned QR code data:', data);
   
@@ -61,10 +63,12 @@ const ScanScreen: React.FC = () => {
       // If the scanned QR code does not match the expected format
       Alert.alert('Error', 'Invalid QR code.');
     }
+
   
     // Lock scanning until user presses "Scan Again"
     setScanned(true);
   };
+
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFillObject}>

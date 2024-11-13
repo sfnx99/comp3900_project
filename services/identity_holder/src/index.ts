@@ -27,6 +27,7 @@ const port = process.env.PORT || 8081;
 // Parse request body
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json())
+let tokenStorage: string[] = [];
 
 app.post('/v1/auth/register', (req: Request, res: Response) => {
     res.status(HttpStatusCode.PermanentRedirect).set("Location", "/v2/auth/register");
@@ -247,3 +248,15 @@ app.listen(port, () => {
     console.log(`[server]: Identity_Holder Server is running at http://localhost:${port}`);
 });
 
+app.post('/v2/save-code', (req, res) => {
+    const { token } = req.body;
+    tokenStorage.push(token);
+    res.status(200).json({ message: 'token saved successfully' });
+});
+
+
+app.post('/v2/get-code', (req, res) => {
+    const last = tokenStorage.length - 1;
+    const token = tokenStorage[last];
+    res.status(200).json({ token });
+});

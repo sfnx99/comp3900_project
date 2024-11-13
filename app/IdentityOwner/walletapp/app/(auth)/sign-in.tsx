@@ -2,53 +2,54 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, Pressable, StyleSheet } from 'react-native'; // Replaced TouchableOpacity with Pressable
 import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
-import axios from 'axios';
-
 
 import IPconfig from '../config.json';
-const wallet_url= JSON.stringify(IPconfig.wallet_url);
+const IPaddress = IPconfig.IPaddress;
+const wallet_url= IPconfig.wallet_url;
 const SignIn = () => {
-  // TODO: remove sign in bypass
-  const router = useRouter();
-  router.push('/(tabs)/home');
 
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const router = useRouter();
-  // // User needs to sign in after scanning QR code to access their credentials for submission
+  // User needs to sign in after scanning QR code to access their credentials for submission
 
-  // const params = new URL(location.href).searchParams;
-  // const verifier_url = params.get('verifier_url');
-  // const requestStep = params.get('request');
-  const handleSignIn = async () => {};
+  const handleSignIn = async () => {
+    // Please implement sign-in step to get a token
 
-  //   // Please implement sign-in step to get a token
+    // Navigate to the home page upon sign in
 
-  //   // Navigate to the home page upon sign in
-  //   const res = await fetch("http://localhost:8081/v2/auth/login", {
-  //     method: 'POST',
-  //     headers: {
-  //       "Content-Type": "application/json", // Ensure the content type is JSON
-  //     },
-  //     body: JSON.stringify({
-  //       email: email,
-  //       password: password
-  //     })
-  //   });
-  //   // Parse the JSON response
-  //   const data = await res.json();
-  //   console.log(data)
-  //   // Get the token from the response
-  //   const token = data.token;
+    const res = await fetch(`http://${IPaddress}:8081/v2/auth/login`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json", // Ensure the content type is JSON
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
 
-  //   if (requestStep === 'True' && res.status === 200) {
-  //     router.push(`/access?verifier_url=${verifier_url}&token=${token}`)
-  //   } else if (requestStep != 'True' && res.status === 200){
-  //     router.push('/(tabs)/home');
-  //   } else {
-  //     alert("Invalid login")
-  //   }
-  // };
+    if (res.status === 200) {
+      // Parse the JSON response
+      const data = await res.json();
+      console.log(data)
+      // Get the token from the response
+      const { token } = data.token;
+      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(token)
+      });
+      router.push({
+        pathname: '/(tabs)/home',
+      });
+    } else {
+      alert("Failed Login")
+    }
+
+  };
 
   return (
     <View style={styles.container}>
@@ -61,6 +62,7 @@ const SignIn = () => {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -68,6 +70,7 @@ const SignIn = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         
     

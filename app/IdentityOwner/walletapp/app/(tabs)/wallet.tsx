@@ -1,9 +1,14 @@
 import { View, Text, StyleSheet, Image, Pressable, Button, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { getToken }from '../script.js'
+
+const config = require('../config.json');
 import * as FileSystem from 'expo-file-system';
 
+
 const Wallet = () => {
+
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   const [walletData, setWalletData] = useState(null);
 
@@ -11,6 +16,21 @@ const Wallet = () => {
   const toggleSensitiveInfo = () => {
     setShowSensitiveInfo(!showSensitiveInfo);
   };
+
+<!--   const getCredentials = async () => {
+    const token = await getToken();
+    const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    // Parse the JSON response
+    const data = await res.json();
+    console.log(data)
+    return data
+  }
+  console.log(getCredentials()) -->
 
   useEffect(() => {
     // Fetch the response.json data (or import it directly)

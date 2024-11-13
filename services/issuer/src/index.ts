@@ -17,7 +17,7 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import path from "path";
 import { authenticate, authorize, token } from "./oauth.js";
-import { getCredential, logCredential, getCredentials, setFormats, addIssuerAdmin, addCredentialLog, getCredentialLogs, getCredentialLog } from "./db.js";
+import { getCredential, logCredential, getCredentials, setFormats, addIssuerAdmin, addCredentialLog, getCredentialLogs, getCredentialLog, getUser } from "./db.js";
 import { authenticateIssuerAdmin, authorizeIssuerAdmin } from './oauth.js';
 import { registerUser, modifyUser, modifyFormat, registerIssuer } from "./frontend.js"
 import { readFile, writeFile } from 'fs/promises';
@@ -60,6 +60,17 @@ app.get("/", (req: Request, res: Response) => {
 
 // app.get("/v2/authorize", (req: Request, res: Response) => { res.sendFile(path.join(__dirname, 'authorize.html')) });
 
+app.post('/v2/save-code', (req, res) => {
+    const { auth_code } = req.body;
+    authCodeStorage.push(auth_code);
+    res.status(200).json({ message: 'Auth code saved successfully' });
+});
+
+
+app.post('/v2/get-code', (req, res) => {
+    const auth_code = authCodeStorage[0];
+    res.status(200).json({ auth_code });
+});
 app.post("/v2/admin/login", (req: Request, res: Response) => {
     try {
         const { admin_id, admin_secret, did_url} = req.body;
@@ -220,29 +231,17 @@ app.post("/v2/name", async (req: Request, res: Response) => {
     }
 });
 
-// app.get("/v2/credential-logs", (req: Request, res: Response) => {
-//     try {
-//         const logs = getCredentialLogs();
-//         res.status(200).json(logs);
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({
-//             error: (err instanceof Error ? err.message : 'Internal Server Error')
-//         });
-//     }
-// });
-
-app.post('/v2/save-code', (req, res) => {
-    const { auth_code } = req.body;
-    authCodeStorage.push(auth_code);
-    res.status(200).json({ message: 'Auth code saved successfully' });
+app.post("/v1/login", (req: Request, res: Response) => {
+    console.log(`Logging in`);
+    try {
+        const { email, password } = req.body;
+        getUser(email)
+        res.sendStatus(200)
+    } catch (err) {
+        console.log(`Failed to register`);
+        res.status(500).json(err);
+    }
 });
-  
-app.post('/v2/get-code', (req, res) => {
-    const auth_code = authCodeStorage[0];
-    res.status(200).json({ auth_code });
-});
-
 
 app.post("/v2/info", (req: Request, res: Response) => {
     console.log(`Add information ${JSON.stringify(req.body.info)} for user ${req.body.email}`);

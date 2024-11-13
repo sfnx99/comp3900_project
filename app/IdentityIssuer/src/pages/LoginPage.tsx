@@ -17,7 +17,7 @@ function LoginPage() {
       navigate('/');
     } catch (error) {
       console.error('Error during login:', error);
-      alert('Invalid credentials');
+      alert(`Invalid credentials${error}`);
     }
   };
 

@@ -19,7 +19,7 @@ function RegisterPage() {
       alert('Registration successful! Please check your email to complete account setup.');
       navigate('/login');
     } catch (error) {
-      alert('Registration failed. Please try again.');
+      alert(`Registration failed. Please try again. ${error}`);
     }
   };
 
