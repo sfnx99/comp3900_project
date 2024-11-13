@@ -24,21 +24,25 @@ const SignUp = () => {
   const wallet_url= IPconfig.wallet_url;
 
   const handleSignUp = async () => {
-    const res = await fetch(`http://${IPaddress}:8081/v2/auth/register`, {
+    const res = await fetch(`${wallet_url}/v2/auth/register`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON
       },
       body: JSON.stringify({
-        "email": email,
-        "password": password
+        email: email,
+        password: password
       })
     });
 
     if (res.status === 200) {
       const data = await res.json();
       // Get the token from the response
-      const { token } = data.token;
+
+      console.log("hi i am the data from the register request" + JSON.stringify(data));
+      const { token } = data;
+      console.log("token: " + token);
+      console.log("hi the token is here in sign up.... attempting to pass to homepage now");
       router.push({
         pathname: '/(tabs)/home',
         params: {
