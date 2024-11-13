@@ -62,6 +62,10 @@ describe('Test integration for UNSW use cases', () => {
             // Issuer Registration: User will register with the issuer
             // Not sure on the point of this but it is a requirement for bookworms to work
             res = await axios.post(issuer_url + "/v2/authorize", {
+                application: {
+                    client_id: "bob@test.com",
+                    credentialType: "UNSWCredential"
+                },
                 client_id: "bob@test.com",
                 client_secret: "wahoo", // Not sure what purpose of this is client_secret is here
                 redirect_uri: wallet_url,
