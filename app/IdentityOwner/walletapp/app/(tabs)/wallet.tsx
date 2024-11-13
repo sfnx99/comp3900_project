@@ -1,13 +1,37 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams } from 'expo-router'
+import { getToken }from '../script.js'
+
+const IPconfig = require('../config.json');
+const IPaddress = IPconfig.IPaddress;
+
 
 const Wallet = () => {
+
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
 
   const toggleSensitiveInfo = () => {
     setShowSensitiveInfo(!showSensitiveInfo);
   };
+
+
+
+  const getCredentials = async () => {
+    const token = await getToken();
+    const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    // Parse the JSON response
+    const data = await res.json();
+    console.log(data)
+    return data
+  }
+  console.log(getCredentials())
 
   return (
     <View style={styles.container}>

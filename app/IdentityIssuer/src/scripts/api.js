@@ -1,8 +1,11 @@
 import { redirect } from "react-router-dom";
+const IPconfig = require('../config.json')
+const IPaddress = IPconfig.IPaddress;
+// const issuer_url = `http://${IPaddress}:8082`;
+const issuer_url = `http://localhost:8082`;
 
-const issuer_url = "http://localhost:8082";
-const wallet_url = "http://localhost:8081";
-const verifier_url = "http://localhost:8083";
+const wallet_url = `http://${IPaddress}:8081`;
+const verifier_url = `http://${IPaddress}:8083`;
 
 import axios from 'axios';
 
@@ -10,7 +13,9 @@ import axios from 'axios';
 // Function to get the token from local storage
 export const getToken = async () => {
   try {
-    const response = await fetch(`${issuer_url}`);
+    console.log(issuer_url)
+    const response = await fetch(`${issuer_url}/`);
+    console.log("HELLO")
     if (!response.ok) {
       throw new Error('Failed to fetch token');
     }
@@ -41,6 +46,7 @@ export const login = async (email, password) => {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Invalid credentials');
     }
+    console.log(response.status)
     const data = await response.json();
     return data;
   } catch (error) {
@@ -82,8 +88,8 @@ export const registerOwner = async (email, password) => {
     if (!response.ok) {
       throw new Error('Registration failed');
     }
-    const data = await response.json();
-    return data;
+    // const data = await response.json();
+    return response;
   } catch (error) {
     console.error('Error registering:', error);
     throw error;

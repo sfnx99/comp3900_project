@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { setUNSWCredentialFormat, setIssuer, sendInfo, issueCredToClient, saveAuthCode } from '../scripts/api'; 
 import { ToastContainer, toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
-const wallet_url = "http://localhost:8081";
+const wallet_url = "http://172.20.10.10:8081";
 
 function AddCredentialPage() {
   const [fields, setFields] = useState({

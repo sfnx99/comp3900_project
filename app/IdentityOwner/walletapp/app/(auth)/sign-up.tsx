@@ -12,25 +12,55 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
+//   function stripFirstAndLastChar(str: string) {
+//     // Check if the string length is greater than 1
+//     if (str.length > 1) {
+//         return str.slice(1, -1); // Remove first and last character
+//     }
+//     return str; // Return the original string if length is 1 or less
+// }
   const IPconfig = require('../config.json')
-  const wallet_url= JSON.stringify(IPconfig.wallet_url);
+  const IPaddress = IPconfig.IPaddress
+  const wallet_url= IPconfig.wallet_url;
 
   const handleSignUp = async () => {
-    const res = await fetch("http://localhost:8081/v2/auth/register", {
+    const res = await fetch(`${wallet_url}/v2/auth/register`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON
       },
       body: JSON.stringify({
-        "email": email,
-        "password": password
+        email: email,
+        password: password
       })
     });
-    console.log(res.status)
-    if (res.status != 200) {
-      alert("Invalid details")
+
+    if (res.status === 200) {
+      const data = await res.json();
+      // Get the token from the response
+<<<<<<< HEAD
+
+      console.log("hi i am the data from the register request" + JSON.stringify(data));
+      const { token } = data;
+      console.log("token: " + token);
+      console.log("hi the token is here in sign up.... attempting to pass to homepage now");
+=======
+      const { token } = data;
+      console.log(token)
+      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token })
+      });
+>>>>>>> db58e78 (up to final access page)
+      router.push({
+        pathname: '/(tabs)/home',
+        params: token,
+      });
     } else {
-      router.push('/(tabs)/home');
+      alert("Invalid details")
     }
   };
 
@@ -44,12 +74,14 @@ const SignUp = () => {
           placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
           placeholder="Last Name"
           value={lastName}
           onChangeText={setLastName}
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -58,6 +90,7 @@ const SignUp = () => {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -65,6 +98,7 @@ const SignUp = () => {
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           keyboardType="phone-pad"
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -72,6 +106,7 @@ const SignUp = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
         <TextInput
           style={styles.input}
@@ -79,6 +114,7 @@ const SignUp = () => {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
+          placeholderTextColor="#888"  // Set placeholder text color to gray
         />
 
        

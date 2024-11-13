@@ -3,7 +3,7 @@ import { ISSUER_HOST, ISSUER_PORT } from '@env';
 import { save, getValueFor, deleteItem } from './util';
 
 const port = ISSUER_PORT || 8082;
-const url = `http://${ISSUER_HOST || '192.168.4.22'}:${port}/v2`;
+const url = `http://${ISSUER_HOST || '172.20.10.10'}:${port}/v2`;
 
 //Issue user API call
 export const IssueRegisterUser = async (email, password) => {
