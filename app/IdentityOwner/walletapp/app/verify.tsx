@@ -64,8 +64,9 @@ const VerifyScreen = ({ route }: any) => {
             },
           });
           const attributeData = await resAttributes.json();
-          setType("UNSWCredential");
-          setAttributes(["zID", "expiryDate"]); // Update to your required attributes
+          console.log("attributeData", attributeData)
+          setType(attributeData.type);
+          setAttributes(attributeData.requiredAttributes); // Update to your required attributes
         }
 
         setLoading(false); // Set loading to false after fetching all the data
