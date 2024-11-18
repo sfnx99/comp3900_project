@@ -82,11 +82,11 @@ const Wallet = () => {
           </View>
           <Ionicons name="settings-outline" size={24} color="black" style={styles.icon} />
           <Pressable onPress={toggleSensitiveInfo} style={styles.icon}>
-            {/* <Ionicons
+            <Ionicons
               name={showSensitiveInfo ? "eye-outline" : "eye-off-outline"}
               size={24}
               color="black"
-            /> */}
+            />
           </Pressable>
         </View>
       </View>
