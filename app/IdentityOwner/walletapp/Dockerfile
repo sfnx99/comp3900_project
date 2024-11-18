@@ -22,6 +22,9 @@
 # # Start the Expo development server using npx
 # CMD ["npx", "expo", "start"]
 
+# Set the environment variables (make sure to replace with your actual local IP address)
+# ENV REACT_NATIVE_PACKAGER_HOSTNAME=10.0.0.10
+
 FROM node:18
 
 WORKDIR /

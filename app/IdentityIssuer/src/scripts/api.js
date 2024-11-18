@@ -185,7 +185,7 @@ export const setUNSWCredentialFormat = async () => {
   try {
       const res = await axios.post(issuer_url + "/v2/format", {
           type: "UNSWCredential",
-          attributes: ["firstName", "lastName", "zID", "dob", "USI", "faculty", "expiryDate", "program", "COMP3900Grade"]
+          attributes: ["firstName", "lastName", "zID", "dob", "USI", "expiryDate"]
       });
       if (res.status !== 200) {
           throw new Error('Failed to set UNSWCredential format');

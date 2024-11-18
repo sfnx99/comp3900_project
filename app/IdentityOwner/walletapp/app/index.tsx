@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import Header from './(auth)/Header'; // Import the Header component
+import * as FileSystem from 'expo-file-system';  // Import Expo FileSystem
+
 
 const IndexPage = () => {
   const router = useRouter();
-
+  
   const handleSignIn = () => {
     router.push('/(auth)/sign-in');
   };

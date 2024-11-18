@@ -1,22 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid'; // Importing uuid to generate unique IDs
 import { QRCodeCanvas } from 'qrcode.react'; // Importing QRCodeCanvas component
+import config from './config.json';
+import axios from 'axios';
 
 const HousingApplication = () => {
   const [studentId, setStudentId] = useState('');
-  const [sessionId, setSessionId] = useState(''); // To hold the session ID
   const [qrData, setQrData] = useState(''); // Data to be encoded in QR code
+  const [isDefined, setIsDefined] = useState(false);
+
+  const [error, setError] = useState(null);
 
   // Effect to generate a session ID and QR code on component mount
   useEffect(() => {
-    const generateSessionId = () => {
-      const newSessionId = uuidv4(); // Generate a unique session ID
-      setSessionId(newSessionId);
-      setQrData(`Session ID: ${newSessionId}`); // Setting data for QR code
+    const defineRequestedPresentation = async () => {
+      try {
+
+        // Call the backend to initialize trust
+        await axios.post(`${config.verifier_url}/define`, {
+          verifier_url: config.verifier_url,
+        });
+
+        setIsDefined(true);
+
+        const qr_data = `walletapp://verify?uri=${config.verifier_url}&sp=Housing`
+        setQrData(qr_data);
+        console.log(qrData)
+
+        console.log("Defined elements SP requested.");
+      } catch (error) {
+        setError("Error during definition");
+        console.error(error);
+      }
     };
 
-    generateSessionId();
+    // Call defineRequestedPresentation as the page loads
+    defineRequestedPresentation();
   }, []);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!isDefined) {
+    return <div>Loading...</div>; // You can display a loading indicator here
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -55,7 +82,7 @@ const HousingApplication = () => {
           </div>
 
           {/* QR Code Generation */}
-          {sessionId && (
+          {(
             <div style={{ marginTop: '20px' }}>
               <h3>Please scan the QR code below to verify your student status.</h3>
               <QRCodeCanvas value={qrData} size={200} />

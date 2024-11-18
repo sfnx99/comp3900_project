@@ -256,7 +256,9 @@ app.post('/v2/save-code', (req, res) => {
 
 
 app.post('/v2/get-code', (req, res) => {
+    console.log("inside get token")
     const last = tokenStorage.length - 1;
     const token = tokenStorage[last];
+    console.log("get token token", token)
     res.status(200).json({ token });
 });

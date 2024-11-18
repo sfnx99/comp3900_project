@@ -4,7 +4,7 @@ let formats: Format[] = [];
 const credentials: Credential[] = []; // Credential list
 const credentialLogs: CredentialLog[] = []; // Credential log
 const users: User[] = [
-    { client_id: "bob@test.com", info: { "firstName": "bob", "lastName": "smith", "zID": "z1234567", "dob": "1/1/2000", "USI": "234955", "faculty": "Engineering", "expiryDate": "10/2025", "program": "Software Engineering", "COMP3900Grade": "HD" } },
+    { client_id: "bob@test.com", info: { "firstName": "bob", "lastName": "smith", "zID": "z1234567", "dob": "1/1/2000", "USI": "234955", "expiryDate": "10/2025"} },
     { client_id: "james@test.com", info: { "firstName": "james", "lastName": "smith", "zID": "z7654321", "dob": "8/1/1969", "USI": "123456", "faculty": "Science", "expiryDate": "10/2026", "program": "Computer Science", "COMP3900Grade": "DN" } }
 ];
 

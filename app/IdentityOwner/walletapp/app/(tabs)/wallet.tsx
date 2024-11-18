@@ -1,37 +1,76 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Pressable, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router'
-import { getToken }from '../script.js'
-
-const IPconfig = require('../config.json');
-const IPaddress = IPconfig.IPaddress;
-
+import { getToken } from '../script.js'; // Import your token retrieval function
+import config from '../config.json';
 
 const Wallet = () => {
 
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+  const [walletData, setWalletData] = useState(null);
+  const [credId, setCredId] = useState(null);
+  const [token, setToken] = useState(null);
 
+  // Toggle to show sensitive information
   const toggleSensitiveInfo = () => {
     setShowSensitiveInfo(!showSensitiveInfo);
   };
 
-
-
-  const getCredentials = async () => {
-    const token = await getToken();
-    const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
+  // Fetch the credentials on component mount
+  useEffect(() => {
+    const getCredentials = async () => {
+      try {
+        const token = await getToken();
+        setToken(token);
+        console.log("tokens", token);
+        
+        const res = await fetch(`${config.wallet_url}/v2/credentials`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const data = await res.json();
+        console.log(data);
+        setCredId(data.credentials[0]); // Assuming the credentials array has at least one entry
+      } catch (error) {
+        console.error('Error fetching credentials:', error.message || error.response);
+        Alert.alert('Error', 'Failed to load credentials.');
       }
-    });
-    // Parse the JSON response
-    const data = await res.json();
-    console.log(data)
-    return data
+    };
+    getCredentials();
+  }, []);
+
+  // Fetch the wallet data when token or credId changes
+  useEffect(() => {
+    const getCredential = async () => {
+      if (!credId || !token) return; // Wait until both token and credId are available
+
+      try {
+        console.log("Fetching credential with credId:", credId);
+
+        const res_cred = await fetch(`${config.wallet_url}/v2/credential?credential_id=${credId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const resJson = await res_cred.json();
+        const credInfo = resJson.credential;
+        setWalletData(credInfo);
+        console.log("Fetched wallet data:", credInfo);
+      } catch (error) {
+        console.error('Error fetching wallet data:', error.message || error.response);
+        Alert.alert('Error', 'Failed to load wallet data.');
+      }
+    };
+
+    getCredential();
+  }, [credId, token]); // Depend on both credId and token
+
+  if (!walletData) {
+    return <Text>Loading...</Text>; // Show loading state while fetching data
   }
-  console.log(getCredentials())
 
   return (
     <View style={styles.container}>
@@ -53,25 +92,16 @@ const Wallet = () => {
       </View>
 
       <View style={styles.licenseInfo}>
-        <Ionicons name="person-circle-outline" size={80} color="black" style={styles.profileIcon} />
-        <Text style={styles.infoText}>
-          zID: {showSensitiveInfo ? 'z5555555' : '••••••••'}
-        </Text>
-        <Text style={styles.infoText}>
-          Date of Expiry: 02.02.2027
-        </Text>
-        <Text style={styles.infoText}>
-          Date of Birth: {showSensitiveInfo ? '16 SEP 2003' : '••••••••'}
-        </Text>
-        <Text style={styles.infoText}>
-          Class: C
-        </Text>
-        <Text style={styles.infoText}>
-          Conditions: None
-        </Text>
-        <Text style={styles.infoText}>
-          Address: {showSensitiveInfo ? '42 Wallaby Way, Sydney NSW 2000' : '••••••••••••••••••••••••'}
-        </Text>
+        {Object.keys(walletData).map((key, index) => {
+          const isSensitive = key !== 'expiryDate'; // Only expiryDate should always be visible
+          const value = isSensitive && !showSensitiveInfo ? '••••••••' : walletData[key];
+
+          return (
+            <Text key={index} style={styles.infoText}>
+              {key}: {value}
+            </Text>
+          );
+        })}
       </View>
 
       <View style={styles.qrContainer}>

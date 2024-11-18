@@ -1,9 +1,8 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useNavigation } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React, { useEffect } from 'react';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -16,11 +15,14 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  const navigation = useNavigation();
+
+  // Function to handle deep linking
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [navigation, loaded]);
 
   if (!loaded) {
     return null;
@@ -30,7 +32,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerShown: false,  // Default: show the header for all screens
+          headerShown: false, // Default: hide the header for all screens
         }}
       >
         {/* Hide header for (tabs) and (auth) screens */}
@@ -43,8 +45,11 @@ export default function RootLayout() {
         {/* Handle not-found screens */}
         <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
 
-        {/* Access screen*/}
+        {/* Access screen */}
         <Stack.Screen name="access" options={{ headerShown: false }} />
+
+        {/* Verify screen */}
+        <Stack.Screen name="verify" options={{ headerShown: true }} />
       </Stack>
     </ThemeProvider>
   );

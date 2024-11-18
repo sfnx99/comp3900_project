@@ -27,7 +27,9 @@ export async function wrapAuthorisation<T extends FunctionRequiringAuthorisation
             }
         }
     }
+    console.log(token)
     const session_data = toSessionData(token);
+    console.log(session_data);
     if (session_data === undefined) {
         return {
             status: 401,
