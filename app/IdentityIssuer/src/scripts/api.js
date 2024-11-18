@@ -96,26 +96,6 @@ export const registerOwner = async (email, password) => {
   }
 };
 
-// export const fetchCredentialById = async (id) => {
-//   try {
-//     const token = getToken();
-//     const response = await fetch(`${issuer_url}/v2/view-credential/${id}`, {
-//       headers: {
-//         'Cache-Control': 'no-cache',
-//         'Authorization': `Bearer ${token}`,
-//       },
-//     });
-//     if (!response.ok) {
-//       throw new Error('Network response was not ok');
-//     }
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error('Error fetching credential:', error);
-//     throw error;
-//   }
-// };
-
 export const fetchCredentialByName = async (name) => {
   try {
     const token = await getToken(); 

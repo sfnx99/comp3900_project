@@ -1,6 +1,7 @@
 {
-  "wallet_url": "http://10.0.0.21:8081",
-  "issuer_url": "http://10.0.0.21:8082",
-  "verifier_url": "http://10.0.0.21:8083",
-  "licenseType": "UNSWCredential"
+    "wallet_url": "http://10.0.0.21:8081",
+    "issuer_url": "http://10.0.0.21:8082",
+    "verifier_url": "http://10.0.0.21:8083",
+    "licenseType": "UNSWCredential",
+    "IPaddress": "10.0.0.21"
 }
