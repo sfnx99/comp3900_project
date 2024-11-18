@@ -3,9 +3,7 @@ import { View, TextInput, Text, Pressable, StyleSheet } from 'react-native'; // 
 import Header from './Header';  // Importing the Header
 import { useRouter } from 'expo-router';  // Correct hook for navigation
 
-import IPconfig from '../config.json';
-const IPaddress = IPconfig.IPaddress;
-const wallet_url= IPconfig.wallet_url;
+import config from '../config.json';
 const SignIn = () => {
 
   const router = useRouter();
@@ -18,7 +16,7 @@ const SignIn = () => {
 
     // Navigate to the home page upon sign in
 
-    const res = await fetch(`http://${IPaddress}:8081/v2/auth/login`, {
+    const res = await fetch(`${config.wallet_url}/v2/auth/login`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json", // Ensure the content type is JSON
@@ -35,7 +33,7 @@ const SignIn = () => {
       console.log(data)
       // Get the token from the response
       const { token } = data.token;
-      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
+      await fetch(`${config.wallet_url}/v2/save-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

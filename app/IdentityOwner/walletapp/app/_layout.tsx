@@ -3,8 +3,6 @@ import { useFonts } from 'expo-font';
 import { Stack, useNavigation } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import 'react-native-reanimated';
-import * as Linking from 'expo-linking'; // Import Linking to handle deep links
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 

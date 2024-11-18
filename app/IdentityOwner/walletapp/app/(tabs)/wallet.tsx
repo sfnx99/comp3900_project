@@ -1,56 +1,72 @@
-import { View, Text, StyleSheet, Image, Pressable, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { getToken }from '../script.js'
-
-const config = require('../config.json');
-import * as FileSystem from 'expo-file-system';
-
+import { getToken } from '../script.js'; // Import your token retrieval function
+import config from '../config.json';
 
 const Wallet = () => {
 
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   const [walletData, setWalletData] = useState(null);
+  const [credId, setCredId] = useState(null);
+  const [token, setToken] = useState(null);
 
   // Toggle to show sensitive information
   const toggleSensitiveInfo = () => {
     setShowSensitiveInfo(!showSensitiveInfo);
   };
 
-<!--   const getCredentials = async () => {
-    const token = await getToken();
-    const res = await fetch(`http://${IPaddress}:8081/v2/credentials`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    });
-    // Parse the JSON response
-    const data = await res.json();
-    console.log(data)
-    return data
-  }
-  console.log(getCredentials()) -->
-
+  // Fetch the credentials on component mount
   useEffect(() => {
-    // Fetch the response.json data (or import it directly)
-    const fetchWalletData = async () => {
+    const getCredentials = async () => {
       try {
-        const fileUri = FileSystem.documentDirectory + 'response.json';
-
-        const fileContents = await FileSystem.readAsStringAsync(fileUri);
-
-        const data = JSON.parse(fileContents);
-
-        setWalletData(data);  // Assuming the response is structured correctly
+        const token = await getToken();
+        setToken(token);
+        console.log("tokens", token);
+        
+        const res = await fetch(`${config.wallet_url}/v2/credentials`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const data = await res.json();
+        console.log(data);
+        setCredId(data.credentials[0]); // Assuming the credentials array has at least one entry
       } catch (error) {
-        console.error('Error fetching wallet data:', error.response || error.message);
+        console.error('Error fetching credentials:', error.message || error.response);
+        Alert.alert('Error', 'Failed to load credentials.');
+      }
+    };
+    getCredentials();
+  }, []);
+
+  // Fetch the wallet data when token or credId changes
+  useEffect(() => {
+    const getCredential = async () => {
+      if (!credId || !token) return; // Wait until both token and credId are available
+
+      try {
+        console.log("Fetching credential with credId:", credId);
+
+        const res_cred = await fetch(`${config.wallet_url}/v2/credential?credential_id=${credId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        const resJson = await res_cred.json();
+        const credInfo = resJson.credential;
+        setWalletData(credInfo);
+        console.log("Fetched wallet data:", credInfo);
+      } catch (error) {
+        console.error('Error fetching wallet data:', error.message || error.response);
         Alert.alert('Error', 'Failed to load wallet data.');
       }
     };
 
-    fetchWalletData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+    getCredential();
+  }, [credId, token]); // Depend on both credId and token
 
   if (!walletData) {
     return <Text>Loading...</Text>; // Show loading state while fetching data
@@ -66,35 +82,26 @@ const Wallet = () => {
           </View>
           <Ionicons name="settings-outline" size={24} color="black" style={styles.icon} />
           <Pressable onPress={toggleSensitiveInfo} style={styles.icon}>
-            <Ionicons
+            {/* <Ionicons
               name={showSensitiveInfo ? "eye-outline" : "eye-off-outline"}
               size={24}
               color="black"
-            />
+            /> */}
           </Pressable>
         </View>
       </View>
 
       <View style={styles.licenseInfo}>
-        <Ionicons name="person-circle-outline" size={80} color="black" style={styles.profileIcon} />
-        <Text style={styles.infoText}>
-          zID: {showSensitiveInfo ? walletData.cred.zID : '••••••••'}
-        </Text>
-        <Text style={styles.infoText}>
-          Date of Expiry: {walletData.cred.expiryDate}
-        </Text>
-        <Text style={styles.infoText}>
-          Date of Birth: {showSensitiveInfo ? walletData.cred.dob : '••••••••'}
-        </Text>
-        <Text style={styles.infoText}>
-          Class: 'C'
-        </Text>
-        <Text style={styles.infoText}>
-          Conditions: 'C'
-        </Text>
-        <Text style={styles.infoText}>
-          Address: {showSensitiveInfo ? 'Address' : '••••••••••••••••••••••••'}
-        </Text>
+        {Object.keys(walletData).map((key, index) => {
+          const isSensitive = key !== 'expiryDate'; // Only expiryDate should always be visible
+          const value = isSensitive && !showSensitiveInfo ? '••••••••' : walletData[key];
+
+          return (
+            <Text key={index} style={styles.infoText}>
+              {key}: {value}
+            </Text>
+          );
+        })}
       </View>
 
       <View style={styles.qrContainer}>

@@ -1,10 +1,17 @@
-const IPconfig = require('./config.json')
-const IPaddress = IPconfig.IPaddress
+const config = require('./config.json')
+
 export const getToken = async () => {
-  const res = await fetch(`http://${IPaddress}:8081/v2/get-code`, {
+  const res = await fetch(`${config.wallet_url}/v2/get-code`, {
     method: 'POST'
   });
 
+  
+
   const data = await res.json()
+
+  console.log('INSIDE GETTOKEN')
+
+  console.log(data)
+
   return data.token
 }

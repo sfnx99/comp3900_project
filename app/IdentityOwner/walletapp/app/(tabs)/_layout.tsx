@@ -4,7 +4,6 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
 import { useRouter } from 'expo-router';  // Correct hook for navigation
 
-const router = useRouter()
 const Header = () => {
   return (
     <View style={styles.header}>
@@ -18,6 +17,8 @@ const Header = () => {
 };
 
 const TabsLayout = () => {
+  const router = useRouter()
+
   return (
     <View style={styles.container}>
       <Header />

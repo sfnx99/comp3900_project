@@ -1,54 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { useLocalSearchParams, useRouter, Router} from 'expo-router';
-const router = useRouter();
-const IPconfig = require('../config.json')
-const IPaddress = IPconfig.IPaddress
+import { useRouter } from 'expo-router';
+import config from '../config.json';
+
 const getToken = async () => {
-  const res = await fetch(`http://${IPaddress}:8081/v2/get-code`, {
-    method: 'POST'
+  const res = await fetch(`${config.wallet_url}/v2/get-code`, {
+    method: 'POST',
   });
 
-  const data = await res.json()
-  return data.token
-}
+  const data = await res.json();
+  return data.token;
+};
 
-const handleCredentialPress = () => {
+const HomeScreen = () => {
+  const [token, setToken] = useState('');
+  const router = useRouter();
 
-  router.push({
-    pathname: '/(tabs)/scan_cred'
-  })
-} 
+  useEffect(() => {
+    const fetchToken = async () => {
+      console.log("in homepage");
+      const fetchedToken = await getToken();
+      setToken(fetchedToken); // Store token in state
+      console.log(fetchedToken); // Log the token
+    };
+    fetchToken();
+  }, []);
 
-const handleCheckCredential = () => {
-  router.push({
-    pathname: '/(tabs)/wallet',
-  })
-}
-const handleScanPress = () => {
-  router.push({
-    pathname: '/(tabs)/scan',
-  })
-} 
-function HomeScreen() {
-  let token = ''
-  const gettingToken = async () => {
-    console.log("in homepage")
-    token = await getToken()
-    console.log(token)
-  } 
-  gettingToken()
+  const handleCredentialPress = () => {
+    router.push({
+      pathname: '/(tabs)/scan',
+    });
+  };
+
+  const handleCheckCredential = () => {
+    router.push({
+      pathname: '/(tabs)/wallet',
+    });
+  };
+
+  const handleScanPress = () => {
+    router.push({
+      pathname: '/(tabs)/scan',
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <View style={styles.headerIcons}>
-      
-          </View>
+          <View style={styles.headerIcons}></View>
         </View>
       </View>
 
-      
       <View style={styles.favouritesContainer}>
         <Text style={styles.sectionTitle}>Favourites</Text>
         <View style={styles.idCard}>
@@ -61,7 +64,6 @@ function HomeScreen() {
         </View>
       </View>
 
-      
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Services</Text>
         <Pressable style={styles.button} onPress={handleCheckCredential}>
@@ -126,8 +128,7 @@ const styles = StyleSheet.create({
     padding: 40,
     borderWidth: 1,
     borderColor: '#e0e0e0',
-
-    elevation: 4,  // Keep this for Android
+    elevation: 4, // Keep this for Android
     alignItems: 'center',
   },
   cardTitle: {
@@ -157,8 +158,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 10,
     marginVertical: 8,
-
-    elevation: 2,  // Keep this for Android
+    elevation: 2, // Keep this for Android
   },
   buttonText: {
     fontSize: 16,

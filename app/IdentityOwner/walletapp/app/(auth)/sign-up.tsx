@@ -2,121 +2,109 @@ import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'; // 
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import Header from './Header';  // Import the Header component
-
+ 
 const SignUp = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const router = useRouter();
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const [email, setEmail] = useState('');
+const [phoneNumber, setPhoneNumber] = useState('');
+const [password, setPassword] = useState('');
+const [confirmPassword, setConfirmPassword] = useState('');
+const router = useRouter();
+const config = require('../config.json')
+ 
+const handleSignUp = async () => {
+  const res = await fetch(`${config.wallet_url}/v2/auth/register`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json", // Ensure the content type is JSON
+    },
+    body: JSON.stringify({
+      "email": email,
+      "password": password
+    })
+  });
 
-//   function stripFirstAndLastChar(str: string) {
-//     // Check if the string length is greater than 1
-//     if (str.length > 1) {
-//         return str.slice(1, -1); // Remove first and last character
-//     }
-//     return str; // Return the original string if length is 1 or less
-// }
-  const IPconfig = require('../config.json')
-  const IPaddress = IPconfig.IPaddress
-  const wallet_url= IPconfig.wallet_url;
-
-  const handleSignUp = async () => {
-    const res = await fetch(`${wallet_url}/v2/auth/register`, {
+  if (res.status === 200) {
+    const data = await res.json();
+    // Get the token from the response
+    const { token } = data;
+    console.log(token)
+    await fetch(`${config.wallet_url}/v2/save-code`, {
       method: 'POST',
       headers: {
-        "Content-Type": "application/json", // Ensure the content type is JSON
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
+      body: JSON.stringify({ token: token })
     });
-    
-    if (res.status === 200) {
-      const data = await res.json();
-      // Get the token from the response
-      const { token } = data;
-      console.log(token)
-      console.log("am here")
-      await fetch(`http://${IPaddress}:8081/v2/save-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: token })
-      });
-      console.log("pushing to home now")
-      router.push({
-        pathname: '/(tabs)/home',
-        params: token,
-      });
-    } else {
-      alert("Invalid details")
-    }
+    router.push({
+      pathname: '/(tabs)/home',
+      params: token,
+    });
+  } else {
+    alert("Invalid details")
+  }
   };
 
   return (
-    <View style={styles.container}>
-      <Header /> 
-      <View style={styles.formContainer}> 
-        <Text style={styles.title}>Sign Up</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="phone-pad"
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-          placeholderTextColor="#888"  // Set placeholder text color to gray
-        />
+  <View style={styles.container}>
+    <Header />
+    <View style={styles.formContainer}>
+      <Text style={styles.title}>Sign Up</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={setLastName}
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+        keyboardType="phone-pad"
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        placeholderTextColor="#888"  // Set placeholder text color to gray
+      />
 
-       
-        <Pressable onPress={handleSignUp} style={styles.button}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </Pressable>
-      </View>
+      
+      <Pressable onPress={handleSignUp} style={styles.button}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </Pressable>
     </View>
+  </View>
   );
 };
 
@@ -156,3 +144,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignUp;
+ 

@@ -1,62 +1,83 @@
 import { View, Text, StyleSheet, Alert, Button } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router'; 
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
+import { getToken } from './script.js';
 import config from './config.json';
-import * as FileSystem from 'expo-file-system';
 
 const VerifyScreen = ({ route }: any) => {
-  const { uri } = useLocalSearchParams<{ uri: string}>();  // Access query params from route.params
-  const { sp } = useLocalSearchParams<{ sp: string}>();
+  const { uri } = useLocalSearchParams<{ uri: string }>(); // Access query params from route.params
+  const { sp } = useLocalSearchParams<{ sp: string }>();
 
   const [type, setType] = useState<string | null>(null);
-  const [attributes, setAttributes] = useState<any[]>([]);  // Expected attributes to be an array
+  const [attributes, setAttributes] = useState<any[]>([]); // Expected attributes to be an array
   const [loading, setLoading] = useState<boolean>(true);
+  const [credId, setCredId] = useState<string | null>(null);
   const [walletData, setWalletData] = useState<any | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchWalletData = async () => {
+    const fetchData = async () => {
       try {
-        const fileUri = FileSystem.documentDirectory + 'response.json';
-        const fileContents = await FileSystem.readAsStringAsync(fileUri);
-        const data = JSON.parse(fileContents);
-        console.log(data);  // Debugging output
-        setWalletData(data);  // Set wallet data state
-      } catch (error) {
-        console.error('Error fetching wallet data:', error.response || error.message);
-        Alert.alert('Error', 'Failed to load wallet data.');
-      }
-    };
+        const token = await getToken();
+        setToken(token); // Set token state to keep track
 
-    fetchWalletData();
-  }, []);  // Runs only once when the component mounts
+        console.log("tokens", token);
 
-  // Fetch attributes if walletData is available
-  useEffect(() => {
-    const fetchAttributes = async () => {
-      if (walletData && uri) {
-        try {
-          const res = await axios.get(`${config.wallet_url}/v2/present?verifier_uri=${uri}`, {
-            headers: {
-              Authorization: `Bearer ${walletData.token}`  // Ensure token is available
-            }
-          });
+        // Fetch credentials
+        const res = await fetch(`${config.wallet_url}/v2/credentials`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        console.log('DATA', data);
 
-          const { type, requiredAttributes } = res.data;
-          setType(type);
-          setAttributes(requiredAttributes);  // Expected attributes to be an array
-          setLoading(false);  // Set loading to false once the data is fetched
-        } catch (error) {
-          console.error("Error fetching attributes:", error);
-          setLoading(false);
-          Alert.alert("Error", "There was an issue fetching the attributes.");
+        if (data.credentials.length > 0) {
+          setCredId(data.credentials[0]);
         }
+
+        // Now fetch wallet data only after credId is available
+        if (credId) {
+          const res_cred = await fetch(`${config.wallet_url}/v2/credential?credential_id=${credId}`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const credResponse = await res_cred.json();
+          console.log('credResponse', credResponse);
+
+          const credInfo = credResponse.credential;
+          setWalletData(credInfo);
+          console.log("Credential Info:", credInfo);
+        }
+
+        // Fetch attributes for the credential
+        if (uri && token) {
+          const resAttributes = await fetch(`${config.wallet_url}/v2/present?verifier_uri=${uri}`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const attributeData = await resAttributes.json();
+          setType("UNSWCredential");
+          setAttributes(["zID", "expiryDate"]); // Update to your required attributes
+        }
+
+        setLoading(false); // Set loading to false after fetching all the data
+      } catch (error) {
+        console.error('Error fetching data:', error.message || error.response);
+        Alert.alert('Error', 'Failed to load data.');
+        setLoading(false);
       }
     };
 
-    fetchAttributes();
-  }, [walletData, uri]);
+    fetchData();
+  }, [uri, credId]); // Add credId as a dependency to trigger fetching wallet data after it's set
 
   const handleAgree = async () => {
     if (!walletData) {
@@ -65,21 +86,29 @@ const VerifyScreen = ({ route }: any) => {
     }
 
     try {
-      const cred_id = walletData.cred.id; // Ensure this is available in walletData
+      const cred_id = walletData.id; // Ensure this is available in walletData
+      const token = await getToken();
+
+      console.log("verifier_uri:", uri);
+      console.log("credential_id:", cred_id);
+      console.log("token", token);
 
       // Make the POST request
-      const res = await axios.post(`${config.wallet_url}/v2/present`, {
-        verifier_uri: uri,
-        credential_id: cred_id,
-      }, {
-        headers: {
-          Authorization: `Bearer ${walletData.token}`,  // Use the token stored in walletData
+      const res = await axios.post(
+        `${config.wallet_url}/v2/present`,
+        {
+          verifier_uri: uri,
+          credential_id: cred_id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use the token stored in walletData
+          },
         }
-      });
+      );
 
-      // Handle the response here (e.g., success message or navigation)
       Alert.alert("Success", "Data shared successfully.");
-      router.push('/home');  // Navigate to the 'home' tab after success
+      router.push('/home'); // Navigate to the 'home' tab after success
     } catch (error) {
       console.error("Error in sharing data:", error.response || error.message);
       Alert.alert("Error", "There was an issue sharing the information.");
@@ -98,16 +127,14 @@ const VerifyScreen = ({ route }: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Scan Result</Text>
-      {/* Ensure uri and sp are displayed correctly */}
       <Text>{uri ? `URI: ${uri}` : "No URI received"}</Text>
       <Text>{sp ? `Service Provider: ${sp}` : "No Service Provider received"}</Text>
 
-      {/* Display bullet points for the attributes */}
       <View style={styles.attributesContainer}>
         <Text style={styles.subHeader}>Service Provider is requesting the following fields:</Text>
-        {attributes && attributes.length > 0 ? (
+        {attributes.length > 0 ? (
           <View>
-            {attributes.map((attribute: string, index: number) => (
+            {attributes.map((attribute, index) => (
               <Text key={index} style={styles.attributeItem}>• {attribute}</Text>
             ))}
           </View>
@@ -116,7 +143,6 @@ const VerifyScreen = ({ route }: any) => {
         )}
       </View>
 
-      {/* Agree/Deny buttons */}
       <View style={styles.buttonsContainer}>
         <Button title="Agree" onPress={handleAgree} />
         <Button title="Deny" onPress={handleDeny} />
@@ -145,12 +171,12 @@ const styles = StyleSheet.create({
   },
   attributesContainer: {
     marginVertical: 20,
-    alignItems: 'center',  // Center the bullets
+    alignItems: 'center',
   },
   attributeItem: {
     fontSize: 16,
     marginBottom: 5,
-    textAlign: 'center',  // Ensure text is centered
+    textAlign: 'center',
   },
   buttonsContainer: {
     marginTop: 30,
