@@ -19,11 +19,14 @@ import cors from 'cors';
 import axios from 'axios';
 import config from "./config.json";
 
+
 // dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 8083;
 const SUCCESS = 200;
+type DefinitionType = keyof typeof config.definitions;
+
 // Express backend setup
 
 app.use(cors()); // Enable CORS for all routes
@@ -47,14 +50,22 @@ app.post('/initialize', async (req, res) => {
 });
 
 app.post('/define', async (req, res) => {
-    const { verifier_url } = req.body;
-        console.log('Received request with body:', req.body);
+    const { verifier_url, definition_type }: { verifier_url: string; definition_type: DefinitionType } = req.body;
+
+    console.log('Received request with body:', req.body);
+
+    const definitionConfig = config.definitions[definition_type];
+
+    if (!definitionConfig) {
+        return res.status(400).send(`Invalid definition type: ${definition_type}`);
+    }
+
     try {
         console.log('Sending definition request...');
         const definitionResponse = await axios.post(verifier_url + '/v2/definition', {
-            type: config.licenseType,
-            requiredAttributes: config.requiredAttributes
-        });
+            type: definitionConfig.licenseType,
+            requiredAttributes: definitionConfig.requiredAttributes
+          });
         console.log('Service Provider Defined Fields successfully:', definitionResponse.status);
         res.status(200).send('Service Provider Defined Fields successfully');
     } catch (error) {

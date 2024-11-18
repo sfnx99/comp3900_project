@@ -18,6 +18,7 @@ const HousingApplication = () => {
         // Call the backend to initialize trust
         await axios.post(`${config.verifier_url}/define`, {
           verifier_url: config.verifier_url,
+          definition_type: "housing"
         });
 
         setIsDefined(true);

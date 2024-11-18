@@ -1,4 +1,4 @@
-const config = require('./config.json')
+import config from './config.json';
 
 export const getToken = async () => {
   const res = await fetch(`${config.wallet_url}/v2/get-code`, {
