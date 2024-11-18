@@ -1,8 +1,8 @@
 {
-  "credential_endpoint": "http://192.168.0.103:8000/(auth)/sign-in?verifier_url=http://localhost:8081&request=True",
-  "IPaddress": "10.0.0.21",
-  "wallet_url": "http://10.0.0.21:8081",
-  "issuer_url": "http://10.0.0.21:8082",
-  "verifier_url": "http://10.0.0.21:8083",
-  "licenseType": "UNSWCredential"
+    "credential_endpoint": "http://10.0.0.21:8000/(auth)/sign-in?verifier_url=http://10.0.0.21:8081&request=True",
+    "IPaddress": "10.0.0.21",
+    "wallet_url": "http://10.0.0.21:8081",
+    "issuer_url": "http://10.0.0.21:8082",
+    "verifier_url": "http://10.0.0.21:8083",
+    "licenseType": "UNSWCredential"
 }

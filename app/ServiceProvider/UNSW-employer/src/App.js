@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Econ from './pages/Econ';
@@ -6,71 +6,77 @@ import Eng from './pages/Eng';
 import ADA from './pages/ADA';
 import Risk from './pages/Risk';
 import Signup from './pages/Sign-up';
-import {QRCodeSVG} from 'qrcode.react';
-
+import { QRCodeCanvas } from 'qrcode.react'; // Importing QRCodeCanvas component
+import axios from 'axios'
+ 
 const IPconfig = require('./config.json')
 // // Service Provider backend is listening on 8083
-// let endpoint= JSON.stringify(IPconfig.credential_endpoint);
 const verifier_url= JSON.stringify(IPconfig.verifier_url);
 const issuer_url = JSON.stringify(IPconfig.issuer_url)
 const IPaddress = JSON.stringify(IPconfig.IPaddress)
-
-// Sets up service provider definition
-const setup = async () => {
-  const res= await fetch(issuer_url);
-  // const issuer_did = res.data.did_uri;
-  const data = await res.json()
-  const issuer_did = data.did_uri;
-  
-  await fetch(`${verifier_url}/v2/trust`, {
-    method: "POST",
-    body: JSON.stringify({
-      id: issuer_did,
-    }),
-  });
-
-  await fetch(`${verifier_url}/v2/definition`, {
-    method: "POST",
-    body: JSON.stringify({
-      type: "UNSWCredential",
-      requiredAttributes: ["zID", "expiryDate"],
-    }),
-  });
-}
-
-
+ 
+ 
 export function QR_BUTTON() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+ 
   const togglePopup = async () => {
     setIsPopupOpen(!isPopupOpen);
   };
     // Combine URL and JSON object as a string
   // Need to construct the data more carefully
-
+ 
   const QRCodeComponent = () => {
-    
-    // const combinedData = `${endpoint}`;
-    const qrCodeData = { 
-      // fetch
-      verifier_url: `http://${IPaddress}:8083`,
-      request: 'True'
-    }; 
-    const qrCodeValue = JSON.stringify(qrCodeData);
+    const [studentId, setStudentId] = useState('');
+    const [qrData, setQrData] = useState(''); // Data to be encoded in QR code
+    const [isDefined, setIsDefined] = useState(false);
+  
+    const [error, setError] = useState(null);
+ 
+    // Effect to generate a session ID and QR code on component mount
+    useEffect(() => {
+      const defineRequestedPresentation = async () => {
+        try {
+  
+          // Call the backend to initialize trust
+          await axios.post(`${IPconfig.verifier_url}/define`, {
+            verifier_url: IPconfig.verifier_url,
+            definition_type: "employer"
+          });
+  
+          setIsDefined(true);
+  
+          const qr_data = `walletapp://verify?uri=${IPconfig.verifier_url}&sp=Employerx`
+          setQrData(qr_data);
+          console.log(qrData)
+  
+          console.log("Defined elements SP requested.");
+        } catch (error) {
+          setError("Error during definition");
+          console.error(error);
+        }
+      };
+  
+      // Call defineRequestedPresentation as the page loads
+      defineRequestedPresentation();
+    }, []);
+  
+    if (error) {
+      return <div>{error}</div>;
+    }
+  
+    if (!isDefined) {
+      return <div>Loading...</div>; // You can display a loading indicator here
+    }
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <h2>Scan to give details</h2>
-        <QRCodeSVG 
-          value={qrCodeValue}
-          size={256} 
-          bgColor={"#ffffff"} 
-          fgColor={"#000000"} 
-          level={"L"} 
-        />
+        <h2>Please scan the QR code below to verify your student status.</h2>
+        <div style={{ marginTop: '20px' }}>
+              <QRCodeCanvas value={qrData} size={200} />
+            </div>
       </div>
     );
   };
-
+ 
   return (
     <div>
     <button className="qr-code-button" onClick={togglePopup}>
@@ -89,7 +95,7 @@ export function QR_BUTTON() {
     </div>
   );
 }
-
+ 
 export function JOB_BUTTON({ text, url }) {
   const openInNewTab = () => {
     window.open(url, "_blank", "noreferrer");
@@ -101,8 +107,53 @@ export function JOB_BUTTON({ text, url }) {
   );
 }
 function App() {
-  setup()
-  return ( 
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState(null);
+ 
+  useEffect(() => {
+    const initializeIssuerTrust = async () => {
+      try {
+        const issuer_get = await fetch("http://localhost:8082", {
+          method: 'GET',
+        });
+        
+        if (!issuer_get.ok) {
+          throw new Error('Failed to fetch DID');
+        }
+        
+        const issuerData = await issuer_get.json();
+        console.log("issuer_did", issuerData.did_uri);
+ 
+        const issuer_did = await issuerData.did_uri;
+ 
+        const verifier_url = IPconfig.verifier_url;
+ 
+        // Call the backend to initialize trust
+        await axios.post(`http://localhost:8083/initialize`, {
+          issuer_did,
+          verifier_url,
+        });
+ 
+        setIsInitialized(true);
+        console.log("Issuer trusted successfully");
+      } catch (error) {
+        setError("Error during initialization");
+        console.error(error);
+      }
+    };
+ 
+    // Call initializeIssuerTrust when the app loads
+    initializeIssuerTrust();
+  }, []);
+ 
+  if (error) {
+    return <div>{error}</div>;
+  }
+ 
+  if (!isInitialized) {
+    return <div>Loading...</div>; // You can display a loading indicator here
+  }
+  return (
     <div className='App'>
       <header className="App-header">
         <img src="https://www.jobs.unsw.edu.au/jobs_files/logo.svg" alt="Site Logo" className="site-logo" />
@@ -132,6 +183,6 @@ function App() {
     </div>
   );
 }
-
+ 
 export default App;
-
+ 

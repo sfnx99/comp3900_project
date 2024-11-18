@@ -13,18 +13,6 @@ function HomePage() {
             <MdOutlineAddCard style={styles.icon} />
             <span style={styles.linkText}>Add Credential</span>
           </Link>
-          <Link to="/credential/unswcredential" style={styles.serviceBox}>
-            <FaIdCard style={styles.icon} />
-            <span style={styles.linkText}>View Credential</span>
-          </Link>
-          <Link to="/credential/add" style={styles.serviceBox}>
-            <MdCreditCardOff style={styles.icon} />
-            <span style={styles.linkText}>Issue Credential</span>
-          </Link>
-          <Link to="/revoke-credentials" style={styles.serviceBox}>
-            <FaRegUserCircle style={styles.icon} />
-            <span style={styles.linkText}>Revoke Credential</span>
-          </Link>
         </div>
       </div>
       <div style={styles.rightContainer}>

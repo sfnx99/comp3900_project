@@ -34,14 +34,14 @@ services:
       - issuer-backend
       - identity-holder-backend
     
-  # frontend-unsw-housing:
-  #   build: ./app/ServiceProvider/University-Housing/uni-housing
-  #   ports:
-  #     - "3002:3002"
-  #   depends_on:
-  #     - service_provider-backend
-  #     - issuer-backend
-  #     - identity-holder-backend
+  frontend-unsw-housing:
+    build: ./app/ServiceProvider/University-Housing/uni-housing
+    ports:
+      - "3002:3002"
+    depends_on:
+      - service_provider-backend
+      - issuer-backend
+      - identity-holder-backend
 
   frontend-unsw-exams:
     build: ./app/ServiceProvider/UNSW-exams

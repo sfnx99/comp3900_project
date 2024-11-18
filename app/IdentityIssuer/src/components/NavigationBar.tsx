@@ -19,8 +19,6 @@ const NavigationBar = () => {
             <Link to="/home" style={styles.navItem}><span style={styles.link}>Home</span></Link>
             <Link to="/credential/add" style={styles.navItem}><span style={styles.link}>Add Credential</span></Link>
             <Link to="/credential/unswcredential" style={styles.navItem}><span style={styles.link}>View Credentials</span></Link>
-            <Link to="/credential/add" style={styles.navItem}><span style={styles.link}>Issue Credentials</span></Link>
-            <Link to="/revoke-credentials" style={styles.navItem}><span style={styles.link}>Revoke Credentials</span></Link>
             <Link to="/notifications" style={styles.navItem}><span style={styles.link}>Notifications</span></Link>
             <Link to="/profile" style={styles.navItem}><span style={styles.link}>Admin Settings</span></Link>
           </div>

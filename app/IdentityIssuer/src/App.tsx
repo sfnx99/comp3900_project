@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AddCredentialPage from './pages/AddCredentialPage';
-import ListCredentialPage from './pages/ListCredentialPage';
 import ViewCredentialPage from './pages/ViewCredentialPage';
-import VerifyCredentialsPage from './pages/VerifyCredentialsPage';
-import RevokeCredentialsPage from './pages/RevokeCredentialPage';
 import NotificationPage from './pages/NotificationPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
@@ -14,8 +11,6 @@ import NavigationBar from './components/NavigationBar';
 import MobileNavigationBar from './components/MobileNavigationBar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import IssueCredentialsPage from './pages/IssueCredentialsPage';
-import AuthorizeCredentialPage from './pages/AuthorizeCredentialPage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
@@ -46,9 +41,7 @@ function App() {
           {/* <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> */}
           <Route path="/home" element={<ProtectedRoute><HomePage /> </ProtectedRoute>}></Route>
           <Route path="/credential/add" element={<ProtectedRoute><AddCredentialPage /></ProtectedRoute>} />
-          <Route path="/credentials/list" element={<ProtectedRoute><ListCredentialPage /></ProtectedRoute>} />
           <Route path="/credential/unswcredential" element={<ProtectedRoute><ViewCredentialPage /></ProtectedRoute>} />
-          <Route path="/revoke-credentials" element={<ProtectedRoute><RevokeCredentialsPage /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><NotificationPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           {/* <Route path="/issue-credentials" element={<ProtectedRoute><IssueCredentialsPage /></ProtectedRoute>} /> */}
