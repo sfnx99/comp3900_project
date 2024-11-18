@@ -259,7 +259,7 @@ app.post("/v2/info", (req: Request, res: Response) => {
         res.sendStatus(200);
     } catch (err) {
         console.log(`Failed to add information`);
-        res.status(500).json(err);
+        res.status(500).json(err.message || err.response);
     }
 });
 

@@ -23,6 +23,7 @@ import config from "./config.json";
 
 const app: Express = express();
 const port = process.env.PORT || 8083;
+const SUCCESS = 200;
 // Express backend setup
 
 app.use(cors()); // Enable CORS for all routes
@@ -88,9 +89,13 @@ app.post("/v2/present", async (req: Request, res: Response) => {
         type: vp_token.verifiableCredential[0].type[0],
         cryptosuite: vp_token.verifiableCredential[0].proof.cryptosuite,
         credential: vp_token.verifiableCredential[0].credentialSubject,
-        status: result.status === 200 ? "accepted" : "denied"
+        status: result.status === SUCCESS ? "accepted" : "denied"
     });
-    console.log(`Success: presentation result: ${result.status}`);
+    console.log(`Presentation result: ${result.status}`);
+    if (result.status === SUCCESS) {
+        console.log("███╗░░██╗███████╗░██╗░░░░░░░██╗  ░█████╗░██████╗░██████╗░██╗░░░░░██╗░█████╗░░█████╗░███╗░░██╗████████╗\n████╗░██║██╔════╝░██║░░██╗░░██║  ██╔══██╗██╔══██╗██╔══██╗██║░░░░░██║██╔══██╗██╔══██╗████╗░██║╚══██╔══╝\n██╔██╗██║█████╗░░░╚██╗████╗██╔╝  ███████║██████╔╝██████╔╝██║░░░░░██║██║░░╚═╝███████║██╔██╗██║░░░██║░░░\n██║╚████║██╔══╝░░░░████╔═████║░  ██╔══██║██╔═══╝░██╔═══╝░██║░░░░░██║██║░░██╗██╔══██║██║╚████║░░░██║░░░\n██║░╚███║███████╗░░╚██╔╝░╚██╔╝░  ██║░░██║██║░░░░░██║░░░░░███████╗██║╚█████╔╝██║░░██║██║░╚███║░░░██║░░░\n╚═╝░░╚══╝╚══════╝░░░╚═╝░░░╚═╝░░  ╚═╝░░╚═╝╚═╝░░░░░╚═╝░░░░░╚══════╝╚═╝░╚════╝░╚═╝░░╚═╝╚═╝░░╚══╝░░░╚═╝░░░");
+        console.log("");
+    }
     res.status(result.status).json(result.body);
 });
 

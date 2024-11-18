@@ -14,11 +14,10 @@ const HousingApplication = () => {
   useEffect(() => {
     const defineRequestedPresentation = async () => {
       try {
-        const verifier_url = config.verifier_url;
 
         // Call the backend to initialize trust
-        await axios.post(`${verifier_url}/define`, {
-          verifier_url,
+        await axios.post(`${config.verifier_url}/define`, {
+          verifier_url: config.verifier_url,
         });
 
         setIsDefined(true);

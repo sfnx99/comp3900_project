@@ -12,11 +12,23 @@ function App() {
   useEffect(() => {
     const initializeIssuerTrust = async () => {
       try {
-        const issuer_did = config.issuer_did;
+        const issuer_get = await fetch(config.issuer_url, {
+          method: 'GET',
+        });
+        
+        if (!issuer_get.ok) {
+          throw new Error('Failed to fetch DID');
+        }
+        
+        const issuerData = await issuer_get.json();
+        console.log("issuer_did", issuerData.did_uri);
+
+        const issuer_did = await issuerData.did_uri;
+
         const verifier_url = config.verifier_url;
 
         // Call the backend to initialize trust
-        await axios.post(`${verifier_url}/initialize`, {
+        await axios.post(`http://localhost:8083/initialize`, {
           issuer_did,
           verifier_url,
         });
